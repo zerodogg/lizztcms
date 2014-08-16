@@ -18,7 +18,7 @@
 %if(not $onlySkeletonHTML) {
 <div id="footer">
 %my $versVal = $VERSION;
-<a href="http://www.lizztcms.org/">
+<a href="https://github.com/zerodogg/lizztcms">
 %if($c->user) {
 <% $i18n->get_advanced("LizztCMS version %(VERSION)",{ VERSION => $VERSION }) %>
 %} else  {
@@ -26,7 +26,6 @@
 LizztCMS
 %}
 </a>
-- Copyright &copy; Utrop AS <a href="http://www.portu.no/">Portu media &amp; communications</a><br />
 LizztCMS is free software, available under the <a href="/lizztcms/license">GNU General Public License version 3</a>
 </div>
 <input type="hidden" id="lizztcms_version" value="<% $versVal %>" />
