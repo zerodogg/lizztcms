@@ -50,10 +50,10 @@ else
     # Install all required modules from our stratopan repo
     for module in $(perl lizztcms/DEPSLIST list 2>/dev/null); do
         if echo "$module" |egrep -q "\w"; then
-            cpanm --local-lib=~/perl5 --mirror-only --mirror https://stratopan.com/eskildportu/lizztcms/master --notest $module
+            cpanm --local-lib=~/perl5 --mirror-only --mirror https://stratopan.com/eskildportu/lixuz/master --notest $module
         fi
     done
-    cpanm --local-lib=~/perl5 --mirror-only --mirror https://stratopan.com/eskildportu/lizztcms/master --notest Starman JSON::DWIW
+    cpanm --local-lib=~/perl5 --mirror-only --mirror https://stratopan.com/eskildportu/lixuz/master --notest Starman JSON::DWIW
     # Create the mysql database and user
     mysql -uroot -e 'CREATE DATABASE lizztcms'
     mysql -uroot -e 'CREATE USER "lizztcms"@"localhost" IDENTIFIED BY "lizztcmspw";'
