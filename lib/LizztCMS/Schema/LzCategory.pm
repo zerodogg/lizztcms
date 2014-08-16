@@ -426,13 +426,11 @@ sub _getCategorySearchSQL
     my $ckey = get_ckey('category','children',$self->category_id);
     if (not $folders = $c->cache->get($ckey))
     {
-        if(not defined $self->root_parent)
+        my $flist = $self->folders;
+        $folders = [];
+        while(my $f = $flist->next)
         {
-            $folders = $self->_toplevelChildrenFetcher($c);
-        }
-        else
-        {
-            $folders = $self->_recursiveChildrenFetcher($c);
+            push(@{$folders},$f->folder_id);
         }
         $c->cache->set($ckey,$folders,CT_1H);
     }
