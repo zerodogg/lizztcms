@@ -1,5 +1,5 @@
 /*
- * LIXUZ content management system
+ * LizztCMS content management system
  * Copyright (C) Utrop A/S Portu media & Communications 2012
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*
- * File UI handling code for Lixuz article pages. Handles things like drag+drop
+ * File UI handling code for LizztCMS article pages. Handles things like drag+drop
  * to file spots
  */
 var filesUI = {
@@ -209,4 +209,4 @@ var filesUI = {
     }
 };
 
-$.subscribe('/lixuz/init',function () { filesUI.init(); });
+$.subscribe('/lizztcms/init',function () { filesUI.init(); });

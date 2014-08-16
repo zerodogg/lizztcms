@@ -1,5 +1,5 @@
 /*
- * LIXUZ content management system
+ * LizztCMS content management system
  * Copyright (C) Utrop A/S Portu media & Communications 2008-2011
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*
- * Image handling code for Lixuz. Interacts with the RTE, allowing
+ * Image handling code for LizztCMS. Interacts with the RTE, allowing
  * the user to add and edit images
  */
 
@@ -26,7 +26,7 @@ function LZ_VideoFLVMissing (videoId,running)
     deprecated();
     if(running == 1)
     {
-        userMessage(i18n.get_advanced('The video file with file_id %(FILEID) has not been converted to the FLV format used to serve video through Lixuz yet, the process is still running, please reload and try again in a few minutes.\n\nIf the conversion takes more than an hour, please contact your system administrator', { 'FILEID': videoId }));
+        userMessage(i18n.get_advanced('The video file with file_id %(FILEID) has not been converted to the FLV format used to serve video through LizztCMS yet, the process is still running, please reload and try again in a few minutes.\n\nIf the conversion takes more than an hour, please contact your system administrator', { 'FILEID': videoId }));
     }
     else
     {
@@ -84,9 +84,9 @@ function LZ_ArtFilePrompt (fileId, fileType)
     {
         html = html + htmlCheckbox('fileActionAddToLead',i18n.get('Add to the lead'),'addToLead','radio',leadSel,'fileAction')+'<br />';
         html = html + htmlCheckbox('fileActionAddToBody',i18n.get('Add to the body'),'addToBody','radio',false,'fileAction')+'<br />';
-        _.each(lixuzRTE.list(), function(field)
+        _.each(lizztcmsRTE.list(), function(field)
         {
-            if(lixuzRTE.get('lead').editorId == field || lixuzRTE.get('body').editorId == field)
+            if(lizztcmsRTE.get('lead').editorId == field || lizztcmsRTE.get('body').editorId == field)
             {
                 return;
             }

@@ -1,5 +1,5 @@
 <%perl>
-# LIXUZ content management system
+# LizztCMS content management system
 # Copyright (C) Utrop A/S Portu media & Communications 2008-2011
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </%perl>
-<div class="dashboardMsg" id="welcomeMsg"><% $i18n->get_advanced('Welcome to Lixuz, %(NAME) (%(USERNAME))', { NAME => $c->user->firstname.' '.$c->user->lastname, USERNAME => $c->user->user_name}) %></div>
+<div class="dashboardMsg" id="welcomeMsg"><% $i18n->get_advanced('Welcome to LizztCMS, %(NAME) (%(USERNAME))', { NAME => $c->user->firstname.' '.$c->user->lastname, USERNAME => $c->user->user_name}) %></div>
 %if($message) {
     <div class="dashboardMsg" id="lzTemplateListMessage"><b><% $message |n %></b></div>
 %}
@@ -40,7 +40,7 @@
                             <b><% $i18n->get('Assignments for:') %></b>
                             <select data-type="assigned" style="width:200px;" class="enableChosen" data-statuses="<% join(',',@{ $dashboard_MyAssignments_statuses }) %>">
                             <%perl>
-                            my $users = $c->model('LIXUZDB::LzUser')->search({ user_status => 'Active' });
+                            my $users = $c->model('LizztCMSDB::LzUser')->search({ user_status => 'Active' });
                             while(my $user = $users->next)
                             {
                                 my $selected;
@@ -58,7 +58,7 @@
                             <b><% $i18n->get('Available assignments for:') %></b>
                             <select data-type="available" style="width:200px;" class="enableChosen">
                             <%perl>
-                            my $roles = $c->model('LIXUZDB::LzRole')->search({ role_status => 'Active' });
+                            my $roles = $c->model('LizztCMSDB::LzRole')->search({ role_status => 'Active' });
                             while(my $role = $roles->next)
                             {
                                 my $selected;

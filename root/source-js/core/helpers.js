@@ -1,5 +1,5 @@
 /*
- * LIXUZ content management system
+ * LizztCMS content management system
  * Copyright (C) Utrop A/S Portu media & Communications 2008-2011
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*
- * Standard shared JavaScript functions for LIXUZ
+ * Standard shared JavaScript functions for LizztCMS
  *
  * Copyright (C) Portu media & communications
  * All Rights Reserved
@@ -196,7 +196,7 @@ function LZ_pagerChange (page)
         page: page,
         handled: false
     };
-    $.publish('/lixuz/pagerChange',[ data ]);
+    $.publish('/lizztcms/pagerChange',[ data ]);
     if(data.handled !== false)
     {
         return
@@ -386,7 +386,7 @@ function lzlog (message,second)
                 message = message+second;
                 second = null;
             }
-            message = '['+dt.toTimeString().replace(/\s+.*/,'')+'] Lixuz: '+message;
+            message = '['+dt.toTimeString().replace(/\s+.*/,'')+'] LizztCMS: '+message;
             if(second)
                 console.log(message,second);
             else
@@ -484,7 +484,7 @@ function getFieldItems (fieldArray)
  *
  * This function is the worker function used by getFieldItems. It can also be
  * used to retrieve a single value from an arbitary field in any other code
- * around Lixuz
+ * around LizztCMS
  */
 function getFieldData (fname)
 {
@@ -508,14 +508,14 @@ function getFieldData (fname)
                 else if(field.tagName.match(/^textarea$/i))
                 {
                     // Perform editor processing
-                    if(lixuzRTE.exists(fname))
+                    if(lizztcmsRTE.exists(fname))
                     {
                         // We might get called before the editor has had a chance
                         // to settle (ie. get any data). When that happens, pretend it
                         // contained an empty string.
                         try
                         {
-                            fvalue = lixuzRTE.getContent(fname);
+                            fvalue = lizztcmsRTE.getContent(fname);
                         }
                         catch(e)
                         {

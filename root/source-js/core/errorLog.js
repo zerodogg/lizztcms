@@ -1,12 +1,12 @@
-(function($,LIXUZ)
+(function($,LizztCMS)
 {
-    LIXUZ.addNamespace('errorLog',
+    LizztCMS.addNamespace('errorLog',
     {
         send: function(error,backtrace)
         {
             try
             {
-                var $errorLog = $('#lixuz_error_log');
+                var $errorLog = $('#lizztcms_error_log');
                 if (!$errorLog || $errorLog.val() != 'enable')
                 {
                     return;
@@ -41,4 +41,4 @@
             } catch(e) { }
         }
     });
-})(jQuery,LIXUZ);
+})(jQuery,LizztCMS);

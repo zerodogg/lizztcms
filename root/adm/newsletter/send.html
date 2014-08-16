@@ -1,5 +1,5 @@
 <%perl>
-# LIXUZ content management system
+# LizztCMS content management system
 # Copyright (C) Utrop A/S Portu media & Communications 2008-2011
 #
 # This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 <div id="mail_recipients" style="overflow: auto"><i>(<% $i18n->get('no recipients added') %>)</i></div>
 
 <div class="label"><% $i18n->get('From') %>:</div>
-<div><input type="text" name="mail_from" id="mail_from" style="width: 600px" value="<% $c->config->{LIXUZ}->{from_email} |n %>" /></div>
+<div><input type="text" name="mail_from" id="mail_from" style="width: 600px" value="<% $c->config->{LizztCMS}->{from_email} |n %>" /></div>
 
 <div class="label"><% $i18n->get('Subject') %>:</div>
 <div><input type="text" name="mail_subject" id="mail_subject" style="width:600px" value="<% $nsubject |n %>"/></div>

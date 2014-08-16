@@ -1,5 +1,5 @@
 /*
- * LIXUZ content management system
+ * LizztCMS content management system
  * Copyright (C) Utrop A/S Portu media & Communications 2008-2011
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*
- * Article submission JavaScript for LIXUZ
+ * Article submission JavaScript for LizztCMS
  *
  * Copyright (C) Portu media & communications
  * All Rights Reserved
@@ -27,12 +27,12 @@
 var articleDataManager = jClass({
     getArticleData: function (disableValidation)
     {
-        var fields = ['lixuzArticleEdit_uid','lixuzArticleEdit_type' ];
+        var fields = ['lizztcmsArticleEdit_uid','lizztcmsArticleEdit_type' ];
         if ($('#article_liveComments_enable')[0])
         {
             fields.push('article_liveComments_enable');
         }
-        var result = getFieldItems(fields, { 'lixuzArticleEdit_uid': 'uid', 'lixuzArticleEdit_type' : 'type'}),
+        var result = getFieldItems(fields, { 'lizztcmsArticleEdit_uid': 'uid', 'lizztcmsArticleEdit_type' : 'type'}),
             adFields = LZ_ADField_GetFields(disableValidation);
         if(adFields == false)
         {
@@ -56,9 +56,9 @@ var articleDataManager = jClass({
 
     getWorkflowData: function (disableValidation)
     {
-        var fields = [ 'workflow_priority','workflow_startdate','workflow_deadline','workflow_reassignToRole','workflow_reassignToUser','workflow_watch_article','lixuzArticleEdit_uid' ],
+        var fields = [ 'workflow_priority','workflow_startdate','workflow_deadline','workflow_reassignToRole','workflow_reassignToUser','workflow_watch_article','lizztcmsArticleEdit_uid' ],
             convertFields = {
-            'lixuzArticleEdit_uid': 'artid'
+            'lizztcmsArticleEdit_uid': 'artid'
             };
         return getFieldItems(fields, convertFields);
     }
@@ -126,7 +126,7 @@ var articleSubmit = jClass.extend([articleDataManager,lzWrapperHelpers,lzProgres
     submitArticle_success: function (data)
     {
         // Update UID to the one from the reply
-        $('#lixuzArticleEdit_uid').val(data.uid);
+        $('#lizztcmsArticleEdit_uid').val(data.uid);
         $('#artid').val(data.uid);
         $('#lz_artid_value').html(data.uid);
         $('#lz_revision_value').html(data.revision);
@@ -191,17 +191,17 @@ var articleSubmit = jClass.extend([articleDataManager,lzWrapperHelpers,lzProgres
 
         this.hasDoneFolderCheck = true;
 
-        if($('#lixuzArticleEdit_uid').val() == "")
+        if($('#lizztcmsArticleEdit_uid').val() == "")
             return true;
 
         if ($L('folder') != null)
         {
             folder = $L('folder').value;
-            if ($L('lixuzArticleEdit_uid') == null)
+            if ($L('lizztcmsArticleEdit_uid') == null)
             {
                 return true;
             }
-            XHR.Form.POST('/admin/articles/ajax', { 'wants':'folderMove', 'article_id':$L('lixuzArticleEdit_uid').value, 'newFolder':folder }, this.objMethodRef('folderCheck_response'));
+            XHR.Form.POST('/admin/articles/ajax', { 'wants':'folderMove', 'article_id':$L('lizztcmsArticleEdit_uid').value, 'newFolder':folder }, this.objMethodRef('folderCheck_response'));
             return;
         }
         return true;

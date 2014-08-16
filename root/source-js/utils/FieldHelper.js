@@ -1,5 +1,5 @@
 /*
- * LIXUZ content management system
+ * LizztCMS content management system
  * Copyright (C) Utrop A/S Portu media & Communications 2008-2011
  *
  * This program is free software: you can redistribute it and/or modify
@@ -175,7 +175,7 @@ function LZ_ADF_getInlineField (field)
 }
 
 /*
- * Lixuz version of $('#SOMEOBJ')[0]. This one will first try to locate an object
+ * LizztCMS version of $('#SOMEOBJ')[0]. This one will first try to locate an object
  * with that ID, then it will attempt to look up an additional field.
  * If both fails, it will return undefined.
  */

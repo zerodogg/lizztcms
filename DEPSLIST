@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# This file contains a list of all dependencies Lixuz has. You can read it by hand
+# This file contains a list of all dependencies LizztCMS has. You can read it by hand
 # or just run "perl DEPSLIST list" to get a quick list. "perl DEPSLIST check" or
 # "perl DEPSLIST verbosecheck" checks for missing dependencies.
 use strict;use warnings;use 5.010;

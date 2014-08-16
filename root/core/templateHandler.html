@@ -1,5 +1,5 @@
 <%perl>
-# LIXUZ content management system
+# LizztCMS content management system
 # Copyright (C) Utrop A/S Portu media & Communications 2008-2013
 #
 # This program is free software: you can redistribute it and/or modify
@@ -38,7 +38,7 @@ eval { $referer = $c->req->referer; };
 eval { $reqFor = $c->req->uri->as_string; };
 eval { $c->response->status(500); };
 eval { $referer = $referer ? $referer : '(none)'; $reqFor = $reqFor ? $reqFor : '(unknown)'; };
-my $internal = 'Fatal error while processing lixuz template "'.$lz_template.'": '.$e;
+my $internal = 'Fatal error while processing lizztcms template "'.$lz_template.'": '.$e;
 my $addInfo = 'This likely indicates a problem with your template. The page requested was "'.$reqFor.'" and the referer was "'.$referer.'"';
 $c->log->debug($internal);
 $c->log->warn($addInfo);

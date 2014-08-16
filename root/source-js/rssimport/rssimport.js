@@ -1,5 +1,5 @@
 /*
- * LIXUZ content management system
+ * LizztCMS content management system
  * Copyright (C) Utrop A/S Portu media & Communications 2008-2011
  *
  * This program is free software: you can redistribute it and/or modify
@@ -116,7 +116,7 @@ function constructRSSEditFormFromData (data)
         }, {
             closeButton: i18n.get('Cancel')
         });
-        editorFormEditor = lixuzRTE.init('rsseditor');
+        editorFormEditor = lizztcmsRTE.init('rsseditor');
     }
     catch(e)
     {

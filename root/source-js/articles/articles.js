@@ -1,5 +1,5 @@
 /*
- * LIXUZ content management system
+ * LizztCMS content management system
  * Copyright (C) Utrop A/S Portu media & Communications 2008-2011
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*
- * Article JavaScript for LIXUZ
+ * Article JavaScript for LizztCMS
  *
  * Copyright (C) Portu media & communications
  * All Rights Reserved
@@ -296,7 +296,7 @@ function articleKeepLockStatus(stat,reply)
     });
 }
 
-$.subscribe('/lixuz/init',function ()
+$.subscribe('/lizztcms/init',function ()
 {
     $('.sliderToggler').click(function(e)
     {

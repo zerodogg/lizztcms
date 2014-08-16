@@ -1,5 +1,5 @@
 <%perl>
-# LIXUZ content management system
+# LizztCMS content management system
 # Copyright (C) Utrop A/S Portu media & Communications 2008-2011
 #
 # This program is free software: you can redistribute it and/or modify
@@ -18,28 +18,28 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<!-- Lixuz CMS - Copyright (C) Portu media & communications
+<!-- LizztCMS CMS - Copyright (C) Portu media & communications
 Licensed under the GNU GPLv3, see gnu.org/licenses/gpl.html -->
-<title>Lixuz<% $pageTitle ? ' - '.$pageTitle : '' %></title>
+<title>LizztCMS<% $pageTitle ? ' - '.$pageTitle : '' %></title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta name="robots" content="noindex, nofollow" />
-% # Request google chrome frame when in IE, if available. Lixuz
+% # Request google chrome frame when in IE, if available. LizztCMS
 % # will work without it though. But Chrome is a LOT better than IE's
 % # rendering engine.
 %if ($isIe) {
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 %}
-<link rel="shortcut icon" href="/static/images/lixuz_favicon.png?2" />
+<link rel="shortcut icon" href="/static/images/lizztcms_favicon.png?2" />
 
-<link rel="stylesheet" type="text/css" href="/css/lixuz.css?<%$GITREVISION%>" />
+<link rel="stylesheet" type="text/css" href="/css/lizztcms.css?<%$GITREVISION%>" />
 %foreach my $css (@{ $cssIncl }) {
     <link rel="stylesheet" type="text/css" href="<% $css %>" />
 %}
 
 <script language="JavaScript" type="text/javascript" src="/js/LABjs.lib.js?<%$GITREVISION%>"></script>
 <script type="text/javascript">
-%if($lixuzLang) {
-window._LANGUAGE="<%$lixuzLang%>";
+%if($lizztcmsLang) {
+window._LANGUAGE="<%$lizztcmsLang%>";
 %}
 <%perl>
 my @jsFiles;
@@ -57,9 +57,9 @@ foreach my $baseIncl (reverse qw(modernizr.lib.js core.lib.js core.js))
 # jQuery+UI loaded from CDN
 $m->comp('/core/CDN-hosted.html', mode => 'rawLAB', %{$CDNLoadParams});
 
-if($lixuzLang)
+if($lizztcmsLang)
 {
-    unshift(@jsFiles,'/js/i18n/'.$lixuzLang.'.js');
+    unshift(@jsFiles,'/js/i18n/'.$lizztcmsLang.'.js');
 }
 
 my %seenJSFile;
@@ -134,8 +134,8 @@ $LAB.queue(function ()
 </head>
 
 <body<% $bodyAttributes |n %>>
-%if($c->config->{LIXUZ}->{clientErrorLog} || $c->debug) {
-<input type="hidden" id="lixuz_error_log" value="enable" />
+%if($c->config->{LizztCMS}->{clientErrorLog} || $c->debug) {
+<input type="hidden" id="lizztcms_error_log" value="enable" />
 %}
 %if(not $onlySkeletonHTML) {
 <div id="progInd" style="display:none; visibility:hidden;">
@@ -145,7 +145,7 @@ $LAB.queue(function ()
 <table cellspacing="0" cellpadding="0">
 <tr>
 <td class="tdlogo">
-<a href="/admin/"><img id="lixuzlogo" src="/static/images/lixuz-white.png" /></a>
+<a href="/admin/"><img id="lizztcmslogo" src="/static/images/lizztcms-white.png" /></a>
 </td>
 <& menu.html, %ARGS &>
 <td class="headerInfo">
@@ -183,10 +183,10 @@ $LAB.queue(function ()
     <p>
 <![endif]-->
 <!--[if lte IE 6]>
-    Lixuz is not supported with this version of Internet Explorer, and will not function correctly.
+    LizztCMS is not supported with this version of Internet Explorer, and will not function correctly.
 <![endif]-->
 <!--[if IE 7]>
-    You may have problems using Lixuz with this version.
+    You may have problems using LizztCMS with this version.
 <![endif]-->
 <!--[if lte IE <%$lte%>]>
     We recommend that you upgrade to <a href="http://www.firefox.com/">Mozilla Firefox</a> to avoid any issues.
@@ -213,13 +213,13 @@ $jsIncl => undef
 $CDNLoadParams => {}
 $onlySkeletonHTML => undef
 $GITREVISION => 'git'
-$lixuzLang => undef
+$lizztcmsLang => undef
 $cssIncl => []
 $i18n
 </%args>
 
 <%init>
-use LIXUZ::HelperModules::Includes qw(add_jsIncl add_bodyClass);
+use LizztCMS::HelperModules::Includes qw(add_jsIncl add_bodyClass);
 
 my $bodyAttributes .= '';
 if ($c->stash->{bodyclass})

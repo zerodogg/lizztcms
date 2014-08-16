@@ -1,7 +1,7 @@
 /*
  * Handle cases where for some reason we have injected duplicate script loading
  */
-if(window.LIXUZ && window.LIXUZ.version)
+if(window.LizztCMS && window.LizztCMS.version)
 {
     if(window.lzError)
     {
@@ -14,7 +14,7 @@ if(window.LIXUZ && window.LIXUZ.version)
                     return m;
                 }};
         }
-        message = i18n.get('Lixuz has loaded several instances on top of each other. This is dangerous, and can result in data corruption. Please save your work and then reload.');
+        message = i18n.get('LizztCMS has loaded several instances on top of each other. This is dangerous, and can result in data corruption. Please save your work and then reload.');
         try {
             destroyPI();
             $('.progressWrapper').each(function()
@@ -35,7 +35,7 @@ if(window.LIXUZ && window.LIXUZ.version)
 
 (function($)
 {
-    window.LIXUZ = window._L = {
+    window.LizztCMS = window._L = {
         namespace: function(namespace)
         {
             if(this[namespace])
@@ -74,10 +74,10 @@ if(window.LIXUZ && window.LIXUZ.version)
         }
     };
 
-    LIXUZ.define({
+    LizztCMS.define({
         version: function()
         {
-            return $('#lixuz_version').val();
+            return $('#lizztcms_version').val();
         }
     });
 })(jQuery);

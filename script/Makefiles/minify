@@ -30,7 +30,7 @@ quickMinifySanity: forceMinifyPrep
 	for file in `ls -t $$(find -iname '*.js') 2>/dev/null |head`; do  echo "$$file"; $(YUI_MINIFY) $(YUI_MINIFY_JS_OPTS) "$$file" -o /dev/null || exit 1;done
 	@echo "All good"
 minify_css: minifyPrep buildcss
-	echo "Minifying root/css/lixuz.css" ; $(YUI_MINIFY) $(YUI_MINIFY_CSS_OPTS) "root/css/lixuz.css" -o "root/css/lixuz.css.minified" || exit 1; mv -f "root/css/lixuz.css.minified" "root/css/lixuz.css"
+	echo "Minifying root/css/lizztcms.css" ; $(YUI_MINIFY) $(YUI_MINIFY_CSS_OPTS) "root/css/lizztcms.css" -o "root/css/lizztcms.css.minified" || exit 1; mv -f "root/css/lizztcms.css.minified" "root/css/lizztcms.css"
 minify_copyright: minifyPrep minify_js minify_css
 	# Portu copyright
 	for file in `ls root/js/*js|grep -v .lib|grep -v dragdrop`; do mv "$$file" "$$file.o"; echo -e "/*!! Copyright (C) Portu media & communications\n * Licensed under the GNU AGPLv3\n * See gnu.org/licenses/agpl.html */" > "$$file"; cat "$$file.o" >> "$$file"; rm -f "$$file.o";done

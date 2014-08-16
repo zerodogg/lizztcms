@@ -12,7 +12,7 @@ use constant { true => 1, false => 0 };
 use Getopt::Long;
 use FindBin;
 use lib $FindBin::RealBin.'/../lib/';
-use LIXUZ::HelperModules::Scripts qw(fakeC);
+use LizztCMS::HelperModules::Scripts qw(fakeC);
 
 $0 = realpath($0);
 my %dumpTargets = (
@@ -102,11 +102,11 @@ sub fatalRestore(&){}
 my $file = shift;
 $| = 1;
 
-print "NOTE: Lixuz should be stopped before running this script\n" if not $chained;
+print "NOTE: LizztCMS should be stopped before running this script\n" if not $chained;
 
 if(not $file or not -e $file)
 {
-    dualDie("Required argument: path to a Lixuz config file\n");
+    dualDie("Required argument: path to a LizztCMS config file\n");
 }
 
 $file = realpath($file);
@@ -180,7 +180,7 @@ print "Upgrade flags:";
 print "\n";
 print "Logging to: $lfile\n" if not $chained;
 
-slog('Starting database upgrade of Lixuz installation referenced by config file '.$file);
+slog('Starting database upgrade of LizztCMS installation referenced by config file '.$file);
 slog('Using config '.$file);
 {
     my $dir = dirname($0);
@@ -201,7 +201,7 @@ if ($flags{standard})
     dualPrint('Dumping database contents...');
     # The table list can be generated with:
     # mysql -uUSER -pPWD DB -e 'SHOW TABLES;'|cat|perl -ni -e 'next if /(dm_map|Tables_in)/;chomp;print "$_ ";';echo
-    dumpDB($dumpTargets{stripped},undef, qw(lz_action lz_article lz_article_elements lz_article_file lz_article_folder lz_article_lock lz_article_relations lz_article_tag lz_article_watch lz_backup lz_category lz_category_folder lz_field lz_field_module lz_field_options lz_field_value lz_file lz_file_class lz_file_folder lz_file_tag lz_folder lz_key_value lz_live_captcha lz_live_comment lz_lixuz_meta lz_newsletter_group lz_newsletter_saved lz_newsletter_subscription lz_newsletter_subscription_category lz_newsletter_subscription_group lz_perms lz_revision lz_role lz_role_action lz_rss_article lz_status lz_tag lz_template lz_template_dependencies lz_template_includes lz_user lz_user_config lz_widget_config lz_workflow lz_workflow_comments lz_category_layout));
+    dumpDB($dumpTargets{stripped},undef, qw(lz_action lz_article lz_article_elements lz_article_file lz_article_folder lz_article_lock lz_article_relations lz_article_tag lz_article_watch lz_backup lz_category lz_category_folder lz_field lz_field_module lz_field_options lz_field_value lz_file lz_file_class lz_file_folder lz_file_tag lz_folder lz_key_value lz_live_captcha lz_live_comment lz_lizztcms_meta lz_newsletter_group lz_newsletter_saved lz_newsletter_subscription lz_newsletter_subscription_category lz_newsletter_subscription_group lz_perms lz_revision lz_role lz_role_action lz_rss_article lz_status lz_tag lz_template lz_template_dependencies lz_template_includes lz_user lz_user_config lz_widget_config lz_workflow lz_workflow_comments lz_category_layout));
     print "done\n";
 
     fatalRestore
@@ -240,30 +240,30 @@ sub loadConfig
     $conf = Config::Any->load_files( { files =>  [ $file ], use_ext => true } ) or dualDie("failed to load config\n");
     $conf = $conf->[0]->{$file};
     print '.';
-    if(ref($conf->{'Model::LIXUZDB'}->{'connect_info'}) eq 'ARRAY')
+    if(ref($conf->{'Model::LizztCMSDB'}->{'connect_info'}) eq 'ARRAY')
     {
         dualDie("Old-style config. Unable to continue.\n");
     }
-    if(not $conf->{'Model::LIXUZDB'}->{'connect_info'}->{dsn} =~ /mysql/)
+    if(not $conf->{'Model::LizztCMSDB'}->{'connect_info'}->{dsn} =~ /mysql/)
     {
         dualDie("Not using MySQL, unable to continue\n");
     }
-    $dbnam = $conf->{'Model::LIXUZDB'}->{'connect_info'}->{dsn};
+    $dbnam = $conf->{'Model::LizztCMSDB'}->{'connect_info'}->{dsn};
     if(not $dbnam =~ s/.*dbname=//)
     {
         dualDie("failed to extract database name from config\n");
     }
-    $user = $conf->{'Model::LIXUZDB'}->{'connect_info'}->{user};
-    $pwd  = $conf->{'Model::LIXUZDB'}->{'connect_info'}->{password};
+    $user = $conf->{'Model::LizztCMSDB'}->{'connect_info'}->{user};
+    $pwd  = $conf->{'Model::LizztCMSDB'}->{'connect_info'}->{password};
     if(not $user or not $pwd or not $dbnam)
     {
         dualDie("Invalid config file, database user/pwd/dbname missing\n");
     }
     print '.';
     # (must never have the mysql_enable_utf8 flag set, see upgradePasswords())
-    $rawDBH = DBI->connect($conf->{'Model::LIXUZDB'}->{'connect_info'}->{dsn},$user,$pwd) or dualDie("Failed to open database connection: $DBI::errstr\n");
-    $dumpTargets{full} = dirname($0).'/lixuz-dbupgrade-dump-db:'.$dbnam.'-'.time.'-full.sql';
-    $dumpTargets{stripped} = dirname($0).'/lixuz-dbupgrade-dump-db:'.$dbnam.'-'.time.'-stripped.sql';
+    $rawDBH = DBI->connect($conf->{'Model::LizztCMSDB'}->{'connect_info'}->{dsn},$user,$pwd) or dualDie("Failed to open database connection: $DBI::errstr\n");
+    $dumpTargets{full} = dirname($0).'/lizztcms-dbupgrade-dump-db:'.$dbnam.'-'.time.'-full.sql';
+    $dumpTargets{stripped} = dirname($0).'/lizztcms-dbupgrade-dump-db:'.$dbnam.'-'.time.'-stripped.sql';
     if(not -w dirname($0))
     {
         dualDie('Unable to write to '.dirname($0)." - please fix the permissions then re-run this script.\n");
@@ -353,13 +353,13 @@ sub resetDB
     my $schema = shift;
     if(not $schema)
     {
-        if(not -e './lixuz_schema.sql')
+        if(not -e './lizztcms_schema.sql')
         {
-            dualDie(getcwd()."/lixuz_schema.sql is missing!\n");
+            dualDie(getcwd()."/lizztcms_schema.sql is missing!\n");
         }
         else
         {
-            $schema = './lixuz_schema.sql';
+            $schema = './lizztcms_schema.sql';
         }
     }
     mysql_exec('source '.$schema,true);
@@ -372,15 +372,15 @@ sub upgradeData
     my $pathToData = dirname(realpath($file));
     if(not -d $pathToData)
     {
-        dualDie($pathToData.' (Lixuz location) does not exist or is not a directory!');
+        dualDie($pathToData.' (LizztCMS location) does not exist or is not a directory!');
     }
     if (not $chained)
     {
-        dualPrint("Using Lixuz located at $pathToData\n");
+        dualPrint("Using LizztCMS located at $pathToData\n");
     }
     else
     {
-        slog("Using Lixuz located at $pathToData");
+        slog("Using LizztCMS located at $pathToData");
     }
     dualPrint("Preparing to upgrade data...");
     my $loaded = 1;
@@ -390,14 +390,14 @@ sub upgradeData
         print '.';
         silent
         {
-            require LIXUZ;
+            require LizztCMS;
         };
-        slog('Working dir after LIXUZ init: '.getcwd);
+        slog('Working dir after LizztCMS init: '.getcwd);
     }
     catch
     {
         $loaded = 0;
-        slog('Failed, perl crash while initializing LIXUZ: '.$_);
+        slog('Failed, perl crash while initializing LizztCMS: '.$_);
         print "failed, unable to perform data upgrade (see the logfile).\n";
     };
     return if not $loaded;
@@ -468,7 +468,7 @@ sub upgradeData
 sub upgradePasswords
 {
     my $c = shift;
-    my $u = getModel('LIXUZDB::LzUser');
+    my $u = getModel('LizztCMSDB::LzUser');
     while(my $user = $u->next)
     {
         # Must use rawDBH to ensure we get correct data (breaks with mysql_enable_utf8)
@@ -486,7 +486,7 @@ sub upgradePasswords
 # Add and remove lz_action's
 sub updateActionPath
 {
-    my $i18n = LIXUZ::HelperModules::I18N->new('lixuz','nn_NO','./i18n/locale');
+    my $i18n = LizztCMS::HelperModules::I18N->new('lizztcms','nn_NO','./i18n/locale');
 
     # A map of actions that have been renamed
     my %renamedPaths = (
@@ -503,7 +503,7 @@ sub updateActionPath
 
     foreach my $path (keys(%renamedPaths))
     {
-        my $s = getModel('LIXUZDB::LzAction')->find({ action_path => $path });
+        my $s = getModel('LizztCMSDB::LzAction')->find({ action_path => $path });
         if ($s)
         {
             print '.';
@@ -514,7 +514,7 @@ sub updateActionPath
 
     foreach my $path (@removedPaths)
     {
-        my $s = getModel('LIXUZDB::LzAction')->find({ action_path => $path });
+        my $s = getModel('LizztCMSDB::LzAction')->find({ action_path => $path });
         if ($s)
         {
             print '.';
@@ -522,21 +522,21 @@ sub updateActionPath
         }
     }
 
-    my %paths = LIXUZ::Schema::LzAction->getPathsHash($i18n);
+    my %paths = LizztCMS::Schema::LzAction->getPathsHash($i18n);
     foreach my $path (keys(%paths))
     {
-        my $s = getModel('LIXUZDB::LzAction')->search({ action_path => $path });
+        my $s = getModel('LizztCMSDB::LzAction')->search({ action_path => $path });
         if ($s && $s->count)
         {
             next;
         }
         print '.';
         slog('Created lz_action action_path entry for '.$path);
-        $s = getModel('LIXUZDB::LzAction')->create({ action_path => $path });
+        $s = getModel('LizztCMSDB::LzAction')->create({ action_path => $path });
         $s->update();
     }
 
-    my $existing = getModel('LIXUZDB::LzAction')->search(undef, { order_by => 'action_id' });
+    my $existing = getModel('LizztCMSDB::LzAction')->search(undef, { order_by => 'action_id' });
     my %seen;
     while((defined $existing) && (my $s = $existing->next))
     {
@@ -544,13 +544,13 @@ sub updateActionPath
         if (defined $seen{$name})
         {
             print '.';
-            my $badPerms = getModel('LIXUZDB::LzRoleAction')->search({ action_id => $s->action_id });
+            my $badPerms = getModel('LizztCMSDB::LzRoleAction')->search({ action_id => $s->action_id });
             slog('Detected duplicate actions for '.$name.' will delete '.$s->action_id.' and merge permission settings for the duplicates together');
             while((defined $badPerms) && (my $bad = $badPerms->next))
             {
                 if ($bad->allowed)
                 {
-                    my $good = getModel('LIXUZDB::LzRoleAction')->find({ action_id => $seen{$name}, role_id => $bad->role_id});
+                    my $good = getModel('LizztCMSDB::LzRoleAction')->find({ action_id => $seen{$name}, role_id => $bad->role_id});
                     if(not $good->allowed)
                     {
                         $good->set_column('allowed',1);
@@ -587,7 +587,7 @@ sub setupInlineFields
 sub checkOrAddField
 {
     my($name,$type,$inline,$exclusive,$obligatory,$height,$richtext) = @_;
-    my $existing = getModel('LIXUZDB::LzField')->search({ field_name => $name });
+    my $existing = getModel('LizztCMSDB::LzField')->search({ field_name => $name });
     if (defined $existing && $existing->count)
     {
         if (defined $height)
@@ -603,7 +603,7 @@ sub checkOrAddField
     }
     print '.';
     slog('Created the inline field '.$name);
-    my $newField = getModel('LIXUZDB::LzField')->create({
+    my $newField = getModel('LizztCMSDB::LzField')->create({
             field_name => $name,
             field_type => $type,
             field_height => $height,
@@ -612,10 +612,10 @@ sub checkOrAddField
             field_richtext => $richtext,});
     $newField->update();
 
-    my $folders = $c->model('LIXUZDB::LzFolder')->search({ parent => \'IS NULL'});
+    my $folders = $c->model('LizztCMSDB::LzFolder')->search({ parent => \'IS NULL'});
     while((defined $folders) && (my $f = $folders->next))
     {
-        my $positions = $c->model('LIXUZDB::LzFieldModule')->search({
+        my $positions = $c->model('LizztCMSDB::LzFieldModule')->search({
                 object_id => $f->folder_id,
                 module => 'folders',
                 position => \'IS NOT NULL',
@@ -630,7 +630,7 @@ sub checkOrAddField
                 $pos = $pos->position + 1;
             }
         }
-        $c->model('LIXUZDB::LzFieldModule')->create({
+        $c->model('LizztCMSDB::LzFieldModule')->create({
                 field_id => $newField->field_id,
                 module => 'folders',
                 object_id => $f->folder_id,
@@ -648,7 +648,7 @@ sub revisionUpgrade
 
     slog('Performing revision upgrade');
 
-    my $articles = $c->model('LIXUZDB::LzArticle')->search(undef, { order_by => 'article_id'});;
+    my $articles = $c->model('LizztCMSDB::LzArticle')->search(undef, { order_by => 'article_id'});;
     my $upgradedNO = 0;
 
     while(my $art = $articles->next)
@@ -656,7 +656,7 @@ sub revisionUpgrade
         if(not $art->revisionMeta)
         {
             $upgradedNO++;
-            $c->model('LIXUZDB::LzRevision')->create({
+            $c->model('LizztCMSDB::LzRevision')->create({
                     type => 'article',
                     type_revision => $art->revision,
                     is_latest => 1,
@@ -678,7 +678,7 @@ sub fileIdentifierUpgrade
     my $c = shift;
 
     slog('Performing file identifier upgrade');
-    my $files = $c->model('LIXUZDB::LzFile')->search(undef, { order_by => 'file_id'});;
+    my $files = $c->model('LizztCMSDB::LzFile')->search(undef, { order_by => 'file_id'});;
     my $upgradedNO = 0;
 
     while(my $file = $files->next)
@@ -709,20 +709,20 @@ sub reIndexDB
     print "structure changes in the indexer. It is safe to start the site and\n";
     print "have it running while this process is running.\n";
     my $pathToData = dirname(realpath($file));
-    logSystem('./cronjobs/lixuz_cron_daily.pl','--strict','--verbose','--reindex','--onlyindex');
+    logSystem('./cronjobs/lizztcms_cron_daily.pl','--strict','--verbose','--reindex','--onlyindex');
 }
 
 # Perform consistency checks
 sub performDbConsistency
 {
     print "\nChecking the database for consistency issues and fixng them:\n";
-    lixuzctl('database','check');
+    lizztctl('database','check');
 }
 
-# Run lixuzctl
-sub lixuzctl
+# Run lizztctl
+sub lizztctl
 {
-    logSystem('./tools/lixuzctl',@_);
+    logSystem('./tools/lizztctl',@_);
 }
 
 # Detect upgrade flags
@@ -885,7 +885,7 @@ sub getCurrentDBRevision
     my $e;
     silent
     {
-        $rev = $rawDBH->selectall_arrayref('SELECT value FROM lz_lixuz_meta WHERE entry="dbrevision"');
+        $rev = $rawDBH->selectall_arrayref('SELECT value FROM lz_lizztcms_meta WHERE entry="dbrevision"');
         $e = $DBI::errstr;
     };
     if (defined $rev)
@@ -906,7 +906,7 @@ sub getCurrentDBRevision
 sub setDBRevision
 {
     $c = fakeC() if not $c;
-    my $rev = $c->model('LIXUZDB::LzLixuzMeta')->find({ entry => 'dbrevision' });
+    my $rev = $c->model('LizztCMSDB::LzLizztCMSMeta')->find({ entry => 'dbrevision' });
     if ($rev)
     {
         $rev->set_column('value',$DBRevision);
@@ -914,7 +914,7 @@ sub setDBRevision
     }
     else
     {
-        $c->model('LIXUZDB::LzLixuzMeta')->create({ entry => ,'dbrevision', value => $DBRevision});
+        $c->model('LizztCMSDB::LzLizztCMSMeta')->create({ entry => ,'dbrevision', value => $DBRevision});
     }
 }
 
@@ -940,7 +940,7 @@ sub articleLatestStatusUpgrade
 
     slog('Performing article latest_in_status upgrade');
 
-    my $articles = $c->model('LIXUZDB::LzArticle')->search(undef, { order_by => 'article_id'});;
+    my $articles = $c->model('LizztCMSDB::LzArticle')->search(undef, { order_by => 'article_id'});;
     my $upgradedNo = 0;
 
     my %map;
@@ -969,7 +969,7 @@ sub articleLatestStatusUpgrade
             $art->revisionMeta->update({
                     is_latest_in_status => 1
                 });
-            $c->model('LIXUZDB::LzArticle')->search({
+            $c->model('LizztCMSDB::LzArticle')->search({
                     article_id => $id,
                     status_id => $status,
                     revision => { '!=' => $rev},
@@ -1045,7 +1045,7 @@ sub convertFileFields
     my $c = shift;
     silent
     {
-        $c->model('LIXUZDB::LzFieldModule')->search({ module => 'files', 'object_id' => \'IS NULL'})->update({ object_id => 0 });
+        $c->model('LizztCMSDB::LzFieldModule')->search({ module => 'files', 'object_id' => \'IS NULL'})->update({ object_id => 0 });
     };
     print '.';
 }
@@ -1067,12 +1067,12 @@ sub migrateFileFolders
 sub upgradeFileClassPerms
 {
     my $c = shift;
-    my $prevAction = $c->model('LIXUZDB::LzAction')->find({ action_path => '/files/upload' });
-    my $newAction = $c->model('LIXUZDB::LzAction')->find({ action_path => '/files/upload/upload' });
-    my $roles = $c->model('LIXUZDB::LzRoleAction')->search({ allowed =>1 , action_id => $prevAction->action_id });
+    my $prevAction = $c->model('LizztCMSDB::LzAction')->find({ action_path => '/files/upload' });
+    my $newAction = $c->model('LizztCMSDB::LzAction')->find({ action_path => '/files/upload/upload' });
+    my $roles = $c->model('LizztCMSDB::LzRoleAction')->search({ allowed =>1 , action_id => $prevAction->action_id });
     while(my $r = $roles->next)
     {
-        my $new = $c->model('LIXUZDB::LzRoleAction')->find_or_create({ action_id => $newAction->action_id, role_id => $r->role_id });
+        my $new = $c->model('LizztCMSDB::LzRoleAction')->find_or_create({ action_id => $newAction->action_id, role_id => $r->role_id });
         $new->set_column('allowed',1);
         $new->update();
     }
@@ -1080,11 +1080,11 @@ sub upgradeFileClassPerms
 sub convertFieldValToDatetime
 {
     my $c = shift;
-    my $fields = $c->model('LIXUZDB::LzField')->search({ field_type => { IN => [ 'datetime', 'date' ] } });
+    my $fields = $c->model('LizztCMSDB::LzField')->search({ field_type => { IN => [ 'datetime', 'date' ] } });
     my $no = 0;
     while(my $field = $fields->next)
     {
-        my $values = $c->model('LIXUZDB::LzFieldValue')->search({ field_id => $field->id, value => \'IS NOT NULL', dt_value => \'IS NULL' });
+        my $values = $c->model('LizztCMSDB::LzFieldValue')->search({ field_id => $field->id, value => \'IS NOT NULL', dt_value => \'IS NULL' });
         while(my $value = $values->next)
         {
             my $val = $value->get_column('value');
@@ -1112,7 +1112,7 @@ sub convertFieldValToDatetime
 sub readCreateStatement
 {
     my $table = shift;
-    open(my $i,'<','./lixuz_schema.sql');
+    open(my $i,'<','./lizztcms_schema.sql');
     my $seen = 0;
     my $statement = '';
     while(my $l = <$i>)
@@ -1168,7 +1168,7 @@ sub upgradeACL
 
     foreach my $part (keys %aclMap)
     {
-        my $action = $c->model('LIXUZDB::LzAction')->find({
+        my $action = $c->model('LizztCMSDB::LzAction')->find({
                 action_path => $part
             });
         if(not $action)
@@ -1176,7 +1176,7 @@ sub upgradeACL
             slog('Failed to locate (old) object for action path '.$part);
             next;
         }
-        my $existing = $c->model('LIXUZDB::LzRoleAction')->search({
+        my $existing = $c->model('LizztCMSDB::LzRoleAction')->search({
                 action_id => $action->id,
                 allowed => 1
             });
@@ -1188,7 +1188,7 @@ sub upgradeACL
         {
             foreach my $grant ( @{$aclMap{$part}})
             {
-                my $grantAction = $c->model('LIXUZDB::LzAction')->find({
+                my $grantAction = $c->model('LizztCMSDB::LzAction')->find({
                         action_path => $grant
                     });
                 if(not $grantAction)
@@ -1196,7 +1196,7 @@ sub upgradeACL
                     slog('Failed to locate (new) object for action path '.$grant);
                     next;
                 }
-                my $entry = $c->model('LIXUZDB::LzRoleAction')->find_or_create({
+                my $entry = $c->model('LizztCMSDB::LzRoleAction')->find_or_create({
                         action_id => $grantAction->id,
                         role_id => $e->role_id
                     });
@@ -1273,7 +1273,7 @@ sub getModel
     }
     catch
     {
-        $result = LIXUZ->model($model);
+        $result = LizztCMS->model($model);
     };
     return $result;
 }
@@ -1362,7 +1362,7 @@ sub fatalRestore(&)
         dualPrint(" -- Error : --\n");
         dualPrint($_);
         dualPrint(" --         --\n");
-        dualPrint("A fatal error has occurred, and Lixuz is unable to upgrade the database.\n");
+        dualPrint("A fatal error has occurred, and LizztCMS is unable to upgrade the database.\n");
         dualPrint("The database upgrader will now restore the database to its original state\n");
         dualPrint("before exiting.\n\n");
         print "Restoring...";

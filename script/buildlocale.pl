@@ -27,19 +27,19 @@ use constant { true => 1, false => 0};
 my @Files;
 my $buildOnlyMode = false;
 my $origDir = getcwd;
-my $potTarget = realpath($origDir.'/i18n/lixuz.pot');
+my $potTarget = realpath($origDir.'/i18n/lizztcms.pot');
 my $i18nDir = realpath($origDir.'/i18n');
 
 $| = 1;
 
-my $temp = tempdir('/tmp/lixuz.potgen.XXXXXX',CLEANUP => 1);
+my $temp = tempdir('/tmp/lizztcms.potgen.XXXXXX',CLEANUP => 1);
 
-my $HEADER = '# LIXUZ translation file';
+my $HEADER = '# LizztCMS translation file';
 my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime();
 $year += 1900;
 $mon++;
 
-die("Needs to be run from the base dir of the LIXUZ source tree\n") if not -d './lib' or not -d './root';
+die("Needs to be run from the base dir of the LizztCMS source tree\n") if not -d './lib' or not -d './root';
 die("Needs gettext, install the gettext package\n") if not InPath('xgettext') or not InPath('msgmerge') or not InPath('msgfmt');
 
 # Purpose: Do some replacements on files in the copy so that xgettext find them easier to work with
@@ -207,7 +207,7 @@ sub createI18NTree
 			print "\n$MO: No directory created\n";
 			next;
 		}
-		move($MO,"$LocaleDir/$orig/LC_MESSAGES/lixuz.mo");
+		move($MO,"$LocaleDir/$orig/LC_MESSAGES/lizztcms.mo");
 		print " $MO";
 	}
 	print "\n";
@@ -239,13 +239,13 @@ if (not $buildOnlyMode)
     print 'Running xgettext...';
     my @command = ('xgettext',
         '--copyright-holder',	'Portu media & communications',
-        '--msgid-bugs-address',	'https://github.com/portu/lixuz/issues',
+        '--msgid-bugs-address',	'https://github.com/portu/lizztcms/issues',
         '--language',			'perl',
-        '--default-domain',		'LIXUZ',
-        '--package-name',		'LIXUZ',
+        '--default-domain',		'LizztCMS',
+        '--package-name',		'LizztCMS',
         '--from-code',			'UTF-8',
         '--package-version',	'('.scalar localtime().')',
-        '-o',					'./lixuz.pot',
+        '-o',					'./lizztcms.pot',
         '--add-comments=TRANSLATORS',
         @Files,);
     # These can be used to debug issues
@@ -265,22 +265,22 @@ if (not $buildOnlyMode)
             },
             no_chdir => 1,
         },'root/source-js');
-    my @jsxgettext = (qw(jsxgettext --addfunc i18n.get --addfunc i18n.get_advanced ./lixuz-js.pot),@files);
+    my @jsxgettext = (qw(jsxgettext --addfunc i18n.get --addfunc i18n.get_advanced ./lizztcms-js.pot),@files);
     system(@jsxgettext);
     print "done\n";
 
-    if(not -e './lixuz.pot')
+    if(not -e './lizztcms.pot')
     {
-        die("'./lixuz.pot': missing, even after xgettext\n");
+        die("'./lizztcms.pot': missing, even after xgettext\n");
     }
     print 'Finalizing POT...';
-    system(qw(msgcat ./lixuz.pot ./lixuz-js.pot),'-o','output.pot');
+    system(qw(msgcat ./lizztcms.pot ./lizztcms-js.pot),'-o','output.pot');
     open(my $pot,'<','./output.pot');
     undef $/;
     my $pot_content = <$pot>;
     close($pot);
     $pot_content =~ s{YEAR (Portu|THE PACKAGE'S COPYRIGHT HOLDER)}{$year Portu}g;
-    $pot_content =~ s{PACKAGE VERSION}{Lixuz}g;
+    $pot_content =~ s{PACKAGE VERSION}{LizztCMS}g;
     $pot_content =~ s{# SOME DESCRIPTIVE TITLE\.}{$HEADER}g;
     $pot_content =~ s{# This file is distributed under the same license as the PACKAGE package\.\n}{}g;
     $pot_content =~ s{# FIRST AUTHOR <EMAIL\@ADDRESS>, YEAR\.\n}{}g;

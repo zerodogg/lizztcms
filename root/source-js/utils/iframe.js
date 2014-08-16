@@ -1,5 +1,5 @@
 /*
- * LIXUZ content management system
+ * LizztCMS content management system
  * Copyright (C) Utrop A/S Portu media & Communications 2008-2011
  *
  * This program is free software: you can redistribute it and/or modify
@@ -38,7 +38,7 @@ function LZ_iFrame_setContentManual (content)
         var doc = this.getDoc();
         // FIXME: doc.write
         doc.open();
-        doc.write('<head><script>function $ (id) { return document.getElementById(id) }</script><link rel="stylesheet" type="text/css" href="/css/lixuz.css" /></head><body>'+content+'</body>');
+        doc.write('<head><script>function $ (id) { return document.getElementById(id) }</script><link rel="stylesheet" type="text/css" href="/css/lizztcms.css" /></head><body>'+content+'</body>');
         doc.close();
     }
     catch(e)

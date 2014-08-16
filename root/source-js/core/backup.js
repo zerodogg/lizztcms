@@ -1,5 +1,5 @@
 /*
- * LIXUZ content management system
+ * LizztCMS content management system
  * Copyright (C) Utrop A/S Portu media & Communications 2008-2011
  *
  * This program is free software: you can redistribute it and/or modify
@@ -51,7 +51,7 @@ function backup_init (dataFunction,type)
     $.subscribe('/polling/getPayload',function(payload)
     {
         var data = backup_getBackupData(),
-            artid = $('#lixuzArticleEdit_uid').val();
+            artid = $('#lizztcmsArticleEdit_uid').val();
 
         payload.article_id = artid;
         if(changedSince('backup'))
@@ -164,7 +164,7 @@ var backup_restore_layout;
  * to field values on the page. Ie.:
  * {
  *      article: {
- *          uid: 'lixuzArticleEdit_uid'
+ *          uid: 'lizztcmsArticleEdit_uid'
  *          }
  * }
  * It is the reverse of the convertNames hash supplied to getFieldItems().

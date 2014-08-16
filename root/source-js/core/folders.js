@@ -1,5 +1,5 @@
 /*
- * LIXUZ content management system
+ * LizztCMS content management system
  * Copyright (C) Utrop A/S Portu media & Communications 2008-2011
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,11 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-var lixuzFolders = {
+var lizztcmsFolders = {
     moveDialog: function()
     {
         this.loadFolderData(function (reply) {
-            lixuzFolders.showMoveDialog(reply);
+            lizztcmsFolders.showMoveDialog(reply);
         });
     },
 
@@ -75,7 +75,7 @@ var lixuzFolders = {
         XHR.Form.POST('/admin/services/moveFolder', {
             folder_id: source,
             parent_id: target
-        }, lixuz_DD_RefreshList, function (error)
+        }, lizztcms_DD_RefreshList, function (error)
         {
             destroyPI();
             if(error.error == 'RECURSIVE_PARENT')
@@ -93,7 +93,7 @@ var lixuzFolders = {
     renameDialog: function ()
     {
         this.loadFolderData(function (reply) {
-            lixuzFolders.showRenameDialog(reply);
+            lizztcmsFolders.showRenameDialog(reply);
         });
     },
 
@@ -135,7 +135,7 @@ var lixuzFolders = {
         XHR.Form.POST('/admin/services/renameFolder', {
             folder_id: folder,
             folder_name: name
-        }, lixuz_DD_RefreshList);
+        }, lizztcms_DD_RefreshList);
     },
 
     loadFolderData: function (action)
@@ -149,7 +149,7 @@ var lixuzFolders = {
     deleteDialog: function()
     {
         this.loadFolderData(function (reply) {
-            lixuzFolders.showDeleteDialog(reply);
+            lizztcmsFolders.showDeleteDialog(reply);
         });
     },
 
@@ -185,7 +185,7 @@ var lixuzFolders = {
         i18n.get('Confirm deletion'),
         function()
         {
-            lixuzFolders.reallyDelete(folder);
+            lizztcmsFolders.reallyDelete(folder);
         });
     },
 
@@ -193,6 +193,6 @@ var lixuzFolders = {
     {
         showPI(i18n.get('Deleting...<br />This is a heavy operation and may take a while'));
         PI_noSoonMessage = PI_currProgress;
-        XHR.GET('/admin/services/deleteFolder/?folder_id='+folder, lixuz_DD_RefreshList);
+        XHR.GET('/admin/services/deleteFolder/?folder_id='+folder, lizztcms_DD_RefreshList);
     }
 };

@@ -1,5 +1,5 @@
 /*
- * LIXUZ content management system
+ * LizztCMS content management system
  * Copyright (C) Utrop A/S Portu media & Communications 2008-2011
  *
  * This program is free software: you can redistribute it and/or modify
@@ -49,7 +49,7 @@
                 'border-radius-bottomleft': 5
             });
             $('head').append(this.getCSS());
-            $s.html('<b>&darr; '+i18n.get('Show Lixuz sidebar')+' &darr;</b>');
+            $s.html('<b>&darr; '+i18n.get('Show LizztCMS sidebar')+' &darr;</b>');
             $s.css({ 'text-align': 'right', cursor: 'pointer' });
             this.$status = $('<div id="ajaxStatus" />').html(i18n.get('Working...')+' <img src="/static/images/progind.gif" width="24" height="25" />').hide()
             .css({ 'background-color':'#FFF' }).appendTo($m);
@@ -109,7 +109,7 @@
             if (this.visible)
             {
                 this.visible = false;
-                this.$menuStr.html('<b>&darr; '+i18n.get('Show Lixuz sidebar')+' &darr;</b>');
+                this.$menuStr.html('<b>&darr; '+i18n.get('Show LizztCMS sidebar')+' &darr;</b>');
                 this.$menu.animate({ width: this.menuSize});
             }
             else
@@ -121,7 +121,7 @@
                 }
                 this.$sideBar.css({ height: height, width: 550, overflow: 'auto' });
                 this.visible = true;
-                this.$menuStr.html('<b>&uarr; '+i18n.get('Hide Lixuz sidebar')+' &uarr;</b>');
+                this.$menuStr.html('<b>&uarr; '+i18n.get('Hide LizztCMS sidebar')+' &uarr;</b>');
                 this.$menu.animate({ width: 550 });
             }
             this.$sideBar.slideToggle();

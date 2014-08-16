@@ -1,13 +1,13 @@
 #!/usr/bin/perl
 use IPC::Open3;
 use Fatal qw(open open3);
-my $schema = 'lixuz_schema.sql';
+my $schema = 'lizztcms_schema.sql';
 
 if (@ARGV)
 {
     $schema = shift(@ARGV);
 }
-open3(my $in, my $out, my $err,'mysqldump','-ulixuz','-pli09uz31','-d','lixuz');
+open3(my $in, my $out, my $err,'mysqldump','-ulizztcms','-pli09uz31','-d','lizztcms');
 open(my $outf, '>',$schema);
 my $seenDM = 0;
 while($_ = <$out>)

@@ -1,6 +1,6 @@
 #!/bin/sh
-# Lixuz Vagrant initialization script
-# Part of the LIXUZ content management system
+# LizztCMS Vagrant initialization script
+# Part of the LizztCMS content management system
 # Copyright (C) Utrop A/S Portu media & Communications 2008-2014
 #
 # This program is free software: you can redistribute it and/or modify
@@ -37,7 +37,7 @@ if [ "$(id -u)" = "0" ]; then
 else
     # User actions
     set -x
-    ln -s /vagrant lixuz
+    ln -s /vagrant lizztcms
     # Initialize the perl installation
     cpanm --local-lib=~/perl5 --notest local::lib
     perl -I ~/perl5/lib/perl5/ -Mlocal::lib >> ~/.bash_profile
@@ -48,16 +48,16 @@ else
     # Upgrade cpanm
     cpanm --local-lib=~/perl5 --self-upgrade --notest
     # Install all required modules from our stratopan repo
-    for module in $(perl lixuz/DEPSLIST list 2>/dev/null); do
+    for module in $(perl lizztcms/DEPSLIST list 2>/dev/null); do
         if echo "$module" |egrep -q "\w"; then
-            cpanm --local-lib=~/perl5 --mirror-only --mirror https://stratopan.com/eskildportu/lixuz/master --notest $module
+            cpanm --local-lib=~/perl5 --mirror-only --mirror https://stratopan.com/eskildportu/lizztcms/master --notest $module
         fi
     done
-    cpanm --local-lib=~/perl5 --mirror-only --mirror https://stratopan.com/eskildportu/lixuz/master --notest Starman JSON::DWIW
+    cpanm --local-lib=~/perl5 --mirror-only --mirror https://stratopan.com/eskildportu/lizztcms/master --notest Starman JSON::DWIW
     # Create the mysql database and user
-    mysql -uroot -e 'CREATE DATABASE lixuz'
-    mysql -uroot -e 'CREATE USER "lixuz"@"localhost" IDENTIFIED BY "lixuzpw";'
-    mysql -uroot -e 'GRANT ALL ON lixuz.* TO "lixuz"@"localhost";'
+    mysql -uroot -e 'CREATE DATABASE lizztcms'
+    mysql -uroot -e 'CREATE USER "lizztcms"@"localhost" IDENTIFIED BY "lizztcmspw";'
+    mysql -uroot -e 'GRANT ALL ON lizztcms.* TO "lizztcms"@"localhost";'
     # Instal simpleJSi18n
     mkdir -p ~/bin
     git clone https://github.com/zerodogg/simpleJSi18n.git
@@ -67,32 +67,32 @@ else
     export PATH="$HOME/bin:$PATH"
     # Generate a config file and initialize the database
     cd /vagrant
-    perl script/lixuz_install.pl --bootstrap --dbname lixuz --dbuser lixuz --dbpwd lixuzpw --installpath /vagrant --filepath ~/lixuztmp/files --templatepath ~/lixuztmp/templates/ --temppath ~/lixuztmp/tmp --indexFiles ~/lixuztmp/indexer --memcached 127.0.0.1:11211 --memcachednamespace orglixuzvagrant --fromemail vagrant@localhost
+    perl script/lizztcms_install.pl --bootstrap --dbname lizztcms --dbuser lizztcms --dbpwd lizztcmspw --installpath /vagrant --filepath ~/lizztcmstmp/files --templatepath ~/lizztcmstmp/templates/ --temppath ~/lizztcmstmp/tmp --indexFiles ~/lizztcmstmp/indexer --memcached 127.0.0.1:11211 --memcachednamespace orglizztcmsvagrant --fromemail vagrant@localhost
     # Build dependencies
     make build
 	# Add a default user
-	/vagrant/tools/lixuzctl plumbing v8 adduser admin admin
+	/vagrant/tools/lizztctl plumbing v8 adduser admin admin
     set -
     # Write a wrapper script that starts the server
-    cat << EOF > ~/bin/lixuz_server
+    cat << EOF > ~/bin/lizztcms_server
 #!/bin/sh
 cd /vagrant
 eval \$(perl -I~/perl5/lib/perl5/ -Mlocal::lib)
-exec ./script/lixuz_server.pl -f -r "\$@"
+exec ./script/lizztcms_server.pl -f -r "\$@"
 EOF
-    cat << EOF > ~/bin/vlixuzctl
+    cat << EOF > ~/bin/vlizztctl
 #!/bin/sh
 if [ "\$(pwd)" == "\$HOME" ]; then
     cd /vagrant
 fi
 eval \$(perl -I~/perl5/lib/perl5/ -Mlocal::lib)
-exec /vagrant/tools/lixuzctl "\$@"
+exec /vagrant/tools/lizztctl "\$@"
 EOF
-    ln -s /vagrant/tools/lixuzctl ~/bin
-    chmod +x ~/bin/lixuz_server
+    ln -s /vagrant/tools/lizztctl ~/bin
+    chmod +x ~/bin/lizztcms_server
 	echo "***"
 	echo "Initialization of VM successfully completed."
-	echo "The default username and password for logging into lixuz is: admin admin"
+	echo "The default username and password for logging into lizztcms is: admin admin"
 	echo "***"
     # Exit with success
     exit 0

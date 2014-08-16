@@ -2,5 +2,5 @@ use strict;
 use warnings;
 use Test::More tests => 1;
 
-BEGIN { use_ok 'LIXUZ::Model::LIXUZDB' }
+BEGIN { use_ok 'LizztCMS::Model::LizztCMSDB' }
 

@@ -163,7 +163,7 @@ addEvent : function(whichObject,eventType,functionName)
                        return;
                    }
                    this.lastSavedValue = strValue;
-                   XHR.Form.POST(lixuz_DD_URL, {
+                   XHR.Form.POST(lizztcms_DD_URL, {
                        saveExpanded: 1,
                        value: value
                    },$.noop,$.noop);
@@ -764,17 +764,17 @@ addEvent : function(whichObject,eventType,functionName)
                            var menuModel = new DHTMLGoodies_menuModel();
                            if(this.deleteAllowed)menuModel.addItem(1,'Delete','','',false,'JSTreeObj.deleteItem');
                            if(this.renameAllowed)menuModel.addItem(2,'Rename','','',false,'JSTreeObj.renameItem');
-                           menuModel.addItem(3,'Add new','','',false,'lixuz_DD_NewItem');
+                           menuModel.addItem(3,'Add new','','',false,'lizztcms_DD_NewItem');
                            menuModel.init();	
 
                            var menuModelRenameOnly = new DHTMLGoodies_menuModel();
                            if(this.renameAllowed)menuModelRenameOnly.addItem(3,'Rename','','',false,'JSTreeObj.renameItem');
-                           menuModelRenameOnly.addItem(5,'Add new','','',false,'lixuz_DD_NewItem');
+                           menuModelRenameOnly.addItem(5,'Add new','','',false,'lizztcms_DD_NewItem');
                            menuModelRenameOnly.init();	
 
                            var menuModelDeleteOnly = new DHTMLGoodies_menuModel();
                            if(this.deleteAllowed)menuModelDeleteOnly.addItem(4,'Delete','','',false,'JSTreeObj.deleteItem');
-                           menuModelDeleteOnly.addItem(6,'Add new','','',false,'lixuz_DD_NewItem');
+                           menuModelDeleteOnly.addItem(6,'Add new','','',false,'lizztcms_DD_NewItem');
                            menuModelDeleteOnly.init();	
 
                            window.refToDragDropTree = this;

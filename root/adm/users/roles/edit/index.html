@@ -1,5 +1,5 @@
 <%perl>
-# LIXUZ content management system
+# LizztCMS content management system
 # Copyright (C) Utrop A/S Portu media & Communications 2008-2011
 #
 # This program is free software: you can redistribute it and/or modify
@@ -68,7 +68,7 @@ sub generateActionList
     }
 }
 generateActionList($groups,$paths);
-my $entries = $c->model('LIXUZDB::LzAction');
+my $entries = $c->model('LizztCMSDB::LzAction');
 my %extra;
 while(my $e = $entries->next)
 {
@@ -85,8 +85,8 @@ if (%extra)
 %}
 
 <br/><br/>
-<div class="submit"><input id="lixuz_roleEdit_submit" name="_submit" onclick="submitRoleData(); return false;" type="button" value="Save changes" /></div>
-<div class="reset"><input id="lixuz_roleEdit_reset" name="_reset" onclick="try { this.form.reset(); } catch(e) { } ; recalculateCheckedBoxes();" type="reset" value="Reset" /></div>
+<div class="submit"><input id="lizztcms_roleEdit_submit" name="_submit" onclick="submitRoleData(); return false;" type="button" value="Save changes" /></div>
+<div class="reset"><input id="lizztcms_roleEdit_reset" name="_reset" onclick="try { this.form.reset(); } catch(e) { } ; recalculateCheckedBoxes();" type="reset" value="Reset" /></div>
 </form>
 
 </div>
@@ -102,5 +102,5 @@ $i18n
 </%args>
 
 <%init>
-use LIXUZ::HelperModules::Forms('select_options');
+use LizztCMS::HelperModules::Forms('select_options');
 </%init>

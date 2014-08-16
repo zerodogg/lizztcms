@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# LIXUZ content management system
+# LizztCMS content management system
 # Copyright (C) Utrop A/S Portu media & Communications 2008-2011
 #
 # This program is free software: you can redistribute it and/or modify
@@ -25,27 +25,27 @@ use lib $FindBin::RealBin.'/../lib/';
 my $file = shift or die("Needs one parameter: the file to import from\n");
 open(my $i,'<',$file);
 $| = 1;
-# Lixuz doesn't like not being in its own dir when initializing
+# LizztCMS doesn't like not being in its own dir when initializing
 chdir($FindBin::RealBin.'/..');
-require LIXUZ;
+require LizztCMS;
 
 while(my $l = <$i>)
 {
     chomp($l);
     print "Adding $l...";
-    if(LIXUZ->model('LIXUZDB::LzNewsletterSubscription')->search({ email => $l })->count)
+    if(LizztCMS->model('LizztCMSDB::LzNewsletterSubscription')->search({ email => $l })->count)
     {
         print "already exists, skipping\n";
         next;
     }
-    my $o = LIXUZ->model('LIXUZDB::LzNewsletterSubscription')->create({
+    my $o = LizztCMS->model('LizztCMSDB::LzNewsletterSubscription')->create({
             email => $l,
             name => $l,
             format => 'html',
             send_every => 'month',
             validated => 1
         });
-    LIXUZ->model('LIXUZDB::LzNewsletterSubscriptionGroup')->create({
+    LizztCMS->model('LizztCMSDB::LzNewsletterSubscriptionGroup')->create({
             group_id => 1,
             subscription_id => $o->subscription_id
         });

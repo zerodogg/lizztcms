@@ -45,7 +45,7 @@
 0.1.4
 - Fixed a bug causing «add to body/lead» not to work
 - Turned the «view other versions» link in the files section into a button
-- Fixed a problem where Lixuz would throw a 503 error instead of 404 when
+- Fixed a problem where LizztCMS would throw a 503 error instead of 404 when
     an invalid UID is used in /files/get
 
 0.1.3

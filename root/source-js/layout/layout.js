@@ -284,14 +284,14 @@ var categoryLayout =
     }
 };
 
-$.subscribe('/lixuz/pagerChange',function(data)
+$.subscribe('/lizztcms/pagerChange',function(data)
 {
     data.handled = true;
     var $pager = $('#listdiv').find('pagination');
     categoryLayout.updateArtList( $pager.data('fid'), $pager.data('search'), false, data.page );
 });
-$.subscribe('/lixuz/init', categoryLayout.initialize);
-$.subscribe('/lixuz/beforeunload', function(messages)
+$.subscribe('/lizztcms/init', categoryLayout.initialize);
+$.subscribe('/lizztcms/beforeunload', function(messages)
 {
     if ( categoryLayout.changed === true )
     {

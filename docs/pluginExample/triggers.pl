@@ -5,6 +5,6 @@ my $triggers = {
     },
     removal => sub {
     },
-    lixuzUpgrade => sub {
+    lizztcmsUpgrade => sub {
     }
 };

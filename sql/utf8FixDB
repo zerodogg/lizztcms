@@ -1,8 +1,8 @@
 #!/usr/bin/perl
-# Database fixing script for Lixuz.
+# Database fixing script for LizztCMS.
 #
-# Older versions of Lixuz did not handle UTF-8 properly. This script will go
-# through all text strings in a Lixuz database and attempt to guess if the
+# Older versions of LizztCMS did not handle UTF-8 properly. This script will go
+# through all text strings in a LizztCMS database and attempt to guess if the
 # string is proper UTF8 or not, and if it isn't convert it to one that is. The
 # script has been tested on and should be safe to run on a database that is
 # already properly utf-8, it is discouraged however.
@@ -13,7 +13,7 @@ use constant { true => 1, false => 0 };
 use Encode qw(encode_utf8 is_utf8 decode encode _utf8_on _utf8_off);
 use utf8;
 
-my $file = shift or die("Usage: $0 path/to/lixuz.yml\n");
+my $file = shift or die("Usage: $0 path/to/lizztcms.yml\n");
 my $confirmed = shift;
 if (not $confirmed)
 {
@@ -28,9 +28,9 @@ loadConfig();
     # We don't need DBIx::Class whining about missing primary keys here, so ignore it
     local *STDERR;
     $ENV{SCHEMA_LOADER_BACKCOMPAT} = 1;
-    $db = LixuzDB->connect('DBI:mysql:'.$dbnam.':localhost',$user,$pwd) or die;
+    $db = LizztCMSDB->connect('DBI:mysql:'.$dbnam.':localhost',$user,$pwd) or die;
     print ".";
-    $dbUTF8 = LixuzDBUTF8->connect('DBI:mysql:'.$dbnam.':localhost',$user,$pwd, { mysql_enable_utf8 => 1 }) or die;
+    $dbUTF8 = LizztCMSDBUTF8->connect('DBI:mysql:'.$dbnam.':localhost',$user,$pwd, { mysql_enable_utf8 => 1 }) or die;
     print ".";
 };
 print "done\n";
@@ -61,11 +61,11 @@ sub loadConfig
     $conf = Config::Any->load_files( { files =>  [ $file ], use_ext => true } ) or die("failed to load config\n");
     $conf = $conf->[0]->{$file};
     print '.';
-    if(ref($conf->{'Model::LIXUZDB'}->{'connect_info'}) eq 'ARRAY')
+    if(ref($conf->{'Model::LizztCMSDB'}->{'connect_info'}) eq 'ARRAY')
     {
         die("Old-style config. Unable to continue.\n");
     }
-    $dbnam = $conf->{'Model::LIXUZDB'}->{'connect_info'}->{dsn};
+    $dbnam = $conf->{'Model::LizztCMSDB'}->{'connect_info'}->{dsn};
     if(not $dbnam =~ /mysql/i)
     {
         die("Not using MySQL, unable to continue\n");
@@ -74,8 +74,8 @@ sub loadConfig
     {
         die("failed to extract database name from config\n");
     }
-    $user = $conf->{'Model::LIXUZDB'}->{'connect_info'}->{user};
-    $pwd  = $conf->{'Model::LIXUZDB'}->{'connect_info'}->{password};
+    $user = $conf->{'Model::LizztCMSDB'}->{'connect_info'}->{user};
+    $pwd  = $conf->{'Model::LizztCMSDB'}->{'connect_info'}->{password};
     if(not $user or not $pwd or not $dbnam)
     {
         die("Invalid config file, database user/pwd/dbname missing\n");
@@ -276,14 +276,14 @@ sub ciprint
     iprint(sprintf("%-10s [%s%%]",$id, $p));
 }
 
-package LixuzDB;
+package LizztCMSDB;
 use strict;
 use warnings;
 use base qw/DBIx::Class::Schema::Loader/;
 __PACKAGE__->loader_options(
     debug         => 0,
 );
-package LixuzDBUTF8;
+package LizztCMSDBUTF8;
 use strict;
 use warnings;
 use base qw/DBIx::Class::Schema::Loader/;

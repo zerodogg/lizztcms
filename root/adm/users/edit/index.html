@@ -1,5 +1,5 @@
 <%perl>
-# LIXUZ content management system
+# LizztCMS content management system
 # Copyright (C) Utrop A/S Portu media & Communications 2008-2011
 #
 # This program is free software: you can redistribute it and/or modify
@@ -35,8 +35,8 @@
 <script type="text/javascript">
     $LAB.queue(function ()
     {
-        validate_lixuz_userEdit_orig = validate_lixuz_userEdit;
-        validate_lixuz_userEdit = function (form)
+        validate_lizztcms_userEdit_orig = validate_lizztcms_userEdit;
+        validate_lizztcms_userEdit = function (form)
         {
             var $form = $(form);
             if($('[name=password]').val() != $('[name=password2]').val())
@@ -62,7 +62,7 @@
                     return false;
                 }
             }
-            return validate_lixuz_userEdit_orig(form);
+            return validate_lizztcms_userEdit_orig(form);
         };
     });
 </script>
@@ -175,6 +175,6 @@ $editType => 'add'
 </%args>
 
 <%init>
-use LIXUZ::HelperModules::Forms('select_options');
+use LizztCMS::HelperModules::Forms('select_options');
 use 5.010;
 </%init>

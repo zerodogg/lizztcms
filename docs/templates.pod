@@ -1,4 +1,4 @@
-# LIXUZ content management system
+# LizztCMS content management system
 # Copyright (C) Utrop A/S Portu media & Communications 2008-2011
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,12 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-=head1 LIXUZ TEMPLATE MANUAL - INTRODUCTION
+=head1 LizztCMS TEMPLATE MANUAL - INTRODUCTION
 
-This is the Lixuz template manual. It serves as an introduction and reference
-for the Lixuz template system.
+This is the LizztCMS template manual. It serves as an introduction and reference
+for the LizztCMS template system.
 
-The version described here is version B<3> of the Lixuz template API.
+The version described here is version B<3> of the LizztCMS template API.
 
 =head2 Conventions used
 
@@ -29,31 +29,31 @@ value supplied to the as= parameter to a needinfo source.
 =head1 BASIC FORMAT
 
 At the base of the Liuxz template format lies Mason (HTML::Mason) and Catalyst.
-Anything you can do with mason, you can do with a Lixuz template, and you also
-have access to the $c catalyst object. Lixuz leaves all of the actual code
+Anything you can do with mason, you can do with a LizztCMS template, and you also
+have access to the $c catalyst object. LizztCMS leaves all of the actual code
 parsing to Mason, but requires an additional data block to be present
-in all templates that lets Lixuz know things about the template.
+in all templates that lets LizztCMS know things about the template.
 
 A block can look like this (all options are not required, see the section on
 INFOBLOCK DATA for more information on the various settings):
 
     <%perl>
-    # BEGIN LIXUZ_INFOBLOCK
+    # BEGIN LizztCMS_INFOBLOCK
     # VERSION    = 0.1
-    # NAME       = Lixuz basic article page
+    # NAME       = LizztCMS basic article page
     # LICENSE    = Proprietary
     # APIVERSION = 3
     # TYPE       = article
     # LAYOUT     = 1|2|1|1
     # NEEDSINFO  = article_get_[artid=url,as=article,includeRelations=1,includeComments=1,handleComments=1,layout=1]
     # FILESPOT   = [type=image,name=Primary image,as=primaryImage,id=1]
-    # INCLUDES   = no.lixuz.header no.lixuz.footer no.lixuz.subscribeNewsletter
-    # UNIQUEID   = no.lixuz.basicArticle
-    # END LIXUZ_INFOBLOCK
+    # INCLUDES   = no.lizztcms.header no.lizztcms.footer no.lizztcms.subscribeNewsletter
+    # UNIQUEID   = no.lizztcms.basicArticle
+    # END LizztCMS_INFOBLOCK
     </%perl>
 
-Any template can only have one infoblock and Lixuz will stop processing the file
-when it hits the first END LIXUZ_INFOBLOCK. You can have comments inside
+Any template can only have one infoblock and LizztCMS will stop processing the file
+when it hits the first END LizztCMS_INFOBLOCK. You can have comments inside
 an infoblock by using ## at the start of the line instead of just #.
 
 The casing of the settings does not matter (the casing of the values DOES
@@ -62,24 +62,24 @@ Additionally you may have as much whitespace around the equals sign as you wish.
 
 =head1 VALIDATION AND DEBUGGING
 
-As Lixuz templates are primarily mason templates, the first thing you
+As LizztCMS templates are primarily mason templates, the first thing you
 should do if you experience issues is to try to validate that the
 Mason template is valid. This can for instance be done with the 
-./tools/masontest.pl file included with Lixuz. This program is an
+./tools/masontest.pl file included with LizztCMS. This program is an
 approximate equivalent to 'perl -c' for mason templates.
 
 Secondly, consult the list of required infoblock data above. If you have
 forgotten an entry, it will not render the template.
 
-Thirdly, check the Lixuz logfile. If something goes wrong while rendering
+Thirdly, check the LizztCMS logfile. If something goes wrong while rendering
 the template, that's where the error information will be available.
 
 =head2 UPDATING LIVE TEMPLATES MANUALLY
 
-Lixuz has a builtin template replacement function, but for quick updates
+LizztCMS has a builtin template replacement function, but for quick updates
 it is often much easier to upload it manually (ie. using rsync or scp) to
-the server than to enter the Lixuz web UI. The templates can be found in
-the directory defined by LIXUZ:template_path in the Lixuz config file.
+the server than to enter the LizztCMS web UI. The templates can be found in
+the directory defined by LizztCMS:template_path in the LizztCMS config file.
 Here the files are named with both their template_id (at the beginning
 of the filename) and their uniqueid, so it should be simple to find the
 one you want to replace. Once you have found it you can simply overwrite
@@ -88,7 +88,7 @@ can just reload the page that is not working to see if your changes
 are now working (checking the logfile for whining). If you did change
 the infoblock then you will have to empty memcached. It's not recommended
 that you do that on a live server so you ought to have a debugging server.
-Emptying memcached can be done either from within the Lixuz web UI on
+Emptying memcached can be done either from within the LizztCMS web UI on
 the templates page, or by restarting memcached.
 
 =head1 MORE INFORMATION
@@ -101,18 +101,18 @@ reading the associated documentation:
 =item B<docs/templates/EmailTemplates.pod>
 
 Contains documentation on the format for templates used to render
-e-mails sent by Lixuz.
+e-mails sent by LizztCMS.
 
 =item B<docs/templates/WebTemplates.pod>
 
 Contains documentation on the format for templates that are used
-to render the live website that is running under Lixuz.
+to render the live website that is running under LizztCMS.
 
 =item B<docs/templates/MediaTemplates.pod>
 
 Contains documentation on the special templates that are used to
 render certain media content to the live website that is running
-under Lixuz. These are similar to the web templates, but as they
+under LizztCMS. These are similar to the web templates, but as they
 are used to render specific components, they have some special
 limitations (and functions).
 

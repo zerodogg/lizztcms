@@ -39,17 +39,17 @@ sub loadConf
     }
 
     # Upgrade DBNAME/DBUSER/DB_PASSWD
-    if(ref($conf->{'Model::LIXUZDB'}->{'connect_info'}) eq 'ARRAY')
+    if(ref($conf->{'Model::LizztCMSDB'}->{'connect_info'}) eq 'ARRAY')
     {
-        $settings{DBNAME} = $conf->{'Model::LIXUZDB'}->{'connect_info'}[0];
-        $settings{DBUSER} = $conf->{'Model::LIXUZDB'}->{'connect_info'}[1];
-        $settings{DB_PASSWD} = $conf->{'Model::LIXUZDB'}->{'connect_info'}[2];
+        $settings{DBNAME} = $conf->{'Model::LizztCMSDB'}->{'connect_info'}[0];
+        $settings{DBUSER} = $conf->{'Model::LizztCMSDB'}->{'connect_info'}[1];
+        $settings{DB_PASSWD} = $conf->{'Model::LizztCMSDB'}->{'connect_info'}[2];
     }
     else
     {
-        $settings{DBNAME} = $conf->{'Model::LIXUZDB'}->{'connect_info'}->{dsn};
-        $settings{DBUSER} = $conf->{'Model::LIXUZDB'}->{'connect_info'}->{user};
-        $settings{DB_PASSWD} = $conf->{'Model::LIXUZDB'}->{'connect_info'}->{password};
+        $settings{DBNAME} = $conf->{'Model::LizztCMSDB'}->{'connect_info'}->{dsn};
+        $settings{DBUSER} = $conf->{'Model::LizztCMSDB'}->{'connect_info'}->{user};
+        $settings{DB_PASSWD} = $conf->{'Model::LizztCMSDB'}->{'connect_info'}->{password};
     }
 
     $settings{DBNAME} =~ s/dbi:\S+:dbname=//g;
@@ -69,10 +69,10 @@ sub loadConf
     $settings{MEMCACHED_NAMESPACE} = $mcref->{namespace};
 
     $settings{MASON_DATADIR} = $conf->{'View::Mason'}->{data_dir};
-    $settings{LIXUZ_ROOT} = $conf->{'View::Mason'}->{comp_root}->[0]->[1];
+    $settings{LizztCMS_ROOT} = $conf->{'View::Mason'}->{comp_root}->[0]->[1];
     $settings{TEMPLATE_PATH} = $conf->{'View::Mason'}->{comp_root}->[1]->[1];
 
-    my $lc = $conf->{LIXUZ};
+    my $lc = $conf->{LizztCMS};
     $settings{TMP_PATH} = $lc->{temp_path};
     $settings{FILE_PATH} = $lc->{file_path};
     $settings{FROM_EMAIL} = $lc->{from_email};
@@ -85,7 +85,7 @@ sub loadConf
     if(not defined $settings{FILES_COMPAT} or not length $settings{FILES_COMPAT})
     {
         # This defaults to true, simply because if it's not set, we're upgrading from
-        # an older version of Lixuz that may have been using the old-style files
+        # an older version of LizztCMS that may have been using the old-style files
         # fetching.
         $settings{FILES_COMPAT} = '1';
     }
@@ -125,7 +125,7 @@ sub writeConfigFile
     undef $/;
     my $template = <$templateFile>;
     close($templateFile);
-    my @baseSources = qw(DBNAME DBUSER DB_PASSWD SESSION_STORAGE MEMCACHED_SERVER MEMCACHED_NAMESPACE MASON_DATADIR LIXUZ_ROOT TEMPLATE_PATH TMP_PATH FILE_PATH FROM_EMAIL EMAIL_TO_OVERRIDE DEFAULT_URL_CATEGORY DEFAULT_URL_ARTICLE RSS_IMPORT_ACTIVE_DEFAULT INDEXER_LANGUAGE INDEXER_STORAGE_PATH FILES_COMPAT LOG_TO_FILE CLIENT_ERROR_LOG);
+    my @baseSources = qw(DBNAME DBUSER DB_PASSWD SESSION_STORAGE MEMCACHED_SERVER MEMCACHED_NAMESPACE MASON_DATADIR LizztCMS_ROOT TEMPLATE_PATH TMP_PATH FILE_PATH FROM_EMAIL EMAIL_TO_OVERRIDE DEFAULT_URL_CATEGORY DEFAULT_URL_ARTICLE RSS_IMPORT_ACTIVE_DEFAULT INDEXER_LANGUAGE INDEXER_STORAGE_PATH FILES_COMPAT LOG_TO_FILE CLIENT_ERROR_LOG);
     foreach my $s (@baseSources)
     {
         my $setting;

@@ -1,5 +1,5 @@
 <%perl>
-# LIXUZ content management system
+# LizztCMS content management system
 # Copyright (C) Utrop A/S Portu media & Communications 2008-2011
 #
 # This program is free software: you can redistribute it and/or modify
@@ -78,7 +78,7 @@ $i18n
 </%args>
 
 <%init>
-use LIXUZ::HelperModules::Forms qw(select_options_manually);
+use LizztCMS::HelperModules::Forms qw(select_options_manually);
 my $type = $values->{type} ? $values->{type} : 'singleline';
 if ($type eq 'user-pulldown' and $values->{range})
 {

@@ -1,4 +1,4 @@
-# LIXUZ content management system
+# LizztCMS content management system
 # Copyright (C) Utrop A/S Portu media & Communications 2008-2013
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,11 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package LIXUZ;
+package LizztCMS;
 
 use Moose;
 
-# If LIXUZ isn't in its own directory then stuff will not load properly,
+# If LizztCMS isn't in its own directory then stuff will not load properly,
 # so make sure that we are before we do anything else.
 BEGIN
 {
@@ -43,8 +43,8 @@ use Catalyst 5.90000 qw/
 	Session::Store::FastMmap
     Cache
 				/; # Newline separated so it's easy to read
-use LIXUZ::HelperModules::I18N;
-use LIXUZ::HelperModules::Log;
+use LizztCMS::HelperModules::I18N;
+use LizztCMS::HelperModules::Log;
 use Config::Any;
 
 extends 'Catalyst';
@@ -52,7 +52,7 @@ extends 'Catalyst';
 # Perl 5.10+ syntax is used
 require 5.010_000;
 
-# Lixuz version
+# LizztCMS version
 my $VERSION_NO = '0.2';
 our $GITREV = '';
 our $GITBRANCH = '';
@@ -85,7 +85,7 @@ else
 
 # Configure the application. 
 #
-# Note that settings in lixuz.yml (or other external
+# Note that settings in lizztcms.yml (or other external
 # configuration file that you set up manually) take precedence
 # over this when using ConfigLoader. Thus configuration
 # details given here can function as a default configuration,
@@ -93,18 +93,18 @@ else
 # local deployment.
 
 __PACKAGE__->config( 
-    name => 'LIXUZ',
+    name => 'LizztCMS',
     encoding => 'UTF-8'
 );
 
 my $confFile = '.';
-if(not -e $PATH.'/lib/LIXUZ.pm')
+if(not -e $PATH.'/lib/LizztCMS.pm')
 {
     # This is a somewhat hacky solution to avoid having to load File::Basename here
-    ($PATH = __FILE__) =~ s{/lib/LIXUZ\.pm$}{};
+    ($PATH = __FILE__) =~ s{/lib/LizztCMS\.pm$}{};
     $confFile = $PATH;
 }
-$confFile .= '/lixuz.yml';
+$confFile .= '/lizztcms.yml';
 __PACKAGE__->config( 'Plugin::ConfigLoader' => { file => $confFile } );
 
 __PACKAGE__->config->{session} = 
@@ -125,7 +125,7 @@ __PACKAGE__->config->{authentication} =
              },
              store => {
                  class => 'DBIx::Class',
-                 user_class => 'LIXUZDB::LzUser',
+                 user_class => 'LizztCMSDB::LzUser',
                  id_field => 'user_id',
                  role_relation => 'roles',
                  role_field => 'role_name',
@@ -146,7 +146,7 @@ my @additionalPlugins;
 {
     # Load the config file to check the logToFile parameter
     my $conf = Config::Any->load_files( { files =>  [ $confFile ], use_ext =>1, flatten_to_hash => 1 } );
-    my $logToFile = $conf->{$confFile}->{'LIXUZ'}->{logToFile};
+    my $logToFile = $conf->{$confFile}->{'LizztCMS'}->{logToFile};
     # If we have a true logToFile parameter, switch to using Log::Handler instead
     # of our builtin log implementation. If we don't have one, use the normal
     # log handler.
@@ -162,12 +162,12 @@ my @additionalPlugins;
     }
     else
     {
-        __PACKAGE__->log( LIXUZ::HelperModules::Log->new );
+        __PACKAGE__->log( LizztCMS::HelperModules::Log->new );
     }
 }
 
 
-# Start LIXUZ
+# Start LizztCMS
 __PACKAGE__->setup(@additionalPlugins);
 
 1;

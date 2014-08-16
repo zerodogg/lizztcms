@@ -1,5 +1,5 @@
 /*
- * LIXUZ content management system
+ * LizztCMS content management system
  * Copyright (C) Utrop A/S Portu media & Communications 2008-2011
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*
- * Comment submission JavaScript for LIXUZ
+ * Comment submission JavaScript for LizztCMS
  *
  * Copyright (C) Portu media & communications
  * All Rights Reserved
@@ -31,9 +31,9 @@
 var commentDataManager = jClass({
     getCommentData: function ()
     {
-        var fields = [ 'lixuzArticleEdit_uid','LZWF_CommentBody','LZWF_CommentSubject'],
+        var fields = [ 'lizztcmsArticleEdit_uid','LZWF_CommentBody','LZWF_CommentSubject'],
             convertFields = { 
-                'lixuzArticleEdit_uid': 'artid',
+                'lizztcmsArticleEdit_uid': 'artid',
                 'LZWF_CommentBody' : 'body',
                 'LZWF_CommentSubject' : 'subject'
                 };
@@ -100,7 +100,7 @@ var commentSubmit = jClass.extend([commentDataManager,lzWrapperHelpers,lzProgres
     fetchCommentList: function ()
     {
         // FIXME: Should use some variation of the asyncHelpers instead of rolling its own
-        var URL = '/admin/articles/workflow/comments/'+$('#lixuzArticleEdit_uid').val();
+        var URL = '/admin/articles/workflow/comments/'+$('#lizztcmsArticleEdit_uid').val();
         $.get(URL,this.objMethodRef('commentListSuccess'));
     },
 

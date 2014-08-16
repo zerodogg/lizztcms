@@ -1,5 +1,5 @@
 <%perl>
-# LIXUZ content management system
+# LizztCMS content management system
 # Copyright (C) Utrop A/S Portu media & Communications 2008-2011
 #
 # This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 </%perl>
 %if($ADF_CanEdit) {
 %my $adfuid = $articleUid;
-%if($adfuid eq 'null') { $adfuid = '$(\'#lixuzArticleEdit_uid\').val()'; }
+%if($adfuid eq 'null') { $adfuid = '$(\'#lizztcmsArticleEdit_uid\').val()'; }
 <div class="buttonHolder"><a href="#" onclick="LZ_DisplayFieldEditForm('articles',<% $adfuid %>); return false;"><img src="/static/images/icons/fields-edit.png" border="0" alt="<% $i18n->get('Edit fields') |n %>" align="left"  />&nbsp;<% $i18n->get('Edit fields') |n %></a></div>
 <br clear="all" />
 %}
@@ -26,8 +26,8 @@
 <% $message |n %>
 %}
 
-<input type="hidden" name="uid" id="lixuzArticleEdit_uid" value="<% $articleUid eq 'null' ? '' : $articleUid%>" />
-<input type="hidden" name="type" id="lixuzArticleEdit_type" value="<% $artEditType eq 'null' ? '' : $artEditType%>" />
+<input type="hidden" name="uid" id="lizztcmsArticleEdit_uid" value="<% $articleUid eq 'null' ? '' : $articleUid%>" />
+<input type="hidden" name="type" id="lizztcmsArticleEdit_type" value="<% $artEditType eq 'null' ? '' : $artEditType%>" />
 %if($c->req->param('autorestore')) {
 <input type="hidden" name="article_autoRestoreBackup" id="article_autoRestoreBackup" value="true" />
 %}

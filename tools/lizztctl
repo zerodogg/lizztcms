@@ -1,0 +1,3533 @@
+#!/usr/bin/perl
+# LizztCMS content management system
+# Copyright (C) Utrop A/S Portu media & Communications 2012, 2013
+# Copyright (C) Eskild Hustvedt 2012, 2013
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+use strict;
+use warnings;
+use 5.010;
+use File::Temp qw(tempdir tempfile);
+use File::Copy qw(copy move);
+use File::Path qw(mkpath);
+use File::Find qw(find);
+use File::stat;
+use File::Basename qw(basename dirname);
+use Data::Dumper qw(Dumper);
+use Term::ReadLine;
+use Digest::SHA qw(sha512_hex);
+use Getopt::Long;
+use Cwd qw(realpath);
+use Config::Any;
+use JSON qw(encode_json decode_json);
+use Try::Tiny;
+use Cwd qw(getcwd);
+use POSIX qw(strftime setsid);
+use IPC::Open3;
+use Carp qw( confess );
+use constant {
+    true => 1,
+    false => 0,
+};
+my $verbosity                 = 0;
+# The revision of the data format that we write
+my $dataFormatRevision        = 3;
+# The minimum supported revision of the data format we can use
+my $minSupportedDataFormatRev = $dataFormatRevision;
+# The minimum supported api level of plumbing commands
+my $minSupportedApiLevel      = 2;
+# The real (latest) supported api level of plumbing commands
+my $currentSupportedApiLevel  = 8;
+# The revision of the package format that we write
+my $packageFormatRevision     = 4;
+# The mimimum supported package format supported
+my $minSupportedPackageFormat = 0;
+# Force an action to complete
+my $force = 0;
+# Don't check deps during install
+my $lazyInstall = false;
+my $logOut;
+my $chained;
+my $logfile;
+my $lizztcmsDir;
+my $forceRefresh;
+my $debugger;
+my @packageMetaFiles = qw(package.yml triggers.pl COPYING README);
+# Boolean flag, set to true once LizztCMS:: modules have been loaded
+# to avoid loading them multiple times.
+my $loadedModules;
+
+main();
+
+# Purpose: Handles toplevel commands and hands off control to the various
+# subsections
+sub main
+{
+    Getopt::Long::Configure('pass_through','permute');
+
+    my $fork = 0;
+    GetOptions(
+        'v|verbose' => sub {
+            $verbosity++
+        },
+        'debug' => sub {
+            $verbosity = 99;
+        },
+        'debugger' => \$debugger,
+        'logfile=s' => sub {
+            shift;
+            $logfile = shift;
+            open($logOut,'>>',$logfile) or die('Failed to open logfile: '.$!."\n");
+        },
+        'quiet' => sub {
+            $verbosity = -1;
+        },
+        'lizztcmsdir=s' => sub {
+            shift;
+            $lizztcmsDir = shift;
+        },
+        'fork' => sub {
+            shift;
+            $fork = 1
+        },
+        'version' => sub
+        {
+            print 'lizztctl - LizztCMS control utility'."\n";
+            print 'Package format used      : '.$packageFormatRevision."\n";
+            print 'Package format supported : from '.$minSupportedPackageFormat.' to '.$packageFormatRevision."\n";
+            print 'Metadata format          : '.$dataFormatRevision."\n";
+            print 'Plumbing API level       : '.$currentSupportedApiLevel.'/'.$minSupportedApiLevel."\n";
+            # Revision ID works as an automatic version number
+            print 'Revision ID              : '. ($minSupportedApiLevel + $currentSupportedApiLevel + $packageFormatRevision + $minSupportedApiLevel + $dataFormatRevision + $minSupportedDataFormatRev)."\n";
+            exit(0);
+        },
+        'lazy' => \$lazyInstall,
+        'force+' => \$force,
+        'force-refresh' => \$forceRefresh,
+        # This is not used anywhere yet, but it is supported for use later
+        # (and already supplied by the upgrade script)
+        'lizztcms-upgrade' => sub {},
+        # This indicates that this instance of lizztctl is a child of another
+        # instance of lizztctl (ie. it's a chain of lizztctl's). lizztctl can
+        # then alter behaviour to suit this (ie. omitting duplicate messages).
+        'chained' => \$chained,
+        # This indicates that this instance of lizztctl is a exec()ed child of
+        # another instance of lizztctl (ie. it's a chain of lizztctl's).
+        # lizztctl can then alter behaviour to suit this (ie. omitting
+        # duplicate messages). Right now this is treated the same as --chained,
+        # but this could potentionally change at some later point.
+        'exec-chained' => \$chained,
+        # This indicates that this instance of lizztctl is a child of LizztCMS itself,
+        # meaning that it has been executed by code running within the LizztCMS web
+        # application. Right now this is treated the same as --chained,
+        # but this could potentionally change at some later point.
+        'web-chained' => \$chained,
+    );
+    Getopt::Long::Configure('no_pass_through');
+
+    if ($fork)
+    {
+        my $PID = fork;
+        exit if $PID;
+        die "Unable to fork: $!\n" if not defined($PID);
+        # Create a new session
+        setsid();
+        open(STDIN, '<', '/dev/null');
+        if ($logfile)
+        {
+            open(STDOUT, '>>', $logfile);
+            open(STDERR, '>>', $logfile);
+        }
+
+    }
+    
+    $lizztcmsDir //= realpath(dirname(realpath($0)).'/../');
+    if (!-d $lizztcmsDir)
+    {
+        die($lizztcmsDir.': does not exist'."\n");
+    }
+    if ($verbosity >= 0)
+    {
+        outLog('LizztCMS directory: '.$lizztcmsDir);
+    }
+    unshift(@INC,$lizztcmsDir.'/lib');
+    my $action = shift(@ARGV);
+
+    if (!defined $action || $action eq '--help' || $action eq '-h')
+    {
+        usage(0);
+    }
+
+    given($action)
+    {
+        when(/^(package|pkg)s?$/)
+        {
+            packages();
+        }
+
+        when(/^(templates?|tpl)$/)
+        {
+            templates();
+        }
+
+        when(/^(database|db)$/)
+        {
+            database();
+        }
+
+        when('utils')
+        {
+            utils();
+        }
+
+        when(/^plugins?$/)
+        {
+            plugins();
+        }
+
+        when('plumbing')
+        {
+            plumbing();
+        }
+
+        default
+        {
+            die('Unknown command: '.$action."\nSee --help for more information\n");
+        }
+    }
+}
+
+# Purpose: Print formatted --help output
+# Usage: printHelp('-shortoption', '--longoption', 'description');
+#  Description will be reformatted to fit within a normal terminal
+sub printHelp
+{
+	# The short option
+	my $short = shift,
+	# The long option
+	my $long = shift;
+	# The description
+	my $desc = shift;
+	# The generated description that will be printed in the end
+	my $GeneratedDesc;
+	# The current line of the description
+	my $currdesc = '';
+	# The maximum length any line can be
+	my $maxlen = 80;
+	# The length the options take up
+	my $optionlen = 20;
+	# Check if the short/long are LONGER than optionlen, if so, we need
+	# to do some additional magic to take up only $maxlen.
+	# The +1 here is because we always add a space between them, no matter what
+	if ((length($short) + length($long) + 1) > $optionlen)
+	{
+		$optionlen = length($short) + length($long) + 1;
+	}
+	# Split the description into lines
+	foreach my $part (split(/ /,$desc))
+	{
+		if(defined $GeneratedDesc)
+		{
+			if ((length($currdesc) + length($part) + 1 + 24) > $maxlen)
+			{
+				$GeneratedDesc .= "\n";
+				$currdesc = '';
+			}
+			else
+			{
+				$currdesc .= ' ';
+				$GeneratedDesc .= ' ';
+			}
+		}
+		$currdesc .= $part;
+		$GeneratedDesc .= $part;
+	}
+	# Something went wrong
+	die('Option mismatch') if not $GeneratedDesc;
+	# Print it all
+	foreach my $description (split(/\n/,$GeneratedDesc))
+	{
+		printf "%-4s %-19s %s\n", $short,$long,$description;
+		# Set short and long to '' to ensure we don't print the options twice
+		$short = '';$long = '';
+	}
+	# Succeed
+	return true;
+}
+
+# Purpose: Run the subroutine provided if --help or -h was provided *anywhere*
+# on the command-line, OR if there are no parameters left in @ARGV
+# Usage: checkForHelpParam(sub { } );
+sub checkForHelpParam
+{
+    my $sub = shift;
+    if (scalar(@ARGV) == 0)
+    {
+        $sub->();
+    }
+    else
+    {
+        foreach my $e (@ARGV)
+        {
+            if ($e eq '-h' || $e eq '--help')
+            {
+                $sub->();
+            }
+        }
+    }
+}
+
+# Purpose: Displays toplevel usage information
+sub usage
+{
+    print "USAGE: lizztctl [category] [subcommand] [parameters]\n";
+    print "\n";
+    print "Available categories:\n";
+    printHelp('','packages','Package actions (install, remove, upgrade, list etc.)');
+    printHelp('','templates','Template actions (inject, remove, list)');
+    printHelp('','database','Database actions (upgrade)');
+    printHelp('','utils','Various utilities that do not fit into the other categories');
+    printHelp('','plugins','Custom actions provided by plugins');
+    printHelp('','plumbing','Plumbing actions, used internally by LizztCMS (not meant for public use)');
+    print "\n";
+    print "Available aliases: pkg -> packages, tpl -> templates, db -> database\n";
+    print "\n";
+    print "Run: \"lizztctl [category] --help\" for a list of subcommands and parameters\n";
+    print "for that category\n";
+    print "\n";
+    print "Global parameters:\n";
+    printHelp('','--logfile X','Log messages to X');
+    printHelp('','--lizztcmsdir X','Operate on the LizztCMS installation located at X');
+    printHelp('','--quiet','Be quiet');
+    printHelp('','--debug','Enable debugging output');
+    exit(shift);
+}
+
+# Purpose: Reads and parses our meta file and returns it
+sub loadMetaFile
+{
+    my $force = shift;
+    my $metaFile;
+    if (-e $lizztcmsDir.'/.lizztctl.data')
+    {
+        $metaFile = readJSON($lizztcmsDir.'/.lizztctl.data');
+    }
+    $metaFile //= {};
+    $metaFile->{formatRevision} //= $dataFormatRevision;
+    $metaFile->{lastWritten} //= time,
+    $metaFile->{packages} //= {};
+
+    if ($metaFile->{formatRevision} > $dataFormatRevision || $metaFile->{formatRevision} < $minSupportedDataFormatRev)
+    {
+        if ($metaFile->{formatRevision} < $minSupportedDataFormatRev)
+        {
+            die("Error: package metadata database format is too old: ".$metaFile->{formatRevision}."\n".
+                "A database upgrade is required (lizztctl plumbing upgrade)\n") if !$force;
+        }
+        else
+        {
+            die("ERROR: Unknown .lizztctl.data format revision: ".$metaFile->{formatRevision}."\n".
+            "A LizztCMS upgrade is required\n") if !$force;
+        }
+    }
+    return $metaFile;
+}
+
+# Purpose: Writes the supplied datastructure to our meta file
+sub writeMetaFile
+{
+    my $metaFile = shift;
+    if (!defined $metaFile)
+    {
+        confess('writeMetaFile() called without any data'."\n");
+    }
+    $metaFile->{lastWritten} = time;
+    $metaFile->{formatRevision} = $dataFormatRevision;
+    $metaFile->{lastAPI} = $currentSupportedApiLevel.'/'.$minSupportedApiLevel.'/'.$dataFormatRevision.'/'.$minSupportedPackageFormat.'/'.$packageFormatRevision;
+    writeFile($lizztcmsDir.'/.lizztctl.data', encode_json($metaFile));
+}
+
+# Purpose: Reads the entire contents of a file and returns it
+sub slurp
+{
+    my $file = shift;
+    open(my $in,'<',$file) or die("Failed to open $file for reading: $!\n");
+    local $/ = undef;
+    my $data = <$in>;
+    close($in);
+    return $data;
+}
+
+# Purpose: Write content to a file
+sub writeFile
+{
+    my $file = shift;
+    my $content = shift;
+    open(my $out,'>',$file) or die('Failed to open '.realpath($file)." for writing: $!\n");
+    print {$out} $content or die("Failed to write content to $file: $!\n");
+    close($out) or die("Failed to close $file after writing: $!\n");
+    return true;
+}
+
+# Purpose: Reads a JSON file, parses it and returns the datastructure
+sub readJSON
+{
+    my $file = shift;
+    return decode_json(slurp($file));
+}
+
+# Purpose: Reads a YML file, parses it and returns the datastructure
+sub readYML
+{
+    my $file = shift;
+    my $data = Config::Any->load_files({ files => [ $file ], use_ext => 1});
+    $data = $data->[0]->{$file};
+    return $data;
+}
+
+# Purpose: Return the sha512 sum of a file
+sub sha512_sum
+{
+    my $file = shift;
+    if (! -e $file)
+    {
+        confess('Unable to retrieve sha512 sum for nonexisting file: '.$file."\n");
+    }
+    return sha512_hex(slurp($file));
+}
+
+# Purpose: Check if a directory is empty
+# Usage: DirIsEmpty(PATH);
+#  Returns 1 if it is empty, 0 if it isn't.
+sub DirIsEmpty
+{
+    my $dir = shift;
+    return 0 if not $dir;
+    return 0 if not -d $dir;
+    opendir(TESTDIR, $dir);
+    my @TestDir = readdir(TESTDIR);
+    closedir(TESTDIR);
+    if(not scalar @TestDir > 2)
+    {
+        return 1;
+    }
+    return 0;
+}
+
+# Purpose: Log some action
+# Usage: outLog(String);
+sub outLog
+{
+    my $msg = shift;
+    if ($verbosity > 0)
+    {
+        print $msg."\n";
+    }
+    if ($logOut)
+    {
+        print {$logOut} '[lizztctl] '.$msg."\n";
+    }
+}
+
+# Purpose: Output something when not in silent mode
+# Usage: same as print
+sub printv
+{
+    if($verbosity > -1)
+    {
+        print @_;
+    }
+}
+
+# Purpose: Output something when in debug mode
+# Usage: printd('text')
+# Adds a newline to each message and a debug prefix
+sub printd
+{
+    if ($verbosity >= 99)
+    {
+        print 'Debug: ';
+        print @_;
+        print "\n";
+    }
+}
+
+# Purpose: Output a status message
+# Usage: printStatus(STATUS);
+# Does "the right thing"(tm) depending on if we're in verbose, silent or debug modes
+sub printStatus
+{
+    my $message = join('',@_);
+    if ($verbosity >= 99)
+    {
+        if ($message =~ /\n/)
+        {
+            return;
+        }
+        $message .= "\n";
+    }
+    printv($message);
+}
+
+# Purpose: Output something when NOT in debug mode or silent mode
+# Usage: same as print
+sub printnd
+{
+    if ($verbosity < 99 && $verbosity > -1)
+    {
+        print @_;
+    }
+}
+
+# Purpose: Load LizztCMS:: namespaced modules
+sub loadLizztCMSModules
+{
+    my $isREPL = shift;
+    if (!$isREPL && $loadedModules)
+    {
+        return;
+    }
+    my $preamble = '';
+    if ($isREPL)
+    {
+        $preamble = $isREPL;
+    }
+    printd('Loading LizztCMS:: namespace dependencies');
+    unshift(@INC,$lizztcmsDir.'/lib');
+    # FIXME: Improved errors
+    eval($preamble.'no strict; no warnings;$LizztCMS::PATH = $lizztcmsDir;1;') or die;
+    eval($preamble.'use LizztCMS::HelperModules::Scripts qw(getDBIC getConfig mockC fakeC);1;') or die;
+    eval($preamble.'use LizztCMS::HelperModules::Templates qw(parse_templatefile get_parsed_template_info);1') or die;
+    eval($preamble.'use LizztCMS::HelperModules::FileUploader qw(ERR_DIRNOTFOUND ERR_WRITEFAILURE);1') or die;
+    printd('Dependencies loaded');
+    $loadedModules = 1;
+}
+
+# Purpose: Perform a lizztctl upgrade
+sub performVersionUpgrade
+{
+    printd('Performing version upgrade');
+    my $metaFile = loadMetaFile(1);
+    if ($metaFile->{formatRevision} == 1)
+    {
+        if ($metaFile->{packages})
+        {
+            die('Inconsistent lizztcms metafile, contains v2 packages structure but claims v1 format, aborting.'."\n");
+        }
+        $metaFile->{formatRevision} = 2;
+        $metaFile->{packages} = $metaFile->{plugins};
+        delete($metaFile->{plugins});
+        printd('Upgraded meta format revision from 1 to 2');
+    }
+    if ($metaFile->{formatRevision} < 3)
+    {
+        foreach my $installedPackage (keys %{$metaFile->{packages}})
+        {
+            if ($metaFile->{packages}->{$installedPackage}->{files})
+            {
+                $metaFile->{packages}->{$installedPackage}->{fileContent} //= [];
+                foreach my $entry ( @{ $metaFile->{packages}->{$installedPackage}->{files} } )
+                {
+                    push(@{ $metaFile->{packages}->{$installedPackage}->{fileContent} }, {
+                            file => $entry,
+                            meta => { checksum => sha512_sum($lizztcmsDir.'/'.$entry) },
+                        });
+                }
+                delete($metaFile->{packages}->{$installedPackage}->{files});
+            }
+            if ($metaFile->{packages}->{$installedPackage}->{templateIDs})
+            {
+                $metaFile->{packages}->{$installedPackage}->{templateContent} //= [];
+                foreach my $entry ( @{ $metaFile->{packages}->{$installedPackage}->{templateIDs} } )
+                {
+                    push(@{ $metaFile->{packages}->{$installedPackage}->{templateContent} }, {
+                            id => $entry,
+                        });
+                }
+                delete($metaFile->{packages}->{$installedPackage}->{templateIDs});
+            }
+        }
+        printd('Upgraded meta format revision 2 to 3');
+    }
+    if (-e $lizztcmsDir.'/.pluginMeta')
+    {
+        printd('Migrated .pluginMeta to .packageMeta');
+        move($lizztcmsDir.'/.pluginMeta',$lizztcmsDir.'/.packageMeta');
+    }
+    if ($metaFile->{formatRevision} > $dataFormatRevision)
+    {
+        die('Unable to downgrade from '.$dataFormatRevision." safely\n");
+    }
+    writeMetaFile($metaFile);
+}
+
+# Purpose: Check if two files differ
+sub filesDiffer
+{
+    if ($forceRefresh)
+    {
+        return 1;
+    }
+
+    my $sourceFile = shift;
+    my $existingFile = shift;
+    my $meta = shift;
+    # Special symlink handling
+    if (-l $sourceFile || -l $existingFile)
+    {
+        my $sourceFileLink = readlink($sourceFile) // "\0";
+        my $existingFileLink = readlink($existingFile) // "\0";
+        if($sourceFileLink ne $existingFileLink)
+        {
+            return 1;
+        }
+        return 0
+    }
+    # If one of the files doesn't exist then of course they differ
+    if (! -e $sourceFile || ! -e $existingFile)
+    {
+        return 1;
+    }
+    # If their permissions are different, then they differ
+    if(stat($sourceFile)->mode != stat($existingFile)->mode)
+    {
+        return 1;
+    }
+    # If their filesizes are different, then they differ
+    if (-s $sourceFile != -s $existingFile)
+    {
+        return 1;
+    }
+
+    # Finally, if their sha512 checksums differ, the files differ
+    if ($meta && $meta->{checksum})
+    {
+        if($meta->{checksum} ne sha512_sum($existingFile))
+        {
+            return 1;
+        }
+    }
+    else
+    {
+        if(sha512_sum($sourceFile) ne sha512_sum($existingFile))
+        {
+            return 1;
+        }
+    }
+    # The files are identical
+    return 0;
+}
+
+# Purpose: Run system() and debug log the command
+sub runSystem
+{
+    printd('Running: '.join(' ',@_));
+    return system(@_);
+}
+
+# Purpose: Get the STDOUT of a command
+sub getOutputFrom
+{
+    my $pid = open3(my $in,my $out,my $err,@_);
+    my $output = '';
+    while(my $data = <$out>)
+    {
+        $output .= $data;
+    }
+    waitpid($pid,0);
+    return $output;
+}
+
+# Purpose: Copy a file along with its permissions
+sub copyFile
+{
+    my $source = shift;
+    my $destination = shift;
+    if (! -e dirname($destination))
+    {
+        mkpath(dirname($destination));
+    }
+    if (-l $source)
+    {
+        my $target = readlink($source);
+        if (-d $destination)
+        {
+            $destination .= '/'.basename($target);
+        }
+        if (-e $destination || -l $destination)
+        {
+            unlink($destination);
+        }
+        if (!symlink($target,$destination))
+        {
+            warn('Failed to symlink '.$destination.' to '.$target.': '.$!."\n");
+            return;
+        }
+        printd('Symlinked '.$destination.' to '.$target);
+        return { type => 's' };
+    }
+    if ( -e $destination && !-w $destination)
+    {
+        unlink($destination) or warn('Failed to preemptively unlink '.$destination."\n");
+        printd('Preemptively unlinked '.$destination);
+    }
+    if (!copy($source,$destination))
+    {
+        warn('Failed to copy '.$source.' to '.$destination.': '.$!."\n");
+        return;
+    }
+    else
+    {
+        printd('Copied '.$source.' to '.$destination);
+    }
+    if (-d $destination)
+    {
+        $destination .= '/'.basename($source);
+    }
+    chmod(stat($source)->mode,$destination);
+    my $return = { type => 'f' };
+    if (!$lazyInstall)
+    {
+        $return->{checksum} = sha512_sum($destination);
+    }
+    return $return;
+}
+
+# Purpose: Run an action on the cron helper
+sub runCronHelper
+{
+    my $action = shift;
+    my @params = qw(--strict --lizztctl --verbose);
+    if ($verbosity >= 99)
+    {
+        push(@params,'--debug');
+    }
+    exec('perl',$lizztcmsDir.'/cronjobs/lizztcms_cron_daily.pl',@params,$action) or die($!);
+}
+
+# Purpose: Check if a file is a temporary file
+sub isTemporary
+{
+    my $file = shift;
+    return $file =~ /(\.sw[po]|~)$/;
+}
+
+# Purpose: Load a config file
+sub loadConfig
+{
+    my $path = shift;
+    my $config = Config::Any->load_files({ files => [ $path ], use_ext => 1});
+    return $config->[0]->{$path};
+}
+
+# Purpose: Refresh a config file from a template
+sub refreshConfigFromTemplate
+{
+    my $config = shift;
+    my $template = shift;
+    my $output = '';
+    my $confData = {};
+    my $confChecksum = '';
+    if (-e $config)
+    {
+        $confData = readYML($config);
+        $confChecksum = sha512_sum($config);
+        printd('Read existing config data from '.$config);
+    }
+    my @data = split(/\n/,slurp($template));
+    foreach my $line (@data)
+    {
+        if ($line =~ /{#/)
+        {
+            my $entry = $line;
+            $entry =~ s/.*{#\s*([^}]+)}.*/$1/;
+            my ($location, $type, $number) = split(/\s+/,$entry);
+            $type //= 'normal';
+            $number //= 0;
+            my $value = resolveConfigPath($confData,$location);
+            if ($type eq 'boolean')
+            {
+                $type = 'normal';
+                $value = $value ? '1' : 'false';
+            }
+            if ($type eq 'normal')
+            {
+                printd('Read value "'.$value.'" from config for path '.$location);
+                $line =~ s/{#[^}]+}/$value/;
+            }
+            elsif($type eq 'list')
+            {
+                printd('Read array value from config for path '.$location);
+                my $padding = '';
+                while($number)
+                {
+                    $number--;
+                    $padding .= ' ';
+                }
+                $line =~ s/{#[^}]+}//;
+                foreach my $entry (@{$value})
+                {
+                    if(ref($entry))
+                    {
+                        die("Unhandled entry of type ".ref($entry)." for path $location\n");
+                    }
+                    $line .= "\n".$padding.'- '.$entry;
+                }
+            }
+            else
+            {
+                die("Got unknown type \"$type\" for path $location\n");
+            }
+        }
+        $output .= $line."\n";
+    }
+    if (sha512_hex($output) ne $confChecksum)
+    {
+        open(my $out,'>',$config);
+        print {$out} $output;
+        close($out);
+    }
+    printd('Wrote updated config data to '.$config);
+}
+
+# Purpose: Resolve a data structure path, used to update configs
+sub resolveConfigPath
+{
+    my $config = shift;
+    my $path = shift;
+    my @paths = split(/\./,$path);
+    
+    while(defined(my $entry = shift(@paths)))
+    {
+        if (!defined($config))
+        {
+            last;
+        }
+        if(ref($config) eq 'HASH')
+        {
+            $config = $config->{$entry};
+        }
+        elsif(ref($config) eq 'ARRAY')
+        {
+            if ($entry =~ /\D/)
+            {
+                die("Invalid path part (requested $path, on step for $entry): type is array, but \"$entry\" is a hash key\n");
+            }
+            $config = $config->[$entry];
+        }
+        else
+        {
+            die("Unknown path part (requested $path, on step for $entry): type=".ref($config)."\n");
+        }
+    }
+    if (!defined($config))
+    {
+        $config = '';
+    }
+    return $config;
+}
+
+# Purpose: Switch to a directory, debug logging which directory it is
+sub changeDir
+{
+    my $dir = shift;
+    my $ret = chdir($dir);
+    if ($ret)
+    {
+        printd('Switched to '.$dir);
+    }
+    return $ret;
+}
+
+# ---
+# Database functions
+# ---
+
+# Purpose: Handler for database-section subcommands
+sub database
+{
+    checkForHelpParam(sub { usageDatabase(0) });
+
+    my $subcommand = shift(@ARGV);
+
+
+    given($subcommand)
+    {
+
+        when('upgrade')
+        {
+            changeDir($lizztcmsDir.'/sql');
+            my @command = qw(perl ./upgradeDB ../lizztcms.yml);
+            if ($force)
+            {
+                push(@command,'--force');
+            }
+            if ($verbosity >= 99)
+            {
+                push(@command,'--debug');
+            }
+            exec(@command) or die('Failed to exec: '.join(' ',@command).': '.$!."\n");
+        }
+
+        when(/^(check|fsck)$/)
+        {
+            runCronHelper(qw(--database-sanity));
+        }
+        
+        when(/^reindex$/)
+        {
+            runCronHelper(qw(--reindex --onlyindex));
+        }
+        
+        when(/^index$/)
+        {
+            runCronHelper(qw(--onlyindex));
+        }
+
+        when(/^console$/)
+        {
+            runMysqlConsole();
+        }
+
+        when(/^exec$/)
+        {
+            if (!@ARGV)
+            {
+                die('Usage: lizztctl database exec SQL'."\n".'Use "lizztctl database console" if you want to open a console'."\n");
+            }
+            runMysqlConsole(@ARGV);
+        }
+
+        default
+        {
+            die('Unknown subcommand for database: '.$subcommand."\nSee \"database --help\" for more information\n");
+        }
+    }
+}
+
+# Purpose: Displays usage information for database subcommands
+sub usageDatabase
+{
+    print "USAGE: lizztctl database [subcommand] [parameters]\n";
+    print "\n";
+    print "Available subcommands:\n";
+    printHelp('','upgrade','Upgrade the database to the latest schema revision');
+    printHelp('','check','Perform database checks and fix any inconsistencies (also done regulary by the LizztCMS cronjob)');
+    printHelp('','index','Index anything found in the database that is not in the index yet (also done regulary by the LizztCMS cronjob)');
+    printHelp('','reindex','Re-index everything in the database (expensive)');
+    printHelp('','console','Start a mysql console on the LizztCMS database');
+    printHelp('','exec SQL','Execute SQL on the LizztCMS database (and then exit)');
+    exit(shift);
+}
+
+# Purpose: Open up a mysql console
+sub runMysqlConsole
+{
+    my @command = qw(mysql);
+
+    my $targetDir;
+    foreach my $dir ($lizztcmsDir, $ENV{HOME}.'/tmp', $ENV{HOME}.'/.tmp', '/tmp')
+    {
+        if (-e $dir && -w $dir)
+        {
+            $targetDir = $dir;
+            last;
+        }
+    }
+    if (!$targetDir)
+    {
+        die('Failed to find a directory to put our temporary file in.'."\n");
+    }
+    my $config = loadConfig($lizztcmsDir.'/lizztcms.yml');
+    my ($fh,$tempfile) = tempfile('.lizztctlXXXXXXXXX',SUFFIX => '.tmp', DIR => $targetDir );
+
+    push(@command,'--defaults-extra-file='.$tempfile);
+
+    chmod(0600,$tempfile);
+    print {$fh} '# Temporary file written by lizztctl to invoke mysql'."\n";
+    print {$fh} '[client]'."\n";
+    print {$fh} 'password='.$config->{'Model::LizztCMSDB'}->{connect_info}->{password}."\n";
+    print {$fh} 'user='.$config->{'Model::LizztCMSDB'}->{connect_info}->{user}."\n";
+    my $db = $config->{'Model::LizztCMSDB'}->{connect_info}->{dsn};
+    $db =~ s/.*dbname=//;
+    print {$fh} 'database='.$db."\n";
+    close($fh);
+
+    push(@command,'--default-character-set=utf8');
+
+    if (@_)
+    {
+        push(@command,'--execute='.join(';',@_));
+    }
+    my $ret = system(@command);
+    unlink($tempfile);
+    if ($ret != 0)
+    {
+        exit(1);
+    }
+}
+
+# ---
+# Generic package functions
+# ---
+
+# Purpose: Handler for packages-section subcommands
+sub packages
+{
+    $| = 1;
+    checkForHelpParam(sub { usagePackages(0) });
+    my $beep = 0;
+    my $noinstall = 0;
+    GetOptions(
+        'beep' => \$beep,
+        'noinstall|no-install' => \$noinstall,
+    ) or die("See lizztctl --help for more information\n");
+
+    my $subcommand = shift(@ARGV);
+
+    if (!$chained)
+    {
+        printv('Operating on LizztCMS at '.$lizztcmsDir."\n");
+    }
+
+    given($subcommand)
+    {
+        when('buildwatch')
+        {
+            my $dir = shift // '.';
+            selfRun(qw(packages buildinstall),$dir);
+            selfExec(qw(packages watch),$dir);
+        }
+        when('watch')
+        {
+            my $dir = shift // '.';
+            my $command = $noinstall ? 'build' : 'buildinstall';
+            printv('Watching '.$dir.' for changes'."\n");
+            my @inotifyCommand = qw{inotifywait -e modify -e create -e delete -e moved_to -r --excludei .*\.(ipk|swp|swo)$ --excludei .*~$ --excludei ./.lizztctl.buildlock};
+            if ($verbosity < 99)
+            {
+                push(@inotifyCommand,qw(-q -q));
+            }
+            while(1)
+            {
+                if(system(@inotifyCommand,$dir.'/') != 0)
+                {
+                    return;
+                }
+                if(lockfile('check'))
+                {
+                    printv('Change detected, but build directory locked. Sleeping for two seconds.'."\n");
+                    sleep(2);
+                    next;
+                }
+                printv('['.strftime('%H:%M:%S',localtime).'] Change detected, running '.$command."\n");
+                selfRun('packages',$command);
+                printv('['.strftime('%H:%M:%S',localtime).'] '.$command.' complete'."\n");
+                if ($beep)
+                {
+                    print "\a";
+                }
+            }
+        }
+
+        when('buildinstall')
+        {
+            my $package = buildPackage('build',shift(@ARGV));
+            installPackage('upgrade',$package);
+        }
+
+        when('install')
+        {
+            foreach (@ARGV)
+            {
+                installPackage('install',$_);
+            }
+        }
+
+        when('remove')
+        {
+            my @remove;
+            printStatus('Processing dependencies ... ');
+            my @packages = @ARGV;
+            my $prev;
+            my $meta = loadMetaFile();
+            my $loop = 0;
+            my $loopMax = (scalar(@packages)*2)+1000;
+            while(defined(my $pkg = shift(@packages)))
+            {
+                if(! $meta->{packages}->{$pkg})
+                {
+                    warn($pkg.': is not installed, skipping package'."\n");
+                    next;
+                }
+                if(canRemovePackage($pkg,$meta,\@remove))
+                {
+                    push(@remove,$pkg);
+                }
+                else
+                {
+                    if (defined($prev) && $prev eq $pkg)
+                    {
+                        printd('Failed to find any safe way to remove "'.$pkg.'"');
+                        push(@remove,$pkg);
+                        last;
+                    }
+                    else
+                    {
+                        push(@packages,$pkg);
+                        $prev = $pkg;
+                    }
+                    if ($loop++ > $loopMax)
+                    {
+                        my $remaining = join(', ',@packages);
+                        my ($r,$error) = canRemovePackage($pkg,$meta,\@remove);
+                        die('Eternal loop in dependency resolver detected, aborting.'."\n\nDiagnostics:\n".'Remaining packages: '.$remaining."\n".'Last error seen: '.$error);
+                    }
+                }
+            }
+            printStatus('done'."\n");
+            my @die;
+            foreach my $pkg (@remove)
+            {
+                try
+                {
+                    removePackage($pkg);
+                }
+                catch
+                {
+                    push(@die,$_[0]);
+                };
+            }
+            if (@die)
+            {
+                die(join('',@die));
+            }
+        }
+
+        when('upgrade')
+        {
+            foreach (@ARGV)
+            {
+                installPackage('upgrade',$_);
+            }
+        }
+
+        when('list')
+        {
+            listPackages();
+        }
+
+        when('listfiles')
+        {
+            listPackageFiles();
+        }
+
+        when('build')
+        {
+            buildPackage($subcommand,@ARGV);
+        }
+
+        when('reconstruct')
+        {
+            while(@ARGV)
+            {
+                my $package = shift(@ARGV);
+                my $targetDir = shift(@ARGV);
+                reconstructPackage($package,$targetDir);
+            }
+        }
+
+        when('verify')
+        {
+            verifyPackages();
+        }
+
+        when('owner')
+        {
+            checkPackageOwners('output',@ARGV);
+        }
+
+        when('create')
+        {
+            createPackageTree(@ARGV);
+        }
+
+        default
+        {
+            die('Unknown subcommand for packages: '.$subcommand."\nSee \"packages --help\" for more information\n");
+        }
+    }
+}
+
+# Purpose: Displays usage information for packages subcommands
+sub usagePackages
+{
+    print "USAGE: lizztctl packages [subcommand] [parameters]\n";
+    print "\n";
+    print "Available subcommands:\n";
+    printHelp('','install X','Install a new package, located at X');
+    printHelp('','remove X','Remove the package X');
+    printHelp('','upgrade X','Upgrade a package using the package located at X');
+    printHelp('','verify','Verify installed packages');
+    printHelp('','build X?','Build a package using data at X (where X defaults to ./)');
+    printHelp('','buildinstall X','Runs build X, and then installs the package generated');
+    printHelp('','owner X Y ..','Output which package (if any) owns the files specified');
+    printHelp('','listfiles','List all files installed by packages, along with which package installed the file');
+    printHelp('','watch X','Runs buildinstall X whenever a file in the supplied directory changes');
+    printHelp('','  --noinstall','Changes the behaviour of "watch" to run "build" instead of "buildinstall');
+    printHelp('','buildwatch X','First runs "buildinstall X" and then acts like "watch X"');
+    printHelp('','  --beep','Emit a beep (terminal bell) whenever buildinstall gets run by "watch" or "buildwatch"');
+    printHelp('','reconstruct X Y','Reconstruct a package (X) from its installed data, saving the package to Y');
+    printHelp('','create X','Create a new package named "X" in ./X');
+    print "\n";
+    print "Parameters for install and upgrade:\n";
+    printHelp('','--force','Force an installation, even if there are conflicts, unsatisfied dependencies etc. This parameter is UNSAFE and could break LizztCMS, use only if you know what you\'re doing. Supply twice to bypass additional safety checks.');
+    printHelp('','--lazy','Skip dependency checks and don\'t verify checksums');
+    print "Parameters for upgrade:\n";
+    printHelp('','--force-refresh','Update all files in the tree when upgrading, even if the files in question are identical to those already installed');
+    exit(shift);
+}
+
+# Purpose: Executes package installation triggers
+sub runPackageTrigger
+{
+    my $package = shift;
+    my $trigger = shift;
+
+    my $origDir = getcwd;
+    my $file;
+    my $switchTo;
+    if ($trigger =~ /^build\w*$/)
+    {
+        $file = shift;
+        $switchTo = dirname($file);
+    }
+    else
+    {
+        $file = $lizztcmsDir.'/.packageMeta/'.$package.'/triggers.pl';
+        $switchTo = $lizztcmsDir;
+    }
+    if ($switchTo ne $origDir)
+    {
+        printd('Switching to '.$switchTo.' for the duration of the trigger');
+        changeDir($switchTo) or die($trigger.' trigger for '.$package.' failed: could not chdir('.$switchTo.'): '.$!);
+    }
+    if (-e $file)
+    {
+        outLog('Running trigger '.$trigger.' in '.$file);
+        my $ns = ($package =~ s/-//g);
+        $ns = 'CtlTriggers::'.$package.'::r'.time.'::'.int(rand(9999999));
+        try
+        {
+            eval('package '.$ns.'; my $lizztctlManaged = 1; sub lizztctl { main::selfRun(@_) };'.slurp($file).'; if ($triggers->{"'.$trigger.'"}) { $triggers->{"'.$trigger.'"}->(); };1;') or die($@);
+        }
+        catch
+        {
+            my $error = $trigger.' trigger for '.$package.' failed: '.$_;
+            if ($trigger eq 'build')
+            {
+                die($error);
+            }
+            else
+            {
+                warn('Warning: '.$error."\n");
+            }
+        };
+    }
+    else
+    {
+        outLog('Skipping trigger '.$trigger.' because '.$file.' does not exist');
+    }
+    if ($origDir)
+    {
+        changeDir($origDir);
+    }
+}
+
+# Purpose: Check owners
+sub checkPackageOwners
+{
+    my $mode = shift;
+    if (scalar(@_) == 0)
+    {
+        die('Missing parameters: Which files to check ownership of'."\n");
+    }
+    foreach my $checkFile (@_)
+    {
+        my $meta = loadMetaFile();
+        my $file = realpath($checkFile);
+        my $owner;
+        foreach my $package (keys %{$meta->{packages}})
+        {
+            foreach my $entry (@{$meta->{packages}->{$package}->{fileContent}})
+            {
+                my $pkgFile = $entry->{file};
+                if ($file eq realpath($lizztcmsDir.'/'.$pkgFile))
+                {
+                    $owner = $package;
+                    last;
+                }
+            }
+            last if $owner;
+        }
+        if ($mode eq 'output')
+        {
+            if ($owner)
+            {
+                print "$checkFile is owned by $owner\n";
+            }
+            else
+            {
+                print "$checkFile is not owned by any package\n";
+            }
+        }
+        elsif($mode eq 'plumbing')
+        {
+            if (!$owner)
+            {
+                exit(1);
+            }
+        }
+        elsif($mode eq 'return')
+        {
+            return $owner;
+        }
+    }
+}
+
+# Purpose: List all installed package files
+sub listPackageFiles
+{
+    my $meta = loadMetaFile();
+    if (%{$meta->{packages}})
+    {
+        foreach my $package (keys %{$meta->{packages}})
+        {
+            if ($meta->{packages}->{$package}->{fileContent})
+            {
+                foreach my $meta (@{$meta->{packages}->{$package}->{fileContent}})
+                {
+                    my $pkgFile = $meta->{file};
+                    print "$package: $pkgFile\n";
+                }
+            }
+            if ($meta->{packages}->{$package}->{templateContent})
+            {
+                foreach my $meta (@{$meta->{packages}->{$package}->{templateContent}})
+                {
+                    my $templateID = $meta->{id};
+                    print "$package: (live template) $templateID\n";
+                }
+            }
+        }
+    }
+    else
+    {
+        print '(there are no packages installed)'."\n";
+    }
+}
+
+# Purpose: Create a new package tree
+sub createPackageTree
+{
+    my $path = shift;
+    if (!defined $path)
+    {
+        die('Usage: lizztctl packages create NAME'."\n");
+    }
+    if (-e $path && !$force)
+    {
+        die($path.': already exists. Use --force if you\'re sure you want to create a tree there.'."\n");
+    }
+
+    mkdir($path);
+
+    open(my $yml,'>',$path.'/package.yml');
+    print {$yml} '# LizztCMS package metadata'."\n\n";
+    print {$yml} '# Package name'."\n";
+    print {$yml} 'name: '.$path."\n";
+    print {$yml} '# Package version number'."\n";
+    print {$yml} '# You may use the following placeholders in this string, they will'."\n";
+    print {$yml} '# automatically have their values replaced at build time:'."\n";
+    print {$yml} '# {DATE}        - the current date (YYYYMMDD)'."\n";
+    print {$yml} '# {GITREVISION} - the current git revision of the plugin (if in a git tree)'."\n";
+    print {$yml} '# Ie. 0.1.{DATE}-{GITREVISION} could become 0.1.20130101-5a14815'."\n";
+    print {$yml} 'version: 0.1'."\n";
+    print {$yml} '# The lowest LizztCMS core API version supported'."\n";
+    print {$yml} '# (note: core API version is distinct from template API version)'."\n";
+    print {$yml} 'apiversion: 4'."\n";
+    print {$yml} '# A short description of the package'."\n";
+    print {$yml} 'description: I did not edit package.yml'."\n";
+    print {$yml} '# The license of the package'."\n";
+    print {$yml} 'license: GPLv3'."\n";
+    print {$yml} '# A YAML-list of required perl modules'."\n";
+    print {$yml} 'perlDependencies:'."\n";
+    print {$yml} '# A YAML-list of LizztCMS-packages that this package depends upon'."\n";
+    print {$yml} 'lizztcmsDependencies:'."\n";
+    print {$yml} '# A YAML-list of files that this package requires to be present in'."\n";
+    print {$yml} '# the LizztCMS-tree. You can combine this with LizztCMS-package deps to'."\n";
+    print {$yml} '# ensure that lizztctl will complain loudly if a file this package'."\n";
+    print {$yml} '# needs gets removed from a package it depends on'."\n";
+    print {$yml} 'fileDependencies:'."\n";
+    close($yml);
+    print 'Create: '.$path.'/package.yml'."\n";
+
+    open(my $triggers,'>',$path.'/triggers.pl');
+    print {$triggers} 'no warnings;die(\'Used by "lizztctl", not to be executed directly\') if (!$lizztctlManaged);
+use strict;
+use warnings;
+use 5.010;
+use LizztCMS::HelperModules::Scripts qw(getDBIC);
+
+my $triggers; $triggers = {
+    # Triggered on package upgrade
+    upgrade => sub {
+    },
+    # Triggered on package install
+    install => sub {
+    },
+    # Triggered on package removal
+    removal => sub {
+    },
+    # Triggered on a LizztCMS upgrade
+    lizztcmsUpgrade => sub {
+    },
+    # Triggered during build of the package. Here you can ie. build CSS/JS files
+    # and perform other actions to prepare for packaging. Build triggers
+    # are run before package construction begins.
+    build => sub
+    {
+        # Run buildCleanup first, to ensure our environment is clean
+        # (you may remove this if you don\'t need it)
+        $triggers->{buildCleanup}->(@_);
+    },
+    # Triggered during the construction step of package building. At this point
+    # the current directory is a temporary directory tree that will become
+    # the package content and contain only copies of files (ie. any changes made
+    # here will only be present in the actual package, not in your working
+    # tree). The only two directories available at this point is content/ and
+    # liveTemplates/
+    buildConstruct => sub
+    {
+    },
+    # Triggered after the package has been built. You may use this to
+    # clean up after the build trigger if needed. buildCleanup also gets
+    # triggered if the build fails for some reason.
+    buildCleanup => sub
+    {
+    },
+};';
+    close($triggers);
+    print 'Create: '.$path.'/triggers.pl'."\n";
+
+    mkdir($path.'/content');
+    foreach my $sub (qw(lib/LizztCMS/Controller root))
+    {
+        mkpath($path.'/content/'.$sub);
+        print 'Create: '.$path.'/content/'.$sub."\n";
+    }
+
+    mkdir($path.'/liveTemplates/');
+    print 'Create: '.$path.'/liveTemplates'."\n";
+    exit(0);
+}
+
+# Purpose: Verify installed packages
+sub verifyPackages
+{
+    printnd('Verifying packages...');
+    my $meta = loadMetaFile();
+    my @errors;
+    foreach my $package (keys %{ $meta->{packages} })
+    {
+        printd('Checking '.$package);
+        my @otherChecks = qw(metaFiles);
+        if ($meta->{packages}->{$package}->{fileContent})
+        {
+            foreach my $entry (@{ $meta->{packages}->{$package}->{fileContent} })
+            {
+                my $file = $entry->{file};
+                printnd( '.' );
+                my $pre = $lizztcmsDir;
+                if ( ! -e $pre.'/'.$file)
+                {
+                    push(@errors,$package.': file missing: '.$file);
+                }
+                elsif (defined($entry->{meta}->{checksum}) && sha512_sum($pre.'/'.$file) ne $entry->{meta}->{checksum})
+                {
+                    push(@errors,$package.': file corruption (did not match its checksum): '.$file);
+                }
+            }
+        }
+        else
+        {
+            push(@otherChecks,'files');
+        }
+        foreach my $checkType (@otherChecks)
+        {
+            printd(' - '.$checkType);
+            foreach my $file (@{ $meta->{packages}->{$package}->{$checkType} })
+            {
+                printnd( '.' );
+                my $pre = $lizztcmsDir;
+                if ($checkType eq 'metaFiles')
+                {
+                    $pre .= '/.packageMeta/'.$package.'/';
+                }
+                if ( ! -e $pre.'/'.$file)
+                {
+                    push(@errors,$package.': file missing: '.$file);
+                }
+            }
+        }
+        printd(' - templates');
+        if ($meta->{packages}->{$package}->{templateContent})
+        {
+            loadLizztCMSModules();
+            my $fakeC = mockC();
+            my $dbic = getDBIC();
+            foreach my $entry (@{$meta->{packages}->{$package}->{templateContent}})
+            {
+                my $ID = $entry->{id};
+                printnd( '.' );
+                my $template = $dbic->resultset('LzTemplate')->find({
+                        uniqueid => $ID
+                    });
+                if (!$template)
+                {
+                    push(@errors,$package.': template not installed: '.$ID);
+                }
+                elsif(! -e $template->path_to_template_file($fakeC))
+                {
+                    push(@errors,$package.': template installed, but template file missing: '.$ID.' ('.$template->path_to_template_file($fakeC).')');
+                }
+                elsif(defined($entry->{meta}->{checksum}) && sha512_sum($template->path_to_template_file($fakeC)) ne $entry->{meta}->{checksum})
+                {
+                    push(@errors,$package.': template file corruption (did not match its checksum): '.$ID);
+                }
+            }
+        }
+    }
+    if(@errors)
+    {
+        printnd("issues found\n");
+        print join("\n",@errors)."\n";
+        print "\nIn order to resolve these issues you will need to reinstall\n";
+        print "the affected packages\n";
+    }
+    else
+    {
+        printnd( "done. All packages appear to be ok.\n" );
+    }
+}
+
+# ---
+# Template management functions
+# ---
+
+# Purpose: Handler for templates-section subcommands
+sub templates
+{
+    $| = 1;
+    checkForHelpParam(sub { usageTemplates(0) });
+
+    my $subcommand = shift(@ARGV);
+
+    if (!$chained)
+    {
+        printv('Operating on LizztCMS at '.$lizztcmsDir."\n");
+    }
+
+    given($subcommand)
+    {
+        when('inject')
+        {
+            foreach my $templateFile (@ARGV)
+            {
+                if (-e $templateFile)
+                {
+                    injectTemplateFile($templateFile);
+                }
+            }
+        }
+
+        when('remove')
+        {
+            foreach my $templateID (@ARGV)
+            {
+                removeTemplate($templateID);
+            }
+        }
+
+        when('list')
+        {
+            print "\n";
+            printnd('Fetching template list...');
+            loadLizztCMSModules();
+
+            printd('Fetching DBIC');
+            my $dbic = getDBIC();
+            my $fmt = "%-35s %-18s %s\n";
+
+            my $templates = $dbic->resultset('LzTemplate');
+            printnd("\r");
+            printf($fmt,'Unique ID','Type','Name');
+            while(my $template = $templates->next)
+            {
+                my $default = $template->is_default ? ' (default)' : '';
+                printf($fmt,$template->uniqueid,$template->type.$default,$template->name);
+            }
+        }
+
+        when('setdefault')
+        {
+            my $template = shift(@ARGV);
+            if (!$template)
+            {
+                die('setdefault requires a parameter: the template which is to be set as the default'."\n");
+            }
+            print "\n";
+            printnd('Initializing database access ...');
+            loadLizztCMSModules();
+
+            printd('Fetching DBIC');
+            my $dbic = getDBIC();
+            my $fmt = "%-35s %-18s %s\n";
+
+            my $tplObject = $dbic->resultset('LzTemplate')->find({ uniqueid => $template });
+            printnd("done\n");
+            if (!$tplObject)
+            {
+                die("Failed to locate any template with the unique ID $template\n");
+            }
+            if ($tplObject->is_default)
+            {
+                print "$template: is already the default template for ".$tplObject->type."\n";
+                exit(0);
+            }
+            printnd("Setting $template as the default handler for ".$tplObject->type."...");
+            $dbic->resultset('LzTemplate')->search({ type => $tplObject->type })->update({ is_default => 0 });
+            $tplObject->set_column('is_default',1);
+            $tplObject->update;
+            printnd("done\n");
+        }
+
+        when('info')
+        {
+            print "\n";
+            print "Initializing parser...";
+            loadLizztCMSModules();
+            my $fakeC = fakeC();
+            print "done\n";
+            foreach my $file (@ARGV)
+            {
+                print "$file:\n";
+                my $info;
+                try
+                {
+                    $info = get_parsed_template_info($fakeC,$file);
+                }
+                catch
+                {
+                    print 'Error: Failed to parse the infoblock in '.$file."\n"
+                };
+                if ($info)
+                {
+                    print Dumper($info);
+                }
+            }
+        }
+        default
+        {
+            die('Unknown subcommand for templates: '.$subcommand."\nSee \"templates --help\" for more information\n");
+        }
+    }
+}
+
+# Purpose: Displays usage information for template subcommands
+sub usageTemplates
+{
+    print "USAGE: lizztctl templates [subcommand] [parameters]\n";
+    print "\n";
+    print "Available subcommands:\n";
+    printHelp('','inject X','Install or upgrade the supplied live template file');
+    printHelp('','remove X','Remove the template identified by the supplied unique ID X. If X is in the form /X/ then it is treated as a regular expression, and all templates whose uniqueid matches this regular expression gets removed.');
+    printHelp('','list','List all installed templates');
+    printHelp('','setdefault X','Set the template X as the default template for its type (where X is a full template unique id)');
+    exit(shift);
+}
+
+# Purpose: Inject a live template into LizztCMS
+sub injectTemplateFile
+{
+    my $file = shift;
+
+    my $errorPrefix = 'Unable to install template from '.$file.':';
+
+    loadLizztCMSModules();
+    
+    printd('Processing '.basename($file));
+
+    printd('Fetching DBIC, fake $c and config');
+    my $dbic = getDBIC();
+    my $fakeC = fakeC();
+    my $config = getConfig();
+
+    printd('Reading infoblock');
+    my $info;
+    try
+    {
+        $info = parse_templatefile($fakeC,$file);
+    }
+    catch
+    {
+        die('Fatal: Failed to parse the infoblock in '.$file."\n");
+    };
+
+    printd('Validating infoblock');
+
+    if(not defined $info or not (keys %{$info}))
+    {
+        die($errorPrefix.' invalid infoblock');
+    }
+
+    # TODO: Add some regexes to validate the content of the items as well,
+    # UNIQUEID in particular, which should probably only be [A-Za-z0-9.-\+]
+    foreach my $required (qw(VERSION NAME APIVERSION UNIQUEID TYPE))
+    {
+        if(not defined $info->{$required} or not length($info->{$required}))
+        {
+            die($errorPrefix.' '.$required.' missing from infoblock');
+        }
+    }
+
+    if ($info->{'APIVERSION'} > 3 && $force < 2)
+    {
+        die($errorPrefix.' APIVERSION not supported. This version of LizztCMS only supports APIVERSION 3 and lower, this template is for APIVERSION '.$info->{'APIVERSION'});
+    }
+
+    if ($info->{'TYPE'} !~ /^(list|article|message|include|search|email_(html|text)|media|rssimport)/)
+    {
+        die($errorPrefix.' illegal template type: '.$info->{TYPE}."\n");
+    }
+
+    # When we have reached this point we can assume that all is o.k. with the
+    # template and that its infoblock is well formed, and can thus simply be
+    # shoved into the database without further validation.
+    my $template = $dbic->resultset('LzTemplate')->find({
+            uniqueid => $info->{UNIQUEID}
+        });
+
+    if(defined $template)
+    {
+        printd('Upgrading template');
+    }
+    else
+    {
+        printd('Installing new template');
+        $template = $dbic->resultset('LzTemplate')->create({
+                uniqueid => $info->{UNIQUEID},
+            });
+    }
+
+    eval
+    {
+        my $name;
+        $template->set_column('type',$info->{TYPE});
+        $template->set_column('apiversion',1);
+        if ($info->{NAME})
+        {
+            $name = $info->{NAME};
+        }
+        else
+        {
+            $name = $info->{UNIQUEID};
+        }
+        $template->set_column('name',$name);
+        $template->update();
+        1;
+    } or do {
+        my $e = $@;
+        # Delete if something at all got added
+        eval { if ($template) { $template->delete(); } };
+
+        die($errorPrefix.' Failed to create template object during injection. Error: '.$e);
+    };
+
+    my $fnam = $template->template_id.'_'.$template->uniqueid.'_'.$template->apiversion.'.lz.mas';
+    $template->set_column('file',$fnam);
+    my $current = $dbic->resultset('LzTemplate')->search({ is_default => 1, type => $template->type });
+    if (!$current || !$current->count >0)
+    {
+        $template->set_column('is_default',1);
+    }
+    $template->update();
+
+    my $error;
+    if (! -e $config->{LizztCMS}->{template_path}.'/'.$fnam || filesDiffer($file,$config->{LizztCMS}->{template_path}.'/'.$fnam))
+    {
+        printd('Wrote updated template to '.$config->{LizztCMS}->{template_path}.'/'.$fnam);
+        copyFile($file,$config->{LizztCMS}->{template_path}.'/'.$fnam) or $error = $!;
+    }
+    else
+    {
+        printd('Skipped copying of template data: identical version already present');
+    }
+
+    if ($error)
+    {
+        $template->delete;
+        die($errorPrefix.' Failed to copy file into place: '.$error);
+    }
+    printd('Template injection complete');
+    return $info->{UNIQUEID};
+}
+
+# Purpose: Remove a live template from LizztCMS
+sub removeTemplate
+{
+    my $id = shift;
+    my $errorPrefix = 'Failed to remove template with ID '.$id.':';
+    loadLizztCMSModules();
+
+    printd('Fetching DBIC');
+    my $dbic = getDBIC();
+
+    printd('Fetching a fake $c');
+    my $fakeC = fakeC();
+
+    printd('Loading config');
+    my $config = getConfig();
+
+    if ($id =~ s{^/(.+)/$}{$1})
+    {
+        my $templates = $dbic->resultset('LzTemplate');
+        while(my $template = $templates->next)
+        {
+            if ($template->uniqueid =~ m{$id})
+            {
+                removeTemplate($template->uniqueid);
+            }
+        }
+        return;
+    }
+
+    my $template = $dbic->resultset('LzTemplate')->find({
+            uniqueid => $id,
+        });
+
+    if (! $template)
+    {
+        printd('No template with the ID '.$id.' in the database. Ignoring request.');
+        return;
+    }
+    my $file = $config->{LizztCMS}->{template_path}.'/'.$template->get_column('file');
+    if (-e $file)
+    {
+        unlink($file) or die($errorPrefix.' Failed to unlink '.$file.': '.$!."\n");
+        printd('Removed '.$file);
+    }
+    $template->delete;
+    printd('Removed database entry for '.$id);
+    printnd('Removed '.$id."\n");
+}
+
+# ---
+# Utility functions
+# ---
+
+# Purpose: Handler for utils-section subcommands
+sub utils
+{
+    $| = 1;
+    checkForHelpParam(sub { usageUtils(0) });
+
+    my $subcommand = shift(@ARGV);
+
+    if (!$chained)
+    {
+        printv('Operating on LizztCMS at '.$lizztcmsDir."\n");
+    }
+
+    given($subcommand)
+    {
+        when(/^(cat(egory)|folders?)?_?tree$/)
+        {
+            loadLizztCMSModules();
+            my $fakeC = mockC();
+            my $dbic = getDBIC();
+            my $objects;
+            if (/^folder/)
+            {
+                $objects = $dbic->resultset('LzFolder')->search({ parent => \'IS NULL' });
+            }
+            else
+            {
+                $objects = $dbic->resultset('LzCategory')->search({ parent => \'IS NULL' });
+            }
+            printTreeVisualization($objects,0);
+        }
+
+        when('fileinject')
+        {
+            foreach(@ARGV)
+            {
+                if (-e $_)
+                {
+                    injectFile($_);
+                }
+                else
+                {
+                    warn($_.': does not exist - skipped'."\n");
+                }
+            }
+        }
+
+        when('adduser')
+        {
+            adduser();
+        }
+
+        when('repl')
+        {
+            repl();
+        }
+
+        default
+        {
+            die('Unknown subcommand for utils: '.$subcommand."\nSee \"utils --help\" for more information\n");
+        }
+    }
+}
+
+# Purpose: Displays usage information for util subcommands
+sub usageUtils
+{
+    print "USAGE: lizztctl utils [subcommand] [parameters]\n";
+    print "\n";
+    print "Available subcommands:\n";
+    printHelp('','categorytree','Print a simple visualization of the category tree');
+    printHelp('','foldertree','Print a simple visualization of the folder tree');
+    printHelp('','fileInject X Y ..','Inject a file or set of files into LizztCMS (as if they were uploaded via the web-interface)');
+    printHelp('','adduser','Add a new LizztCMS admin user. lizztctl will prompt for the username and password');
+    printHelp('','repl','Open up a REPL with LizztCMS paths in @INC and some basic utilities loaded');
+    exit(shift);
+}
+
+# Purpose: Run a REPL
+sub repl
+{
+    $| = 1;
+    print 'LizztCMS REPL initializing...';
+    loadLizztCMSModules('package lizztctlREPL;');
+    print "done\n\n";
+    print 'Type help for help'."\n";
+    my $r = Term::ReadLine->new(1);
+    while(defined($_ = $r->readline("\$ ")))
+    {
+        if ($_ eq 'help')
+        {
+            print 'This is a basic perl REPL. It runs in a clean namespace with only the'."\n";
+            print 'following functions defined:'."\n";
+            print 'getDBIC, getConfig, mockC, fakeC from LizztCMS::HelperModules::Scripts'."\n";
+            print 'parse_templatefile, get_parsed_template_info from L::HM::Templates'."\n";
+            print 'ERR_DIRNOTFOUND, ERR_WRITEFAILURE from L::HM::FileUploader'."\n";
+            print "\nLizztCMS is in \@INC, so you may use() any LizztCMS module\n";
+        }
+        else
+        {
+            my $ret=Dumper(eval('package lizztctlREPL;'.$_));
+            my $err=$@;
+            if($err ne "")
+            {
+                print $err;
+            }
+            else
+            {
+                print $ret;
+            }
+        }
+    }
+}
+
+# Purpose: Prints a visualization of a LizztCMS tree structure (ie. categories or folders)
+sub printTreeVisualization
+{
+    my($tree,$level) = @_;
+    my $nextLevel = $level +1;
+    while(my $object = $tree->next)
+    {
+        my $spaces = $level;
+        while($spaces)
+        {
+            print '  ';
+            $spaces--;
+        }
+        if ($object->can('category_name'))
+        {
+            print $object->category_name;
+        }
+        elsif ($object->can('folder_name'))
+        {
+            print $object->folder_name;
+        }
+        else
+        {
+            die;
+        }
+        print "\n";
+        printTreeVisualization(scalar $object->children,$nextLevel);
+    }
+}
+
+# Purpose: Inject a file into LizztCMS
+sub injectFile
+{
+    my $file = shift;
+    printStatus('Injecting '.$file.'...');
+    loadLizztCMSModules();
+    printStatus('.');
+    my $fUploader = LizztCMS::HelperModules::FileUploader->new(
+        c          => mockC(),
+        standalone => 1,
+        dbic       => getDBIC()
+    );
+    printStatus('.');
+    my ($obj,$error) = $fUploader->upload(basename($file),slurp($file),{
+        class_id => 0,
+    });
+    if ($error)
+    {
+        printStatus('error'."\n");
+        my $msg = $error->{system};
+        if (!$msg)
+        {
+            if ($error->{error} == ERR_DIRNOTFOUND())
+            {
+                $msg = 'Directory not found';
+            }
+            elsif($error->{error} == ERR_WRITEFAILURE())
+            {
+                $msg = 'Write failure';
+            }
+            else
+            {
+                $msg = 'Unknown error';
+            }
+        }
+        elsif($error->{target})
+        {
+            $msg .= ' while writing to '.$error->{target};
+        }
+        warn('Failed to inject file: '.$msg."\n");
+    }
+    else
+    {
+        printStatus('done - given file ID '.$obj->file_id."\n");
+    }
+}
+
+# Purpose: Add a user
+sub adduser
+{
+    printStatus('Initializing ...');
+    loadLizztCMSModules();
+    printStatus('.');
+    my $dbic = getDBIC();
+    printStatus("done\n");
+
+    my $r = Term::ReadLine->new(1);
+    my $username = $r->readline('Username> ');
+    if (!defined($username) || !length($username))
+    {
+        die("A username is required\n");
+    }
+    if ($username =~ /\s/)
+    {
+        die("Usernames can't include spaces\n");
+    }
+    if ($dbic->resultset('LzUser')->find({user_name => $username}))
+    {
+        die("User already exists\n");
+    }
+    my $password = $r->readline('Password> ');
+    if (!defined($password) || !length($password))
+    {
+        die("A password is required\n");
+    }
+
+    printStatus('Creating user ...');
+    my $role = $dbic->resultset('LzRole')->find({
+            role_name => 'Admin',
+        });
+    if (!defined $role)
+    {
+        die('failed - no Admin role found. Suggested action: lizztctl database check'."\n");
+    }
+    printStatus('.');
+    my $user = $dbic->resultset('LzUser')->create({
+            created => \'now()',
+            firstname => 'changeme',
+            lastname => 'changeme',
+            user_name => $username,
+            role_id => $role->role_id,
+        });
+    printStatus('.');
+    $user->set_password($password);
+    printStatus('.');
+    $user->update();
+    printStatus("done - user created\n");
+}
+
+# ---
+# Plugin subcommand functions
+# ---
+
+# Purpose: Handler for plugins-section subcommands
+sub plugins
+{
+    $| = 1;
+    checkForHelpParam(sub { usagePlugins(0) });
+
+    my $subcommand = shift(@ARGV);
+
+    if (!$chained)
+    {
+        printv('Operating on LizztCMS at '.$lizztcmsDir."\n");
+    }
+
+    given($subcommand)
+    {
+        default
+        {
+            runPluginSubcommand($subcommand,@ARGV);
+        }
+    }
+}
+
+# Purpose: Run a plugin utility
+sub runPluginSubcommand
+{
+    my $plugin = shift;
+    if (-e $lizztcmsDir.'/tools/plugins.d/'.$plugin)
+    {
+        $ENV{LizztCMSCTL_VERBOSITY} = $verbosity;
+        $ENV{LizztCMS_ROOT} = $lizztcmsDir;
+        my $origLib = $ENV{PERL5LIB} // '';
+        $ENV{PERL5LIB} = $lizztcmsDir.'/lib:'.$origLib;
+        printd('Added '.$lizztcmsDir.'/lib'.' to PERL5LIB');
+        my @command = ('perl',$lizztcmsDir.'/tools/plugins.d/'.$plugin,@_);
+        if ($debugger)
+        {
+            shift(@command);
+            unshift(@command,qw(perl -d));
+        }
+        printd('Running: '.join(' ',@command));
+        my @ret = system(@command);
+        $ENV{PERL5LIB} = $origLib;
+        return @ret;
+    }
+    else
+    {
+        die('Plugin '.$plugin.' not found'."\n");
+    }
+}
+
+# Purpose: Displays usage information for plugins subcommands
+sub usagePlugins
+{
+    print "USAGE: lizztctl plugins [subcommand] [parameters]\n";
+    print "\n";
+    print "Available subcommands:\n";
+    my $saw = 0;
+    foreach my $plugin (glob($lizztcmsDir.'/tools/plugins.d/*'))
+    {
+        if (-x $plugin && $plugin !~ /~$/)
+        {
+            $saw = 1;
+            runPluginSubcommand(basename($plugin),'toolslist');
+        }
+    }
+    if (!$saw)
+    {
+        print "(no plugin subcommands are available)\n";
+    }
+    exit(shift);
+}
+
+# ---
+# Package construction functions
+# ---
+
+# Purpose: Builds a new LizztCMS package
+sub buildPackage
+{
+    my $mode = shift;
+    my $srcdir = shift;
+    $srcdir //= '.';
+    my $target = shift;
+    $target //= '.';
+    my $disableTriggers = shift;
+
+    my @copyMetaFiles = @packageMetaFiles;
+
+    # Refuse to be lazy during builds
+    $lazyInstall = 0;
+
+    {
+        my $prepDone = 0;
+        printStatus('Preparing...');
+
+        if (! -w $target && -w $srcdir)
+        {
+            warn($target.'/ is not writeable, saving package to '.$srcdir."\n");
+            $target = $srcdir;
+        }
+
+        if (! -e $srcdir.'/package.yml')
+        {
+            if (-e $srcdir.'/plugin.yml')
+            {
+                if ($mode eq 'reconstruct')
+                {
+                    move($srcdir.'/plugin.yml',$srcdir.'/package.yml');
+                }
+                else
+                {
+                    die('Package is using plugin.yml instead of package.yml. It is outdated.'."\n".
+                        'Rename plugin.yml to package.yml and update apiversion to 4 and try again.'."\n");
+                }
+            }
+            else
+            {
+                my $origsrc = $srcdir;
+                while(! -e $srcdir.'/package.yml' && $srcdir ne '/')
+                {
+                    $srcdir = realpath($srcdir.'/../');
+                }
+                if (! -e $srcdir.'/package.yml')
+                {
+                    die("package.yml is missing\n");
+                }
+                if ($target eq $origsrc)
+                {
+                    $target = $srcdir;
+                }
+                printStatus('done'."\n");
+                $prepDone = 1;
+                print "Autodetected package root directory: $srcdir\n";
+            }
+        }
+        # Resolve directory paths
+        $srcdir = realpath($srcdir);
+        $target = realpath($target);
+        # Switch to the source directory
+        changeDir($srcdir);
+
+        if (!$prepDone)
+        {
+            printStatus('done'."\n");
+        }
+    }
+
+    printStatus('Performing sanity checks...');
+
+    if(! -w $target)
+    {
+        die('Neither '.$target.'/ or '.$srcdir.' is writeable, giving up'."\n");
+    }
+    if (-e $srcdir.'/plugin' && ! -e $srcdir.'/content')
+    {
+        die('Package is using plugin/ instead of content/. It is outdated.'."\n".
+            'Rename plugin/ to content/ and try again.'."\n");
+    }
+
+    my $meta = loadConfig($srcdir.'/package.yml');
+
+    foreach my $setting (qw(name version apiversion license))
+    {
+        if (!defined $meta->{$setting} || !length($meta->{$setting}))
+        {
+            die('Required setting "'.$setting.'" missing from package.yml'."\n");
+        }
+    }
+
+    my $packageName = getPackageSystemName($meta);
+    lockfile('create');
+
+    my $runCleanup = sub
+    {
+        my $error = shift;
+        if (!$disableTriggers)
+        {
+            if ($error)
+            {
+                printStatus('failed - cleaning up...');
+            }
+            else
+            {
+                printStatus('Running trigger: buildCleanup...');
+            }
+            runPackageTrigger($packageName,'buildCleanup',$srcdir.'/triggers.pl');
+            printStatus('done'."\n");
+        }
+        lockfile('remove');
+    };
+
+    printStatus('done'."\n");
+
+    if (!$disableTriggers)
+    {
+        printStatus('Running trigger: build...');
+        try
+        {
+            runPackageTrigger($packageName,'build',$srcdir.'/triggers.pl');
+        }
+        catch
+        {
+            $runCleanup->(1);
+            die($_);
+        };
+        printStatus('done'."\n");
+    }
+
+    printStatus('Constructing package payload...');
+    my $date = strftime('%Y%m%d',localtime);
+    $meta->{version} =~ s/{DATE}/$date/g;
+    my $gitRev = '';
+    if ($meta->{version} =~ m/{GITREVISION}/)
+    {
+        $gitRev = getOutputFrom(qw(git log --abbrev-commit --pretty=format:%h ./));
+        if (!$gitRev)
+        {
+            $gitRev = 'notree';
+        }
+        else
+        {
+            $gitRev =~ s/\n.+$//sg;
+        }
+        $meta->{version} =~ s/{GITREVISION}/$gitRev/g;
+    }
+    my $fname = $packageName.'-'.$meta->{version}.'.lpk';
+    $fname =~ s/\s+/-/g;
+
+    my @metaFilesMeta;
+    my $dir = realpath(tempdir( CLEANUP => 1, TEMPLATE => 'lizztctl-buildpkg.XXXXXXX', TMPDIR => 1));
+    mkpath($dir.'/lzpackage/');
+    $dir = $dir.'/lzpackage/';
+
+    if ($meta->{configFiles})
+    {
+        push(@copyMetaFiles,@{ $meta->{configFiles} });
+    }
+
+    foreach my $copy (@copyMetaFiles)
+    {
+        if (-e $srcdir.'/'.$copy)
+        {
+            push(@metaFilesMeta,{ file => $copy, meta => copyFile($srcdir.'/'.$copy,$dir) });
+            printd($copy.' (meta file) added to package');
+        }
+    }
+
+    if (! -d $srcdir.'/content' && ! -d $srcdir.'/liveTemplates')
+    {
+        $runCleanup->(1);
+        die('Neither of content or liveTemplates exist in '.$srcdir.'. Cowardly refusing to create empty package'."\n");
+    }
+
+    my @contentMeta;
+    foreach my $tree (qw(content liveTemplates))
+    {
+        if (-e $srcdir.'/'.$tree)
+        {
+            find({
+                    no_chdir => 1,
+                    preprocess => sub
+                    {
+                        return sort(@_);
+                    },
+                    wanted => sub
+                    {
+                        my $path = substr($_,length($srcdir));
+                        # Ignore temporary files
+                        return if isTemporary($_);
+                        # Ignore .git and .gitignore
+                        if ($_ =~ m{/\.git/} || $_ =~ m{/\.gitignore$})
+                        {
+                            return;
+                        }
+                        if (-d $_)
+                        {
+                            mkpath($dir.'/'.$path);
+                        }
+                        else
+                        {
+                            push(@contentMeta,{ file => $path, meta => copyFile($_,$dir.'/'.$path) });
+                            printd($path.' added to package');
+                        }
+                    },
+                }, $srcdir.'/'.$tree);
+        }
+    }
+
+    printStatus('done'."\n");
+
+    if (!$disableTriggers)
+    {
+        my $previousDir = getcwd();
+        changeDir($dir) or die('Failed to chdir to '.$dir.': '.$!);
+
+        printStatus('Running trigger: buildConstruct...');
+        try
+        {
+            runPackageTrigger($packageName,'buildConstruct',$dir.'/triggers.pl');
+        }
+        catch
+        {
+            $runCleanup->(1);
+            changeDir($previousDir);
+            die($_);
+        };
+        printStatus('done'."\n");
+
+        changeDir($previousDir);
+    }
+
+    # Ensure that we don't have multiple templates with the same unique id
+    if (-d 'liveTemplates')
+    {
+        printStatus('Validating template payload...');
+        my @errors;
+        if(glob($dir.'/liveTemplates/*'))
+        {
+            my %idMap;
+            loadLizztCMSModules();
+            my $fakeC = fakeC();
+            printnd('.');
+
+            foreach my $file (glob($dir.'/liveTemplates/*'))
+            {
+                # Ignore temporary files
+                next if $file =~ /(\.sw[po]|~)$/;
+
+                try
+                {
+                    my $info = parse_templatefile($fakeC,$file);
+                    if ( my $existing = $idMap{ $info->{'UNIQUEID'} } )
+                    {
+                        push(@errors,'Multiple templates are using the unique id "'.$info->{'UNIQUEID'}.'": '.basename($file).' '.basename($existing)."\n");
+                    }
+                    if ($info->{'TYPE'} !~ /^(list|article|message|include|search|email_(html|text)|media|rssimport)/)
+                    {
+                        push(@errors,'Illegal template type: "'.$info->{TYPE}.'" for the template '.$info->{UNIQUEID}."\n");
+                    }
+                    $idMap{ $info->{'UNIQUEID'} } = $file;
+                }
+                catch
+                {
+                    push(@errors,'File '.$file.' does not appear to have a LizztCMS section'."\n");
+                };
+            }
+        }
+        if (@errors)
+        {
+            $runCleanup->(1);
+            foreach my $error (@errors)
+            {
+                warn($error);
+            }
+            exit(1);
+        }
+        printStatus('done'."\n");
+    }
+
+
+    printStatus('Constructing package file...');
+
+    # Update checksums
+    my @finalContent;
+    foreach my $file (@contentMeta)
+    {
+        # Files can be removed before reaching this step, so if the file is missing
+        # then we assume a trigger has removed it and just ignore it.
+        if (-e $dir.'/'.$file->{file} || -l $dir.'/'.$file->{file})
+        {
+            # Symlinks don't have checksums
+            if (! -l $dir.'/'.$file->{file})
+            {
+                $file->{meta}->{checksum} = sha512_sum($dir.'/'.$file->{file});
+            }
+            push(@finalContent,$file);
+        }
+        else
+        {
+            printd('File '.$file->{file}.' ignored: appears to have been removed during buildConstruct');
+        }
+    }
+    @contentMeta = @finalContent;
+
+    # Replace placeholders in package.yml
+    my $packageYML = slurp($dir.'/package.yml');
+    $packageYML =~ s/(version:.+)\{DATE\}/$1$date/g;
+    $packageYML =~ s/(version:.+)\{GITREVISION\}/$1$gitRev/g;
+    writeFile($dir.'/package.yml',$packageYML);
+
+    # Add a format file
+    # Syntax is simple: formatVersion/lowestCompatible
+    # Where:
+    # - formatVersion is the package format version this file is
+    # - lowestCompatible is the lowest package format version this package
+    #   is compatible with
+    #
+    # Ie. a package can be /compatible/ with a lower version if no critical
+    # changes have been made (ie. change of directory tree) and if no critical
+    # additions have been made and are being used by this package (ie. if
+    # changes were made to dependency handling, but this package doesn't use
+    # the new feature, or if use of the new feature is of the "nice to have"
+    # rather than "essential" variety)
+    my $minVersion = 0;
+    # Use of configFiles requires format revision 4
+    if ($meta->{configFiles})
+    {
+        $minVersion = 4;
+    }
+    writeFile($dir.'/lpkversion',$packageFormatRevision.'/'.$minVersion);
+
+    # Write a metadata file
+    writeFile($dir.'/contentMeta.json',encode_json({
+                fileContent => \@contentMeta,
+                metaFiles => \@metaFilesMeta,
+                packageCreatedAt => time,
+                writtenBy => "$currentSupportedApiLevel/$minSupportedApiLevel/$dataFormatRevision",
+            }));
+
+    my $targetFile = $target.'/'.$fname;
+    $targetFile = realpath($targetFile);
+    if(runSystem('tar','-C',$dir.'/..','-cf',$targetFile,'./lzpackage') != 0)
+    {
+        printStatus('error - tar exited with nonzero return value'."\n");
+        $runCleanup->();
+        exit(1);
+    }
+    printStatus('done'."\n");
+
+    $runCleanup->();
+
+    printv('Wrote package to '.$targetFile."\n");
+    return $targetFile;
+}
+
+# Purpose: Check for, create and remove lockfiles
+# Usage:
+#   lockfile('create') - create a lockfile, and die if it is already locked
+#   lockfile('check')  - check if the lockfile is locked by someone else
+#                        returns 1 if it is, 0 if unlocked or locked by us
+#   lockfile('remove') - remove lockfile
+#
+# This function is subject to race-conditions and proper locking is therefore
+# not guaranteed.
+sub lockfile
+{
+    my $action = shift;
+    my $lockFile = './.lizztctl.buildlock';
+    if ($action eq 'create')
+    {
+        if(lockfile('check'))
+        {
+            die("Build directory is already locked. Aborting.\n");
+        }
+        writeFile($lockFile,$$);
+    }
+    elsif ($action eq 'check')
+    {
+        if (-e $lockFile)
+        {
+            my $pid = slurp($lockFile);
+            if (defined $pid && $pid ne '' && $pid != $$ && kill(0,$pid))
+            {
+                return 1;
+            }
+        }
+        return;
+    }
+    elsif ($action eq 'remove')
+    {
+        if (-e $lockFile)
+        {
+            my $pid = slurp($lockFile);
+            if ($pid == $$)
+            {
+                unlink($lockFile);
+            }
+        }
+    }
+}
+
+# Purpose: Reconstructs an installed LizztCMS package
+sub reconstructPackage
+{
+    my $packageName = shift;
+    my $targetDir = shift;
+    my $meta = loadMetaFile();
+
+    if(! $meta->{packages}->{$packageName})
+    {
+        die($packageName.': is not installed, unable to reconstruct package'."\n");
+    }
+
+    printStatus('Reconstructing '.$packageName.'... ');
+
+    my $dir = tempdir( CLEANUP => 1, TEMPLATE => 'lizztctl-reconstructpkg.XXXXXXX', TMPDIR => 1);
+    mkpath($dir.'/content/');
+
+    my $pkgMeta = $meta->{packages}->{$packageName};
+
+    foreach my $meta (@{$pkgMeta->{metaFiles}})
+    {
+        copyFile($lizztcmsDir.'/.packageMeta/'.$packageName.'/'.$meta,$dir);
+    }
+    if ($pkgMeta->{fileContent})
+    {
+        foreach my $meta (@{$pkgMeta->{fileContent}})
+        {
+            my $file = $meta->{file};
+            mkpath($dir.'/content/'.dirname($file));
+            copyFile($lizztcmsDir.'/'.$file,$dir.'/content/'.dirname($file));
+        }
+    }
+    if ($pkgMeta->{templateContent})
+    {
+        loadLizztCMSModules();
+        my $fakeC = mockC();
+        my $dbic = getDBIC();
+        foreach my $entry (@{$pkgMeta->{templateContent}})
+        {
+            my $ID = $entry->{id};
+            my $template = $dbic->resultset('LzTemplate')->find({
+                    uniqueid => $ID
+                });
+            if (!$template)
+            {
+                die('Unable to reconstruct: Failed to locate template with ID '.$ID."\n");
+            }
+            mkpath($dir.'/liveTemplates/');
+            copyFile($template->path_to_template_file($fakeC),$dir.'/liveTemplates/'.$ID.'.html');
+        }
+    }
+
+    my $previousWD = getcwd;
+    changeDir($dir);
+
+    buildPackage('reconstruct',$dir,$targetDir,1);
+
+    changeDir($previousWD);
+}
+
+# ---
+# Package management functions
+# ---
+
+# Purpose: Generate a "system name" (normalized name) from a package meta-file
+sub getPackageSystemName
+{
+    my $meta = shift;
+    my $packageName = $meta->{name};
+    $packageName =~ s/ /-/g;
+    $packageName =~ s/\./-/g;
+    $packageName = lc($packageName);
+    return $packageName;
+}
+
+# Purpose: Installs or upgrades a LizztCMS package package
+sub installPackage
+{
+    my $mode = shift;
+    my $package = shift;
+    $package = realpath($package);
+    if (! -e $package)
+    {
+        die($package.': does not exist'."\n");
+    }
+    my $meta = loadMetaFile();
+
+    my $dir = tempdir( CLEANUP => 1, TEMPLATE => 'lizztctl-installpkg.XXXXXXX', TMPDIR => 1);
+    printd('Reading package '.$package);
+    system('tar','-C',$dir,'-xf',$package);
+
+    $dir = $dir.'/lzpackage';
+    if (! -d $dir || ! -e $dir.'/package.yml')
+    {
+        die($package.': does not appear to be a LizztCMS package'."\n");
+    }
+
+    # Verify package version
+    my @lpkversion = (0,0);
+    if (-e $dir.'/lpkversion')
+    {
+        my $lpkVersionContent = slurp($dir.'/lpkversion');
+        $lpkVersionContent =~ s/^#.*\n?//g;
+        @lpkversion = split('/',$lpkVersionContent);
+    }
+    my $packageVersion    = $lpkversion[0] // 0;
+    my $packageCompatible = $lpkversion[1] // 0;
+    printd('Package version: '.$packageVersion.' || Compatible with: '.$packageCompatible);
+    if ($packageCompatible > $packageFormatRevision)
+    {
+        die($package.': is using a package format newer than this version of lizztctl supports.'."\n".
+            'Please upgrade LizztCMS to a newer version, then try again.'."\n");
+    }
+    elsif ($packageCompatible < $minSupportedPackageFormat)
+    {
+        die($package.': is using a package format older than this version of lizztctl supports.'."\n".
+            'Please rebuild the package with a newer version of lizztctl or contact the author.'."\n");
+    }
+
+    my $packageMeta = readYML($dir.'/package.yml');
+    my $contentMeta;
+    if ($packageVersion >= 3)
+    {
+        $contentMeta = readJSON($dir.'/contentMeta.json');
+    }
+    else
+    {
+        $contentMeta //= {
+            fileContent => [],
+            metaFiles => [],
+        };
+    }
+    my $packageName = getPackageSystemName($packageMeta);
+    if($mode eq 'install' && defined $meta->{packages}->{$packageName})
+    {
+        warn($packageName.': was already installed, assuming you wanted to upgrade instead.'."\n");
+        $mode = 'upgrade';
+    }
+    elsif($mode eq 'upgrade' && ! $meta->{packages}->{$packageName})
+    {
+        warn($packageName.': is not installed, assuming you wanted to install instead.'."\n");
+        $mode = 'install';
+    }
+    my $action = 'Installing';
+    if($mode eq 'reinject')
+    {
+        $action = 'Re-injecting';
+    }
+    if ($mode eq 'upgrade')
+    {
+        if ($meta->{packages}->{$packageName}->{meta}->{version} eq $packageMeta->{version})
+        {
+            printStatus('Upgrading '.$packageMeta->{name}.' to '.$packageMeta->{version}.' ['.basename($package).']...');
+        }
+
+        else
+        {
+            printStatus('Upgrading '.$packageMeta->{name}.' from '.$meta->{packages}->{$packageName}->{meta}->{version}.' to '.$packageMeta->{version}.' ['.basename($package).']...');
+        }
+    }
+    else
+    {
+        printStatus($action.' '.$packageMeta->{name}.' '.$packageMeta->{version}.' ['.basename($package).']...');
+    }
+
+    # Verify apirevision (except for during re-injections)
+    if ($mode ne 'reinject' && ($packageMeta->{apiversion} > 4 || $packageMeta->{apiversion} < 1))
+    {
+        if ($force)
+        {
+            warn('WARNING: Unsupported apiversion: '.$packageMeta->{apiversion}.'. Continuing anyway due to --force'."\n");
+        }
+        else
+        {
+            printStatus("error\n");
+            die('Unsupported apiversion: '.$packageMeta->{apiversion}."\n");
+        }
+    }
+
+    # Check deps
+    {
+        my $unsatisfied = 0;
+        if (!$lazyInstall && $packageMeta->{perlDependencies} && ref($packageMeta->{perlDependencies}) eq 'ARRAY')
+        {
+            foreach my $dep (@{ $packageMeta->{perlDependencies} })
+            {
+                try
+                {
+                    $dep =~ s/\s+//;
+                    $dep =~ s/[^\w:]//g;
+                    printd('Checking perl dependency: '.$dep);
+                    eval('package '.$dep.'::lizztctl::depsresolve; use '.$dep.';1') or die;
+                }
+                catch
+                {
+                    printStatus("error\n") if (!$unsatisfied);
+                    warn('Unsatisfied perl dependency: "'.$dep.'".'."\n");
+                    $unsatisfied = 1;
+                };
+            }
+        }
+        if (!$lazyInstall && $packageMeta->{lizztcmsDependencies} && ref($packageMeta->{lizztcmsDependencies}) eq 'ARRAY')
+        {
+            foreach my $dep (@{ $packageMeta->{lizztcmsDependencies} })
+            {
+                printd('Checking package dependency: '.$dep);
+                if (!$meta->{packages}->{$dep})
+                {
+                    printStatus("error\n") if (!$unsatisfied);
+                    warn('Unsatisfied dependency: "'.$dep.'".'."\n");
+                    $unsatisfied = 1;
+                }
+            }
+        }
+        if ($unsatisfied)
+        {
+            if ($force)
+            {
+                warn('WARNING: Continuing with installation anyway due to --force'."\n");
+            }
+            else
+            {
+                die("Installation aborted due to unsatisfied dependencies.\n"),
+            }
+        }
+    }
+    if (!$lazyInstall && $packageMeta->{fileDependencies} && ref($packageMeta->{fileDependencies}) eq 'ARRAY')
+    {
+        foreach my $dep (@{ $packageMeta->{fileDependencies} })
+        {
+            printd('Checking file dependency: '.$dep);
+            if (! -e $lizztcmsDir.'/'.$dep)
+            {
+                if($force)
+                {
+                    warn('WARNING: Unsatisfied file dependency: "'.$dep.'". Continuing anyway due to --force'."\n");
+                }
+                else
+                {
+                    printStatus("error\n");
+                    die('The file "'.$dep.'" that is required by this package is not installed. Installation aborted.'."\n");
+                }
+            }
+        }
+    }
+
+    printnd('.');
+
+    # Perform action
+    my %upgradeMap;
+    if ($mode eq 'upgrade' || $mode eq 'reinject')
+    {
+        if ($meta->{packages}->{$packageName}->{fileContent} )
+        {
+            foreach my $entry (@{ $meta->{packages}->{$packageName}->{fileContent} })
+            {
+                $upgradeMap{$entry->{file}} = 1;
+            }
+        }
+    }
+
+    my %templateIDs;
+    my @fileData;
+    my @templateData;
+    # Packages of revision 3 and later have all of this content already present in the metafile
+    if ($packageVersion >= 3)
+    {
+        my $fno = 0;
+        foreach my $entry (@{ $contentMeta->{fileContent} })
+        {
+            my $file = $entry->{file};
+            my $meta = $entry->{meta};
+            if ($fno++ > 5)
+            {
+                printnd '.';
+                $fno = 0;
+            }
+            if ($file =~ s{^/content}{})
+            {
+                if (-e $lizztcmsDir.'/'.$file)
+                {
+                    if ($force)
+                    {
+                        warn('WARNING: '.$file.' already exists in LizztCMS tree. It will be overwritten due to --force'."\n");
+                    }
+                    elsif ($mode eq 'upgrade' || $mode eq 'install')
+                    {
+                        my $owner = checkPackageOwners('return',$lizztcmsDir.'/'.$file);
+                        if (defined($owner) && $owner ne $packageName)
+                        {
+                            die("failed\n".$file.': already exists in LizztCMS tree and belongs to another package ('.$owner.') .'."\n".'Refusing to overwrite.'."\n");
+                        }
+                        elsif (!defined($owner))
+                        {
+                            die("failed\n".$file.': already exists in LizztCMS tree and does not belong to this (or any other) package.'."\n".'Refusing to overwrite.'."\n");
+                        }
+                    }
+                    elsif($mode ne 'reinject')
+                    {
+                        die("failed\n".$file.': already exists in LizztCMS tree. Refusing to overwrite.'."\n");
+                    }
+                }
+                if (! -e $lizztcmsDir.'/'.$file || filesDiffer($dir.'/content/'.$file,$lizztcmsDir.'/'.$file,$meta))
+                {
+                    my $newData = copyFile($dir.'/content/'.$file,$lizztcmsDir.'/'.$file);
+                    # Symlinks don't have checksums (obviously), so don't check for it
+                    if ($meta->{type} ne 's')
+                    {
+                        if (!$lazyInstall && !defined($meta->{checksum}))
+                        {
+                            die('Package corrupt, '.$file.' does not have a checksum'."\n");
+                        }
+                        elsif (!$lazyInstall && $newData->{checksum} && $newData->{checksum} ne $meta->{checksum})
+                        {
+                            printd($file.' checksums: ');
+                            printd($newData->{checksum});
+                            printd($meta->{checksum});
+                            die('Package corrupt, copied data for '.$file.' differs from its checksum'."\n");
+                        }
+                    }
+                }
+                else
+                {
+                    printd('Skipped copying of '.$file.': already up-to-date');
+                }
+                $entry->{file} = $file;
+                push(@fileData, $entry);
+                delete($upgradeMap{$file});
+            }
+            elsif($file =~ m{/liveTemplates})
+            {
+                my $id = injectTemplateFile($dir.$file);
+                $templateIDs{ $id } = 1;
+                push(@templateData, { id => $id, meta => { checksum => $meta->{checksum} } });
+            }
+            else
+            {
+                warn('UNHANDLED FILE: '.$file);
+            }
+        }
+    }
+    else
+    {
+        printd('Using legacy installation method');
+        my @copy;
+        legacyInstallPackage($dir,$mode,\%upgradeMap,\@copy,\%templateIDs,$meta,$packageName);
+        foreach my $file (@copy)
+        {
+            push(@fileData, { file => $file, meta => {
+                        checksum => sha512_sum($lizztcmsDir.'/'.$file)
+                    }});
+        }
+        foreach my $metaFile (@packageMetaFiles)
+        {
+            if (-e $dir.'/'.$metaFile)
+            {
+                push(@{ $contentMeta->{metaFiles} }, {
+                        file => $metaFile,
+                        meta => {
+                            type => 'f',
+                            checksum => sha512_sum($dir.'/'.$metaFile),
+                        },
+                    });
+            }
+        }
+    }
+    printnd('.');
+    my @metaFiles;
+    mkpath($lizztcmsDir.'/.packageMeta/'.$packageName);
+    if ($mode eq 'upgrade' || $mode eq 'reinject')
+    {
+        printnd('.');
+        foreach my $oldFile (keys %upgradeMap)
+        {
+            unlink($lizztcmsDir.'/'.$oldFile);
+            printd('Removed '.$oldFile);
+        }
+        printnd('.');
+        my $existingMeta = $meta->{packages}->{$packageName};
+        if ($existingMeta->{metaFiles})
+        {
+            foreach my $oldFile (@{ $meta->{packages}->{$packageName}->{metaFiles} })
+            {
+                unlink($lizztcmsDir.'/.packageMeta/'.$packageName.'/'.$oldFile);
+                printd('Removed old '.$oldFile.' from package meta storage');
+            }
+            printnd('.');
+        }
+        if ($existingMeta->{templateContent})
+        {
+            foreach my $entry (@{ $existingMeta->{templateContent} })
+            {
+                my $currentTemplate = $entry->{id};
+                if (!$templateIDs{$currentTemplate})
+                {
+                    removeTemplate($currentTemplate);
+                }
+            }
+            printnd('.');
+        }
+    }
+    printd('Copying meta files');
+    foreach my $entry (@{ $contentMeta->{metaFiles} })
+    {
+        my $copy = $entry->{file};
+        push(@metaFiles,$copy);
+        copyFile($dir.'/'.$copy,$lizztcmsDir.'/.packageMeta/'.$packageName);
+        printd('Copied '.$copy.' into package meta storage');
+    }
+    if ($packageMeta->{configFiles})
+    {
+        printd('Copying config files');
+        foreach my $file( @{ $packageMeta->{configFiles} } )
+        {
+            printnd('.');
+            selfRun('plumbing','confupgrade',$lizztcmsDir.'/'.$file,$lizztcmsDir.'/.packageMeta/'.$packageName.'/'.$file);
+        }
+    }
+    if ($mode eq 'upgrade' || $mode eq 'reinject')
+    {
+        printd('Performing upgrade/reinject housekeeping');
+        printnd('.');
+        foreach my $oldFile (keys %upgradeMap)
+        {
+            unlink($lizztcmsDir.'/'.$oldFile);
+            printd('Removed '.$oldFile);
+            my $checkDir = $lizztcmsDir.'/'.$oldFile;
+            while($checkDir = dirname($checkDir))
+            {
+                if (!DirIsEmpty($checkDir))
+                {
+                    last;
+                }
+                rmdir($checkDir);
+                printd('Empty directory '.$checkDir.' removed');
+            }
+        }
+    }
+    if (-d $lizztcmsDir.'/.git')
+    {
+        printd('Appending entries to .git/info/exclude');
+        my $excludes = slurp($lizztcmsDir.'/.git/info/exclude');
+        my %files = map { $_ => 1 } split(/\n/,$excludes);
+        my @append;
+        foreach my $entry (@fileData)
+        {
+            my $file = $entry->{file};
+            if (!$files{$file})
+            {
+                push(@append,$file);
+            }
+        }
+        if ($packageMeta->{configFiles})
+        {
+            push(@append,@{ $packageMeta->{configFiles} });
+        }
+        if (@append)
+        {
+            open(my $out,'>>',$lizztcmsDir.'/.git/info/exclude');
+            foreach my $file (@append)
+            {
+                print {$out} '# Added by lizztctl for package '.$packageName."\n";
+                print {$out} $file."\n";
+            }
+            printd('Exclusions added to .git/info/exclude');
+            close($out);
+        }
+    }
+    $meta->{packages}->{$packageName}->{meta} = $packageMeta;
+    $meta->{packages}->{$packageName}->{fileContent} = \@fileData;
+    $meta->{packages}->{$packageName}->{templateContent} = \@templateData;
+    $meta->{packages}->{$packageName}->{metaFiles} = \@metaFiles;
+    $meta->{packages}->{$packageName}->{lastModified} = time;
+    if ($mode eq 'install')
+    {
+        $meta->{packages}->{$packageName}->{installed} = time;
+        runPackageTrigger($packageName,'install');
+    }
+    elsif ($mode eq 'reinject')
+    {
+        runPackageTrigger($packageName,'lizztcmsUpgrade');
+    }
+    elsif($mode eq 'upgrade')
+    {
+        runPackageTrigger($packageName,'upgrade');
+    }
+    else
+    {
+        outLog('Not running post-"install" triggers, unknown mode: '.$mode);
+    }
+    writeMetaFile($meta);
+    printStatus("done\n");
+}
+
+sub legacyInstallPackage
+{
+    my $dir         = shift;
+    my $mode        = shift;
+    my $upgradeMap  = shift;
+    my $copy        = shift;
+    my $templateIDs = shift;
+    my $meta        = shift;
+    my $packageName = shift;
+    # Make sure $dir is an absolute path
+    $dir            = realpath($dir);
+
+    if (-e $dir.'/content')
+    {
+        printd('Package has content data');
+        find({
+                no_chdir => 1,
+                wanted => sub
+                {
+                    my $path = substr($_,length($dir.'/content'));
+                    if (!-d $_ && !/~$/ && !isTemporary($_))
+                    {
+                        # TODO: Save existing files to a .conflictbak.$$.time() when conflicts are --force ignored
+                        if (-e $lizztcmsDir.'/'.$path && !$upgradeMap->{$path})
+                        {
+                            $path =~ s{^/}{};
+                            if ($force)
+                            {
+                                warn('WARNING: '.$path.' already exists in LizztCMS tree. It will be overwritten due to --force'."\n");
+                                $path = '/'.$path;
+                            }
+                            elsif ($mode eq 'upgrade')
+                            {
+                                if (my $owner = checkPackageOwners('return',$lizztcmsDir.'/'.$path))
+                                {
+                                    die("failed\n".$path.': already exists in LizztCMS tree and belongs to another package ('.$owner.') .'."\n".'Refusing to overwrite.'."\n");
+                                }
+                                else
+                                {
+                                    die("failed\n".$path.': already exists in LizztCMS tree and does not belong to this (or any other) package.'."\n".'Refusing to overwrite.'."\n");
+                                }
+                            }
+                            elsif($mode ne 'reinject')
+                            {
+                                die("failed\n".$path.': already exists in LizztCMS tree. Refusing to overwrite.'."\n");
+                            }
+                        }
+                        delete($upgradeMap->{$path});
+                        push(@{$copy},$path);
+                    }
+                },
+            }, $dir.'/content');
+    }
+
+    printnd('.');
+
+    if (-e $dir.'/liveTemplates/')
+    {
+        printd('Package has template data');
+        my @templateFiles;
+        find({ 
+                no_chdir => 1,
+                wanted => sub
+                {
+                    if (!-d $_ && !/~$/ && !isTemporary($_))
+                    {
+                        push(@templateFiles,realpath($_));
+                    }
+                },
+            }, $dir.'/liveTemplates');
+        if (@templateFiles)
+        {
+            foreach my $templateFile (@templateFiles)
+            {
+                if (-e $templateFile)
+                {
+                    $templateIDs->{ injectTemplateFile($templateFile) } = 1;
+                }
+            }
+        }
+    }
+
+    printnd('.');
+    foreach my $f (@{$copy})
+    {
+        mkpath($lizztcmsDir.'/'.dirname($f));
+        if (! -e $dir.'/content/'.$f && ! -l $dir.'/content/'.$f)
+        {
+            warn('WARNING: Internal inconsistency: Wanted to copy a file that is not present in the package: '.$f."\n");
+            warn('…continuing anyway, package will be installed in an inconsistent state!'."\n");
+            printd('Wanted to copy: '.$dir.'/content/'.$f);
+            next;
+        }
+        if (! -e $lizztcmsDir.'/'.$f || filesDiffer($dir.'/content/'.$f,$lizztcmsDir.'/'.$f) || !$meta->{packages}->{$packageName}->{fileContent})
+        {
+            my $data = copyFile($dir.'/content/'.$f,$lizztcmsDir.'/'.$f) or die('Failed to copy '.$f.' from package: '.$!."\n");
+            printd('Copied '.$f.' into tree');
+        }
+        else
+        {
+            printd('Skipped copying of '.$f.': identical version already in tree');
+        }
+    }
+}
+
+# Purpose: Removes a LizztCMS package
+sub removePackage 
+{
+    my $packageName = shift;
+    my $meta = loadMetaFile();
+
+    if(! $meta->{packages}->{$packageName})
+    {
+        die($packageName.': is not installed, unable to remove package'."\n");
+    }
+
+    printStatus('Preparing to remove...');
+
+    my($canRemove,$error) = canRemovePackage($packageName,$meta);
+
+    if (!$canRemove)
+    {
+        if ($force)
+        {
+            warn('WARNING: '.$error.'. Continuing anyway due to --force'."\n");
+        }
+        else
+        {
+            die($error.', removal aborted.'."\n");
+        }
+    }
+
+    printStatus(' Removing '.$packageName.'... ');
+
+    runPackageTrigger($packageName,'removal');
+
+    foreach my $meta (@{$meta->{packages}->{$packageName}->{metaFiles}})
+    {
+        unlink($lizztcmsDir.'/.packageMeta/'.$packageName.'/'.$meta);
+        printd('Removed meta file: '.$meta);
+    }
+    rmdir($lizztcmsDir.'/.packageMeta/'.$packageName);
+    foreach my $entry (@{$meta->{packages}->{$packageName}->{fileContent}})
+    {
+        my $file = $entry->{file};
+        unlink($lizztcmsDir.'/'.$file);
+        printd('Removed file: '.$file);
+    }
+    if ($meta->{packages}->{$packageName}->{templateContent})
+    {
+        my @templates;
+        foreach my $entry (@{ $meta->{packages}->{$packageName}->{templateContent} })
+        {
+            push(@templates, $entry->{id});
+        }
+        # If verbosity is 0 then we silence the template subcommand. @templates
+        # merely represents additional command-line parameters at this point.
+        if ($verbosity == 0)
+        {
+            push(@templates,'--quiet');
+        }
+        selfRun('templates','remove',@templates);
+    }
+    delete($meta->{packages}->{$packageName});
+    writeMetaFile($meta);
+    printStatus('done'."\n");
+}
+
+# Purpose: Check if it is possible to remove the supplied package safely
+sub canRemovePackage
+{
+    my $packageName = shift;
+    my $meta        = shift;
+    my $removedA    = shift;
+    my $error       = undef;
+    my $return      = 1;
+    my $removed     = {};
+
+    if($removedA)
+    {
+        foreach my $n (@{$removedA})
+        {
+            $removed->{$n} = 1;
+        }
+    }
+
+    $meta         //= loadMetaFile();
+
+    if(! $meta->{packages}->{$packageName})
+    {
+        die($packageName.': is not installed, unable to remove package'."\n");
+    }
+
+    my %files;
+    foreach my $entry (@{ $meta->{packages}->{$packageName}->{fileContent} })
+    {
+        $files{ $entry->{file} } = 1;
+    }
+
+
+    # Verify that no dependencies will go unresolved by this action
+    foreach my $installedPackage (keys %{$meta->{packages}})
+    {
+        next if $installedPackage eq $packageName;
+        next if $removed->{$installedPackage};
+        my $package = $meta->{packages}->{$installedPackage};
+        if ($package->{meta}->{lizztcmsDependencies})
+        {
+            foreach my $pkg (@{ $package->{meta}->{lizztcmsDependencies} })
+            {
+                if ($pkg eq $packageName && !$removed->{$pkg})
+                {
+                    $error = $packageName.' is required by "'.$installedPackage;
+                    $return = 0;
+                    last;
+                }
+            }
+        }
+
+        last if !$return;
+
+        if ($package->{meta}->{fileDependencies})
+        {
+            foreach my $file (@{ $package->{meta}->{fileDependencies} })
+            {
+                if ($files{$file})
+                {
+                    $return = 0;
+                    $error = 'The file "'.$file.'" that is provided by '.$packageName.' is required by "'.$installedPackage.'"';
+                }
+            }
+        }
+    }
+    if(wantarray())
+    {
+        return($return,$error);
+    }
+    return $return;
+}
+
+# Purpose: Lists all installed LizztCMS packages
+sub listPackages
+{
+    my $meta = loadMetaFile();
+    if (%{$meta->{packages}})
+    {
+        my $fmt = '%-30s %-6s'."\n";
+        printf($fmt,'Name','Version');
+        foreach my $p (keys %{$meta->{packages}})
+        {
+            printf($fmt,$p,$meta->{packages}->{$p}->{meta}->{version});
+        }
+    }
+    else
+    {
+        print '(there are no packages installed)'."\n";
+    }
+}
+
+# ---
+# Plumbing functions
+# ---
+# Purpose: Handler for plumbing-section subcommands
+sub plumbing
+{
+    my $subcommand = $ARGV[0];
+
+    if ($verbosity < 99)
+    {
+        $verbosity = -1;
+    }
+
+    # These are used internally, for enforcing an api compatibility layer if
+    # required. In most cases the caller is responsible for handling the
+    # compatibility layer.
+    if (defined($subcommand) && $subcommand =~ s/^v(\d+)/$1/)
+    {
+        my $levelNo = int($subcommand);
+        if ($levelNo > $currentSupportedApiLevel)
+        {
+            die('ERROR: UNKNOWN API LEVEL: '.$subcommand."\n");
+        }
+        elsif($levelNo < $minSupportedApiLevel)
+        {
+            die('ERROR: TOO OLD API LEVEL: '.$subcommand."\n");
+        }
+        shift(@ARGV);
+        $subcommand = $ARGV[0];
+    }
+    elsif(defined($subcommand) && $subcommand eq 'getlevel')
+    {
+        print "$currentSupportedApiLevel/$minSupportedApiLevel/$dataFormatRevision\n";
+        exit(0);
+    }
+
+    checkForHelpParam(sub { usagePlumbing(0) });
+    shift(@ARGV);
+
+    given($subcommand)
+    {
+
+        when('packup')
+        {
+            my $dir = shift(@ARGV);
+            my $meta = loadMetaFile();
+            if ($meta->{packages} && scalar(%{$meta->{packages}}))
+            {
+                foreach my $p (keys %{$meta->{packages}})
+                {
+                    selfRun('packages','reconstruct',$p,$dir);
+                }
+            }
+            else
+            {
+                exit(1);
+            }
+        }
+        when('reinject')
+        {
+            # reinject implies --lazy and --force
+            $lazyInstall = 1;
+            $force       = 1;
+            foreach my $pkg (@ARGV)
+            {
+                if (-e $pkg)
+                {
+                    installPackage('reinject',$pkg);
+                }
+            }
+        }
+
+        when('confupgrade')
+        {
+            my $confFile = shift(@ARGV);
+            my $template = shift(@ARGV);
+            if (! -e $template)
+            {
+                die("confupgrade: $template does not exist\n");
+            }
+            refreshConfigFromTemplate($confFile,$template);
+        }
+
+        when('checkowner')
+        {
+            checkPackageOwners('plumbing',@ARGV);
+        }
+
+        when('upgrade')
+        {
+            performVersionUpgrade();
+        }
+
+        # Remove this once minSupportedApiLevel > 4
+        when(/^template(list|remove|inject)$/)
+        {
+            s/^template//;
+            exit(selfRun('templates',$_,@ARGV));
+        }
+
+        when('adduser')
+        {
+            my $username = shift(@ARGV) or die;
+            my $password = shift(@ARGV) or die;
+            loadLizztCMSModules();
+            my $dbic = getDBIC();
+            my $role = $dbic->resultset('LzRole')->find({
+                    role_name => 'Admin',
+                });
+            my $user = $dbic->resultset('LzUser')->create({
+                    created => \'now()',
+                    firstname => 'changeme',
+                    lastname => 'changeme',
+                    user_name => $username,
+                    role_id => $role->role_id,
+                });
+            $user->set_password($password);
+            $user->update();
+        }
+
+        default
+        {
+            die('Unknown subcommand for plumbing: '.$subcommand."\n");
+        }
+    }
+}
+
+# Purpose: Displays usage information for plumbing subcommands
+sub usagePlumbing
+{
+    print "USAGE: lizztctl plumbing [subcommand] [parameters]\n";
+    print "\n";
+    print "WARNING: Plumbing commands can be potentionally dangerous.\n";
+    print "Use with care.\n";
+    print "\n";
+    print "These commands are not meant for public use. They may have backwards-incompatible\n";
+    print "changes between versions, and any command may be removed at any time\n";
+    print "\n";
+    print "Available subcommands:\n";
+    printHelp('','packup X','Reconstruct a dump of all packages into X');
+    printHelp('','reinject X Y ..','Re-inject the packages specified into the LizztCMS tree (similar to an upgrade, but runs lizztcmsUpgrade instead of upgrade triggers, and ignores all conflicts/dependencies)');
+    printHelp('','checkowner X Y ..','Check if files X, Y, .. are owned by a package. Exits with exit status 0 if all the files are owned by packages, 1 if not');
+    printHelp('','getlevel','Output the plumbing API level supported by this version of lizztctl');
+    printHelp('','upgrade','Upgrade lizztctl metadata');
+    printHelp('','adduser X Y','Add a user X with the password Y. You should likely use "lizztctl utils adduser" instead.');
+    exit(shift);
+}
+
+# Purpose: Run self with the correct parameters
+# Usage: selfRun(options);
+sub selfRun
+{
+    _selfRun('system',@_);
+}
+
+# Purpose: Exec self with the correct parameters
+# Usage: selfExec(options);
+sub selfExec
+{
+    _selfRun('exec',@_);
+}
+
+# Purpose: Run self via system() or exec() with the correct parameters
+# Usage: _selfRun(mode,params),
+sub _selfRun
+{
+    my $mode = shift;
+    my @command = ($0,'--lizztcmsdir',$lizztcmsDir, $mode eq 'exec' ? '--exec-chained' : '--chained' );
+    if ($verbosity == -1)
+    {
+        push(@command,'--quiet');
+    }
+    elsif($verbosity > 0 && $verbosity < 99)
+    {
+        push(@command,'--verbose');
+    }
+    if ($verbosity >= 99)
+    {
+        push(@command,'--debug');
+    }
+    for (my $i = 0; $i < $force; $i++)
+    {
+        push(@command,'--force');
+    }
+    if ($logfile)
+    {
+        push(@command,'--logfile',$logfile);
+    }
+    if ($lazyInstall)
+    {
+        push(@command,'--lazy');
+    }
+    if ($mode eq 'exec')
+    {
+        printd('exec()ing self: '.join(' ',@command,@_));
+        exec(@command,@_);
+    }
+    else
+    {
+        printd('Running self: '.join(' ',@command,@_));
+        return system(@command,@_);
+    }
+}

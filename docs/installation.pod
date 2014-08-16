@@ -1,4 +1,4 @@
-# LIXUZ content management system
+# LizztCMS content management system
 # Copyright (C) Utrop A/S Portu media & Communications 2008-2011
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,31 +14,31 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-=head1 LIXUZ INSTALLATION MANUAL
+=head1 LizztCMS INSTALLATION MANUAL
 
-This is the Lixuz installation manual.
+This is the LizztCMS installation manual.
 
 =head1 REQUIREMENTS
 
-Lixuz runs on top of Catalyst and Mason. It also needs a few other perl
+LizztCMS runs on top of Catalyst and Mason. It also needs a few other perl
 modules. To find out if you have any deps missing, run
 
     perl DEPSLIST check
 
-from the root of the Lixuz source tree. It will then check all of the Lixuz
+from the root of the LizztCMS source tree. It will then check all of the LizztCMS
 dependencies and tell you which are missing.
 
 =head2 VIDEO
 
-Lixuz can convert uploaded videos to FLV for use on the website, however
+LizztCMS can convert uploaded videos to FLV for use on the website, however
 to do this it needs to have some utilities available, namely I<ffmpeg>.
-The codecs Lixuz can convert from then depends upon which are installed
+The codecs LizztCMS can convert from then depends upon which are installed
 for ffmpeg.
 
 =head3 DEBIAN/UBUNTU
 
 These packages in Debian/Ubuntu (or similarly named, unstripped, packages)
-will give most of the codec support that Lixuz might need. For Ubuntu
+will give most of the codec support that LizztCMS might need. For Ubuntu
 these come from the Medibuntu repository.
 
     libavcodec-unstripped-51 libavdevice-unstripped-52
@@ -50,7 +50,7 @@ these come from the Medibuntu repository.
 =head2 CREATING THE DATABASE
 
 Before you can proceed to the installation, you need to create the database
-and the database user for your new installation of Lixuz. Skip this section
+and the database user for your new installation of LizztCMS. Skip this section
 if you have already done so.
 
 In the following commands, replace [NAME] with the name of the database, [USER]
@@ -78,15 +78,15 @@ in mind, as the installation script will prompt you for this information.
 
 Most of the initial setup (including copying files and configuration) can be
 automated. Simply run the I<.run>-package you downloaded or
-I<./scripts/lixuz_install.pl> script from the Lixuz source tree (depending on
-which you have) with the path to where you want to install Lixuz and follow the
+I<./scripts/lizztcms_install.pl> script from the LizztCMS source tree (depending on
+which you have) with the path to where you want to install LizztCMS and follow the
 instructions. The following sections will outline what needs to be done
 manually.
 
-B<Note on HTTP servers:> as Lixuz uses FastCGI, you do not need to use any of
+B<Note on HTTP servers:> as LizztCMS uses FastCGI, you do not need to use any of
 the web servers listed as examples here, you can just follow the instructions
 for setting up fastcgi, and then configure whichever websever you're using to
-serve Lixuz via the FastCGI instance.
+serve LizztCMS via the FastCGI instance.
 
 =head3 SETTING UP FASTCGI
 
@@ -94,18 +94,18 @@ The easiest way to set up FastCGI is to use the L<fcgim(1)> utility from
 I<http://random.zerodogg.org/fcgim>. If you want to configure it manually,
 refer to the Catalyst docs, we will assume you're using fcgim here.
 
-Relevant fcgim documentation for a generic Lixuz app:
+Relevant fcgim documentation for a generic LizztCMS app:
 
-        "lixuz": {
+        "lizztcms": {
             // The root directory that the app is installed at
-            "path":"/var/www/lixuz/",
+            "path":"/var/www/lizztcms/",
             // Supports: Catalyst, PHP
             // Case sensitive.
             "type":"Catalyst",
             // The max number of processes to use for this app
             "processes":4,
             // The location of the server process file
-            "serverFile":"/tmp/lixuz.socket",
+            "serverFile":"/tmp/lizztcms.socket",
             // Any environment variables you want set in the environment of
             // this application
             "ENV": {},
@@ -113,22 +113,22 @@ Relevant fcgim documentation for a generic Lixuz app:
 
 Modify the number of processes to suit the load for your site.
 
-If you're using L<local::lib> to mange the perl modules for Lixuz, set the
+If you're using L<local::lib> to mange the perl modules for LizztCMS, set the
 PERL5LIB environment variable from local::lib for it in the config:
 
             "ENV": {
-                "PERL5LIB":"/usr/local/lixuzModules/perl5/lib/perl5:/usr/local/lixuzModules/perl5/lib/perl5/i486-linux-gnu-thread-multi"
+                "PERL5LIB":"/usr/local/lizztcmsModules/perl5/lib/perl5:/usr/local/lizztcmsModules/perl5/lib/perl5/i486-linux-gnu-thread-multi"
             },
 
 Once these are set up you can use the normal fcgim commands to mange the app.
-I<fcgim lixuz start> to start it, I<fcgim lixuz stop> to stop, etc. Lixuz
+I<fcgim lizztcms start> to start it, I<fcgim lizztcms stop> to stop, etc. LizztCMS
 also works fine with the fcgim sanitycheck feature.
 
 =head3 APACHE2
 
 First follow the instructions to set up the FastCGI instance.
 
-Here is an example of an apache config file configured to talk to Lixuz FastCGI.
+Here is an example of an apache config file configured to talk to LizztCMS FastCGI.
 
     <VirtualHost *:80>
         ServerAdmin youruser@example.org
@@ -155,15 +155,15 @@ Here is an example of an apache config file configured to talk to Lixuz FastCGI.
         ErrorDocument 502 /_errors/index.html
 
         # Static data that the web server can serve itself
-        Alias /css /var/www/lixuz/root/css
-        Alias /js /var/www/lixuz/root/js
-        Alias /livedata /var/www/lixuz/root/livedata
-        Alias /static /var/www/lixuz/root/static
-        Alias /swf /var/www/lixuz/root/swf
+        Alias /css /var/www/lizztcms/root/css
+        Alias /js /var/www/lizztcms/root/js
+        Alias /livedata /var/www/lizztcms/root/livedata
+        Alias /static /var/www/lizztcms/root/static
+        Alias /swf /var/www/lizztcms/root/swf
 
-        # Connect to the Lixuz FastCGI instance
-        FastCgiExternalServer /tmp/lixuz.fcgi -socket /tmp/lixuz.socket
-        Alias / /tmp/lixuz.fcgi/
+        # Connect to the LizztCMS FastCGI instance
+        FastCgiExternalServer /tmp/lizztcms.fcgi -socket /tmp/lizztcms.socket
+        Alias / /tmp/lizztcms.fcgi/
     </VirtualHost>
 
 Put it in ie. /etc/apache2/sites-available/mysite.conf - and possibly symlink it into
@@ -171,31 +171,31 @@ Put it in ie. /etc/apache2/sites-available/mysite.conf - and possibly symlink it
 
 =head2 CRONJOBS
 
-Lixuz has two different cronjob types in use. One lives within the Lixuz
+LizztCMS has two different cronjob types in use. One lives within the LizztCMS
 engine, the other ones are standalone, both should be added.
 
 =head3 BUILTIN
 
-Lixuz has some builtin cronjobs for operations that need full
-access to every part of the Lixuz engine (not just the parts that are
+LizztCMS has some builtin cronjobs for operations that need full
+access to every part of the LizztCMS engine (not just the parts that are
 available from standalone scripts). These cronjobs need to be explicitly
 triggered by submitting a request to the webserver.
 
 B<Daily>
 
-Request the cron handler (/cron) of your Lixuz install with the parameter
-schedule_trigger=lixuz_daily_cron - ie.:
+Request the cron handler (/cron) of your LizztCMS install with the parameter
+schedule_trigger=lizztcms_daily_cron - ie.:
 
-    wget -O/dev/null -q http://example.org/cron/?schedule_trigger=lixuz_daily_cron
+    wget -O/dev/null -q http://example.org/cron/?schedule_trigger=lizztcms_daily_cron
 
 Needless to say, this should be run daily.
 
 B<Second daily>
 
 There is also a second daily cronjob, this should be run twelve hours
-after the above cronjob. It is triggered by "lixuz_daily_cron_two". Ie.:
+after the above cronjob. It is triggered by "lizztcms_daily_cron_two". Ie.:
 
-    wget -O/dev/null -q http://example.org/cron/?schedule_trigger=lixuz_daily_cron_two
+    wget -O/dev/null -q http://example.org/cron/?schedule_trigger=lizztcms_daily_cron_two
 
 =head3 EXTERNAL
 

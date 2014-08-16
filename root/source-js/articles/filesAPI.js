@@ -1,5 +1,5 @@
 /*
- * LIXUZ content management system
+ * LizztCMS content management system
  * Copyright (C) Utrop A/S Portu media & Communications 2008-2011
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*
- * Image handling code for Lixuz. Interacts with the RTE, allowing
+ * Image handling code for LizztCMS. Interacts with the RTE, allowing
  * the user to add and edit images
  *
  * The API here publishes the following events:
@@ -429,21 +429,21 @@ var articleFiles = {
                 var identifier = articleFiles.getIdentifierByID(fileID);
                 articleFiles.removeFromSpot(fileID);
                 var image = '<img alt="" title="" style="float:right;" src="/files/get/'+identifier+'?width=240" imgId="'+identifier+'" id="image_'+RTE+identifier+d.getTime()+'" /> ';
-                lixuzRTE.pushContent(RTE,image);
+                lizztcmsRTE.pushContent(RTE,image);
                 articleFiles.buildFileList();
             }
             else if(file.is_video)
             {
                 var d = new Date();
                 var identifier = articleFiles.getIdentifierByID(fileID);
-                var video = '<div name="lixuz_video" uid="'+identifier+'" style="display:block;width:400px;height:300px" id="player_'+RTE+identifier+d.getTime()+'"><img src="/files/get/'+identifier+'?flvpreview=1" style="border:0;" /></div>';
-                lixuzRTE.pushContent(RTE,video);
+                var video = '<div name="lizztcms_video" uid="'+identifier+'" style="display:block;width:400px;height:300px" id="player_'+RTE+identifier+d.getTime()+'"><img src="/files/get/'+identifier+'?flvpreview=1" style="border:0;" /></div>';
+                lizztcmsRTE.pushContent(RTE,video);
             }
             else if(file.is_audio)
             {
                 var d = new Date();
-                var audio = '<div name="lixuz_audio" uid="'+fileID+'" style="display:block;width:400px;height:50" id="player_'+RTE+fileID+d.getTime()+'"><img src="/static/images/icons/audio.png" alt="" /></div>';
-                lixuzRTE.pushContent(RTE,audio);
+                var audio = '<div name="lizztcms_audio" uid="'+fileID+'" style="display:block;width:400px;height:50" id="player_'+RTE+fileID+d.getTime()+'"><img src="/static/images/icons/audio.png" alt="" /></div>';
+                lizztcmsRTE.pushContent(RTE,audio);
             }
             else
             {
@@ -462,7 +462,7 @@ var articleFiles = {
                 title = title.replace(/<imageId/g,'&gt;').replace(/>/g,'&lt;');
                 var identifier = articleFiles.getIdentifierByID(fileID);
                 var entry = '<a href="/files/get/'+identifier+'/'+fileName+'">'+title+'</a>';
-                lixuzRTE.pushContent(RTE,entry);
+                lizztcmsRTE.pushContent(RTE,entry);
             }
         } catch(e)
         {
@@ -518,4 +518,4 @@ var articleFiles = {
     }
 };
 
-$.subscribe('/lixuz/init',function () { articleFiles.initBuild(); });
+$.subscribe('/lizztcms/init',function () { articleFiles.initBuild(); });

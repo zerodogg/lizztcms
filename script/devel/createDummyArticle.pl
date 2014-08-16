@@ -7,7 +7,7 @@ use Getopt::Long;
 use Cwd qw(realpath);
 use 5.010;
 use lib "$FindBin::RealBin/../../lib/";
-use LIXUZ::HelperModules::Scripts qw(fakeC);
+use LizztCMS::HelperModules::Scripts qw(fakeC);
 use Text::Lorem;
 
 my $folderID;
@@ -106,10 +106,10 @@ sub silent(&)
 $| = 1;
 
 print "Creating dummy articles...";
-my $lixuzDir = realpath($FindBin::RealBin.'/../../');
+my $lizztcmsDir = realpath($FindBin::RealBin.'/../../');
 unshift(@INC,realpath($FindBin::RealBin.'/../../lib'));
-eval('no strict; no warnings;$LIXUZ::PATH = $lixuzDir;1;') or die;
-eval('use LIXUZ::HelperModules::Scripts qw(getDBIC getConfig mockC fakeC);1;') or die;
+eval('no strict; no warnings;$LizztCMS::PATH = $lizztcmsDir;1;') or die;
+eval('use LizztCMS::HelperModules::Scripts qw(getDBIC getConfig mockC fakeC);1;') or die;
 
 my $c = mockC();
 my $dbic = getDBIC();

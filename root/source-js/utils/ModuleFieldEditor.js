@@ -1,5 +1,5 @@
 /*
- * LIXUZ content management system
+ * LizztCMS content management system
  * Copyright (C) Utrop A/S Portu media & Communications 2008-2011
  *
  * This program is free software: you can redistribute it and/or modify
@@ -30,7 +30,7 @@ var FieldEdit_Type = null,
 
 function LZ_DisplayFieldEditForm (type,uid)
 {
-    if(type == 'articles' && ( /\D/.test($('#lixuzArticleEdit_uid').val()) || /\D/.test($('#lz_revision_value').text()) ) )
+    if(type == 'articles' && ( /\D/.test($('#lizztcmsArticleEdit_uid').val()) || /\D/.test($('#lz_revision_value').text()) ) )
     {
         userMessage(i18n.get('You must save the article before you can edit the fields for its folder. Please save this article then try again.'));
         return;
@@ -39,9 +39,9 @@ function LZ_DisplayFieldEditForm (type,uid)
     FieldEdit_Type = type;
     FieldEdit_UID = uid;
     var URL = '/admin/settings/admin/additionalfields/fieldeditor/'+type;
-    if($('#lixuzArticleEdit_uid').val() != null)
+    if($('#lizztcmsArticleEdit_uid').val() != null)
     {
-        URL = URL+'/'+$('#lixuzArticleEdit_uid').val()+'/'+$('#lz_revision_value').text();
+        URL = URL+'/'+$('#lizztcmsArticleEdit_uid').val()+'/'+$('#lz_revision_value').text();
     }
     else if(type == 'files')
     {

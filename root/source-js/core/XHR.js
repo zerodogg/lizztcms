@@ -1,5 +1,5 @@
 /*
- * LIXUZ content management system
+ * LizztCMS content management system
  * Copyright (C) Utrop A/S Portu media & Communications 2008-2011
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*
- * XHR wrapper object for Lixuz.
+ * XHR wrapper object for LizztCMS.
  *
  * This object can be used to perform various types of requests.
  * They are separated into subgroups. All requests return javascript
@@ -117,7 +117,7 @@ var XHR = {
                 errorCode = 'Invalid JSON data returned from server.';
                 if (data.internalThrown)
                     errorCode = errorCode + ' Threw: '+data.internalThrown;
-                genericError = genericError + i18n.get('The server returned invalid JSON data. This is either a temporary server problem, or a bug in Lixuz. If the problem persists, contact your system administrator with the information listed below.');
+                genericError = genericError + i18n.get('The server returned invalid JSON data. This is either a temporary server problem, or a bug in LizztCMS. If the problem persists, contact your system administrator with the information listed below.');
             }
             else if(data.internalStatus)
             {
@@ -154,7 +154,7 @@ var XHR = {
 
         var ret = { message: genericError, tech: errorCode };
 
-        LIXUZ.error.log(data.tech);
+        LizztCMS.error.log(data.tech);
 
         return ret;
     },
@@ -191,7 +191,7 @@ var XHR = {
                 params.onSuccess = $.noop;
             }
 
-            lixuz_curr_JSON_URL = params.url;
+            lizztcms_curr_JSON_URL = params.url;
 
             if(params.method == null)
                 params.method = 'POST';
@@ -280,5 +280,5 @@ var XHR = {
     }
 };
 
-// Lixuz uses "traditional" request parameters
+// LizztCMS uses "traditional" request parameters
 jQuery.ajaxSettings.traditional = true;

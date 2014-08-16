@@ -1,4 +1,4 @@
-This directory contains various tools used by Lixuz when in production.
+This directory contains various tools used by LizztCMS when in production.
 
 flvConverter is the script used to convert video files of any filetype
 to a flv file.
@@ -10,9 +10,9 @@ and it will create an flv for FILE_ID and let you know when it has finished
 and what the status is.
 
 masontest.pl is a script that checks the syntax of HTML::Mason files,
-the templating format used by Lixuz.
+the templating format used by LizztCMS.
 
-lixuzIndexer.pl is a helper script for indexing individual articles or files
-while Lixuz is in production. It gets called automatically whenever
+lizztcmsIndexer.pl is a helper script for indexing individual articles or files
+while LizztCMS is in production. It gets called automatically whenever
 a file or article is created/updated/deleted. Mass indexing is done
 in the daily cronjob.

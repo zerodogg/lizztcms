@@ -1,5 +1,5 @@
 /*
- * LIXUZ content management system
+ * LizztCMS content management system
  * Copyright (C) Utrop A/S Portu media & Communications 2008-2011
  *
  * This program is free software: you can redistribute it and/or modify
@@ -372,7 +372,7 @@ function showThisMessage (content)
     // contain a bit of HTML, but they'll have to live with it.
     catch(e)
     {
-        alert('(an error occurred while trying to display the Lixuz message dialog ("'+e.message+'"). dumping message contents here):\n\n'+content);
+        alert('(an error occurred while trying to display the LizztCMS message dialog ("'+e.message+'"). dumping message contents here):\n\n'+content);
     }
 }
 

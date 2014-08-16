@@ -6,12 +6,12 @@ clean:
 	rm -f root/js/*.js
 	rm -rf packages
 fullclean: clean
-	rm -rf lib/LIXUZ/Controller/SiteHacks*
+	rm -rf lib/LizztCMS/Controller/SiteHacks*
 
 # --
 # Various development helpers
 # --
 updateddb:
 	(cd sql; ./dumpschema)
-	./script/lixuz_updatedb.pl
+	./script/lizztcms_updatedb.pl
 # vim: set ft=make :

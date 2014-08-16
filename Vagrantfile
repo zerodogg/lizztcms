@@ -1,12 +1,12 @@
 # vi: set ft=ruby :
 
-# --- LIXUZ INSTRUCTIONS ---
+# --- LizztCMS INSTRUCTIONS ---
 # vagrant up
-#   Brings up a Lixuz vagrant VM
-# vagrant ssh -c bin/lixuz_server
-#   Starts the Lixuz server
-# vagrant ssh -c bin/lixuzctl ...
-#   Runs lixuzctl commands
+#   Brings up a LizztCMS vagrant VM
+# vagrant ssh -c bin/lizztcms_server
+#   Starts the LizztCMS server
+# vagrant ssh -c bin/lizztctl ...
+#   Runs lizztctl commands
 # ---                    ---
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
@@ -32,11 +32,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
   config.vm.provider :virtualbox do |v|
-      v.name = "lixuz-vagrant"
+      v.name = "lizztcms-vagrant"
   end
 
   # Name the machine as vagrant sees it
-  config.vm.define :lixuz do |v|
+  config.vm.define :lizztcms do |v|
   end
 
   # Provisioning of the VM
@@ -47,5 +47,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box_check_update = false
 
   # Message to be displayed after every "vagrant up"
-  config.vm.post_up_message = "To start Lixuz run:\n\tvagrant ssh -c bin/lixuz_server\nTo run lixuzctl run:\n\tvagrant ssh -c bin/vlixuzctl ...\nTo get a shell run:\n\tvagrant ssh\n"
+  config.vm.post_up_message = "To start LizztCMS run:\n\tvagrant ssh -c bin/lizztcms_server\nTo run lizztctl run:\n\tvagrant ssh -c bin/vlizztctl ...\nTo get a shell run:\n\tvagrant ssh\n"
 end

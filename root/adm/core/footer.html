@@ -1,5 +1,5 @@
 <%perl>
-# LIXUZ content management system
+# LizztCMS content management system
 # Copyright (C) Utrop A/S Portu media & Communications 2008-2011
 #
 # This program is free software: you can redistribute it and/or modify
@@ -18,18 +18,18 @@
 %if(not $onlySkeletonHTML) {
 <div id="footer">
 %my $versVal = $VERSION;
-<a href="http://www.lixuz.org/">
+<a href="http://www.lizztcms.org/">
 %if($c->user) {
-<% $i18n->get_advanced("Lixuz version %(VERSION)",{ VERSION => $VERSION }) %>
+<% $i18n->get_advanced("LizztCMS version %(VERSION)",{ VERSION => $VERSION }) %>
 %} else  {
 % $versVal = '';
-Lixuz
+LizztCMS
 %}
 </a>
 - Copyright &copy; Utrop AS <a href="http://www.portu.no/">Portu media &amp; communications</a><br />
-Lixuz is free software, available under the <a href="/lixuz/license">GNU General Public License version 3</a>
+LizztCMS is free software, available under the <a href="/lizztcms/license">GNU General Public License version 3</a>
 </div>
-<input type="hidden" id="lixuz_version" value="<% $versVal %>" />
+<input type="hidden" id="lizztcms_version" value="<% $versVal %>" />
 %}
 %# XXX: This is loaded here as tiny_mce does not appear to play nice with LABjs right now
 %if($loadRTE) {

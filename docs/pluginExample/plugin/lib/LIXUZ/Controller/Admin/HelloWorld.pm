@@ -1,4 +1,4 @@
-package LIXUZ::Controller::Admin::HelloWorld;
+package LizztCMS::Controller::Admin::HelloWorld;
 use Moose;
 BEGIN { extends 'Catalyst::Controller' };
 

@@ -1,5 +1,5 @@
 /*
- * LIXUZ content management system
+ * LizztCMS content management system
  * Copyright (C) Utrop A/S Portu media & Communications 2008-2011
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*
- * Core JS helper for live Lixuz sites
+ * Core JS helper for live LizztCMS sites
  */
 
 /*
@@ -80,7 +80,7 @@
             if(console && console.log)
             {
                 var dt = new Date();
-                console.log('['+dt.toString()+'] Lixuz Live: '+message);
+                console.log('['+dt.toString()+'] LizztCMS Live: '+message);
                 return true;
             }
             else

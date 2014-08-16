@@ -1,5 +1,5 @@
 /*
- * LIXUZ content management system
+ * LizztCMS content management system
  * Copyright (C) Utrop A/S Portu media & Communications 2008-2011
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*
- * This file contains various javascript table-related helpers for Lixuz.
+ * This file contains various javascript table-related helpers for LizztCMS.
  *
  * These helpers assist in creating HTML tables and managing them.
  * They can be used to create quick and easy tables from raw JS data.

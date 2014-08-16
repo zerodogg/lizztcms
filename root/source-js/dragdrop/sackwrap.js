@@ -1,5 +1,5 @@
 /*
- * LIXUZ content management system
+ * LizztCMS content management system
  * Copyright (C) Utrop A/S Portu media & Communications 2008-2011
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@
  */
 /*
  * Wrapper around sack AJAX class that calls jQuery.
- * Used in the drag+drop javascript in LIXUZ
+ * Used in the drag+drop javascript in LizztCMS
  *
  * Copyright (C) Portu media & communications
  * All Rights Reserved

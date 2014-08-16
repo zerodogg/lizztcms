@@ -1,6 +1,6 @@
 #!/bin/bash
 # To enable this script, symlink it into .git/hooks/ - ie. from the root of
-# the Lixuz tree:
+# the LizztCMS tree:
 # cd .git/hooks ; ln -sf ../script/pre-commit.githook ./pre-commit; cd -
 ret=0
 yuiPath="$HOME/.local/yuiminify/yuicompressor.jar"

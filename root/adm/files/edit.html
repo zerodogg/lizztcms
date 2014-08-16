@@ -1,5 +1,5 @@
 <%perl>
-# LIXUZ content management system
+# LizztCMS content management system
 # Copyright (C) Utrop A/S Portu media & Communications 2008-2011
 #
 # This program is free software: you can redistribute it and/or modify
@@ -36,10 +36,10 @@
 %}
 %}
 %# FIXME: Drop the whole formbuilder mess
-<script>function validate_lixuz_userEdit() { return true }</script>
+<script>function validate_lizztcms_userEdit() { return true }</script>
 
 %if(not $multiMode) {
-<form action="/admin/files/edit" id="lixuz_userEdit" method="post" name="lixuz_userEdit">
+<form action="/admin/files/edit" id="lizztcms_userEdit" method="post" name="lizztcms_userEdit">
 %}
 %if($c->req->param('asyncUpload')) {
 <input type="hidden" value="true" name="asyncUpload" />
@@ -136,11 +136,11 @@
 <br />
 %if(not $multiMode) {
 %if($c->req->param('asyncUpload')) {
-<input id="lixuz_userEdit_submit" name="_submit" type="submit" value="<%$i18n->get('Save')%>" onclick="showPI(i18n.get('Saving...'));" />  
+<input id="lizztcms_userEdit_submit" name="_submit" type="submit" value="<%$i18n->get('Save')%>" onclick="showPI(i18n.get('Saving...'));" />  
 %} else {
-<input id="lixuz_userEdit_submit" name="_submit" type="submit" value="<%$i18n->get('Save and close')%>" />  
+<input id="lizztcms_userEdit_submit" name="_submit" type="submit" value="<%$i18n->get('Save and close')%>" />  
 %}
-<input id="lixuz_userEdit_reset" name="_reset" type="reset" value="<% $i18n->get('Reset')%>" />
+<input id="lizztcms_userEdit_reset" name="_reset" type="reset" value="<% $i18n->get('Reset')%>" />
 %}
 </div>
 
@@ -159,7 +159,7 @@ $LAB.onLoaded(function()
                 );
                 $('#formTags').attr('value',uids.join(','));
             };
-            $('#lixuz_userEdit_submit').click(myOnSubmit);
+            $('#lizztcms_userEdit_submit').click(myOnSubmit);
             $('#multi_upload_submit').click(myOnSubmit);
         });
 </script>
@@ -233,8 +233,8 @@ $folder_list => []
 $classes => undef
 </%args>
 <%init>
-use LIXUZ::HelperModules::Forms('select_options');
-use LIXUZ::HelperModules::Calendar qw(datetime_from_SQL);
+use LizztCMS::HelperModules::Forms('select_options');
+use LizztCMS::HelperModules::Calendar qw(datetime_from_SQL);
 my $formfield=();
 if(not $multiMode and not $fileObj)
 {

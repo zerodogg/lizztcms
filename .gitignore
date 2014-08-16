@@ -3,31 +3,31 @@
 *.swo
 *.xml
 .swecpwd
-lixuzUpgrade.log
-lixuz.yml
-sql/lixuz_livedummy.sql
+lizztcmsUpgrade.log
+lizztcms.yml
+sql/lizztcms_livedummy.sql
 sql/resetdb
 sql/massReassign
 nytprof*
 scheduler.state
 db-upgrade.log
-lixuz-dbupgrade-dump*.sql
+lizztcms-dbupgrade-dump*.sql
 packages/
 root/livedata
-lib/LIXUZ/Controller/SiteHacks.pm
-lib/LIXUZ/Controller/SiteHacks/
-.lixuzctl.data
+lib/LizztCMS/Controller/SiteHacks.pm
+lib/LizztCMS/Controller/SiteHacks/
+.lizztctl.data
 .pluginMeta
 .packageMeta
-.lixuzctl*.tmp
+.lizztctl*.tmp
 root/source-js/handlebartemplates
 
-# Lixuz packages
+# LizztCMS packages
 *.lpk
 # Built JS files
 root/js
 # Built CSS
-root/css/lixuz.css
+root/css/lizztcms.css
 # Built MO files
 i18n/locale
 i18n/messages.mo

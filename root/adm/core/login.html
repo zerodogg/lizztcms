@@ -1,5 +1,5 @@
 <%perl>
-# LIXUZ content management system
+# LizztCMS content management system
 # Copyright (C) Utrop A/S Portu media & Communications 2008-2011
 #
 # This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 %}
 
     <form action="/admin/logout" method="post"> 
-        <input id="_submitted_lixuz_login" name="_submitted_lixuz_login" type="hidden" value="1" />
+        <input id="_submitted_lizztcms_login" name="_submitted_lizztcms_login" type="hidden" value="1" />
         <table>
             <tr>
                 <td><b><% $i18n->get('Username') |n %></b></td>
@@ -34,7 +34,7 @@
                 <td><input id="password" name="password" size="40" type="password" value="" /></td>
             </tr>
             <tr>
-                <td align="center" colspan="2"><input id="lixuz_login_submit" name="_submit" onclick="this.form._submit.value = this.value;" type="submit" value="<% $i18n->get('Log in') |n %>" /></td>
+                <td align="center" colspan="2"><input id="lizztcms_login_submit" name="_submit" onclick="this.form._submit.value = this.value;" type="submit" value="<% $i18n->get('Log in') |n %>" /></td>
             </tr>
 	
 	    <tr>

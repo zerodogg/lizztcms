@@ -111,15 +111,15 @@ by <% $comment->author_name|n%> <% datetime_from_SQL($comment->created_date) %>
 </div>
 
 <%perl>
-# BEGIN LIXUZ_INFOBLOCK
+# BEGIN LizztCMS_INFOBLOCK
 # VERSION=0.1
-# NAME=Lixuz live comments example
+# NAME=LizztCMS live comments example
 # LICENSE=GPLv3
 # APIVERSION=3
 # TYPE=include
-# UNIQUEID=org.lixuz.example.liveComments
-# END LIXUZ_INFOBLOCK
+# UNIQUEID=org.lizztcms.example.liveComments
+# END LizztCMS_INFOBLOCK
 </%perl>
 <%init>
-use LIXUZ::HelperModules::Calendar qw(datetime_from_SQL);
+use LizztCMS::HelperModules::Calendar qw(datetime_from_SQL);
 </%init>

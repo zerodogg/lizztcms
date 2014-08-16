@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use 5.010;
-use LIXUZ::HelperModules::Scripts qw(getDBIC);
+use LizztCMS::HelperModules::Scripts qw(getDBIC);
 
 # Add or remove the lz_action entry
 sub checkAddOrRemoveACL
@@ -24,12 +24,12 @@ sub checkAddOrRemoveACL
     }
 }
 
-# Add or remove the lz_lixuz_meta setting
+# Add or remove the lz_lizztcms_meta setting
 sub checkAddOrRemoveSetting
 {
     my $remove = shift;
     my $dbic = getDBIC();
-    my $cview = $dbic->resultset('LzLixuzMeta')->find_or_create({
+    my $cview = $dbic->resultset('LzLizztCMSMeta')->find_or_create({
             entry => 'calendarview_field',
         });
     if ($remove)
@@ -59,7 +59,7 @@ my $triggers = {
         print "\n".'***'."\n";
         print 'If you have multiple DateTime fields you may need to manually set which field'."\n";
         print 'you want the CalendarView module to use. If so, set the setting'."\n";
-        print '"calendarview_field" in lz_lixuz_meta to the ID (default: "auto")'."\n";
+        print '"calendarview_field" in lz_lizztcms_meta to the ID (default: "auto")'."\n";
         print '***'."\n";
     },
     # Triggered on plugin removal
@@ -67,8 +67,8 @@ my $triggers = {
         checkAddOrRemoveACL(1);
         checkAddOrRemoveSetting(1);
     },
-    # Triggered on a Lixuz upgrade
-    lixuzUpgrade => sub {
+    # Triggered on a LizztCMS upgrade
+    lizztcmsUpgrade => sub {
     },
     # Triggered during build of the plugin
     build => sub

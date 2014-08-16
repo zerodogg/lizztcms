@@ -1,4 +1,4 @@
-# LIXUZ translation file
+# LizztCMS translation file
 # Copyright (C) 2011 Portu media & communications
 #
 # This program is free software: you can redistribute it and/or modify
@@ -17,8 +17,8 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: LIXUZ (Mon Feb 14 14:51:18 2011)\n"
-"Report-Msgid-Bugs-To: https://github.com/portu/lixuz/issues\n"
+"Project-Id-Version: LizztCMS (Mon Feb 14 14:51:18 2011)\n"
+"Report-Msgid-Bugs-To: https://github.com/portu/lizztcms/issues\n"
 "POT-Creation-Date: 2013-04-24 10:43+0200\n"
 "PO-Revision-Date: 2013-04-24 10:44+0200\n"
 "Last-Translator: Eskild Hustvedt <eskild@portu.no>\n"
@@ -28,91 +28,91 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: lib/LIXUZ/Controller/Admin.pm:74 lib/LIXUZ/Controller/Admin.pm:76
+#: lib/LizztCMS/Controller/Admin.pm:74 lib/LizztCMS/Controller/Admin.pm:76
 msgid "This account has been deactivated."
 msgstr "Denne kontoen er deaktivert."
 
-#: lib/LIXUZ/Controller/Admin.pm:76 lib/LIXUZ/Controller/Admin.pm:86
-#: lib/LIXUZ/Controller/Admin/Articles.pm:387
-#: lib/LIXUZ/Controller/Admin/Articles.pm:391
-#: lib/LIXUZ/Controller/Admin/Articles.pm:581
-#: lib/LIXUZ/Controller/Admin/Articles.pm:585
+#: lib/LizztCMS/Controller/Admin.pm:76 lib/LizztCMS/Controller/Admin.pm:86
+#: lib/LizztCMS/Controller/Admin/Articles.pm:387
+#: lib/LizztCMS/Controller/Admin/Articles.pm:391
+#: lib/LizztCMS/Controller/Admin/Articles.pm:581
+#: lib/LizztCMS/Controller/Admin/Articles.pm:585
 msgid "Permission denied"
 msgstr "Tilgang nekta"
 
-#: lib/LIXUZ/Controller/Admin.pm:86
+#: lib/LizztCMS/Controller/Admin.pm:86
 msgid "You need to log in to access that resource."
 msgstr "Du må logge inn for å få tilgang til denne ressursen"
 
-#: lib/LIXUZ/Controller/Admin.pm:141 lib/LIXUZ/Controller/Admin.pm:142
+#: lib/LizztCMS/Controller/Admin.pm:141 lib/LizztCMS/Controller/Admin.pm:142
 msgid "404 error"
 msgstr "404 feil"
 
-#: lib/LIXUZ/Controller/Admin.pm:143
+#: lib/LizztCMS/Controller/Admin.pm:143
 msgid ""
 "The component or object you requested could not be found<br /><br />If you "
 "entered the URL manually, please check if you have mistyped something.<br /"
-"><br />If you followed a link inside of Lixuz then this is almost certainly "
-"a bug,<br />please report it to your administrator or the Lixuz development "
+"><br />If you followed a link inside of LizztCMS then this is almost certainly "
+"a bug,<br />please report it to your administrator or the LizztCMS development "
 "team.<br /><br />Error information:<br />"
 msgstr ""
 "Komponentet eller objektet du ba om kunna ikkje verta funne.<br /><br />Viss "
 "du skrev inn nettaddressa manuelt, sjekk om du har skrevet den feil.<br /"
-">Viss du fulgte ei lenke inne i Lixuz er dette nesten heilt sikkert ein "
+">Viss du fulgte ei lenke inne i LizztCMS er dette nesten heilt sikkert ein "
 "programfeil<br />rapporter den til din administrator eller utviklingslaget "
-"for Lixuz.<br /><br />Feilinformasjon:<br />"
+"for LizztCMS.<br /><br />Feilinformasjon:<br />"
 
-#: lib/LIXUZ/Controller/Admin/Files.pm:92
-#: lib/LIXUZ/Controller/Admin/Files/Edit.pm:37
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:371 root/adm/core/menu.html:67
+#: lib/LizztCMS/Controller/Admin/Files.pm:92
+#: lib/LizztCMS/Controller/Admin/Files/Edit.pm:37
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:371 root/adm/core/menu.html:67
 #: root/adm/articles/rightside.html:33
 #: root/adm/articles/read/rightread.html:30
 #: root/source-js/articles-previewUI/previewUI.js:179
 msgid "Files"
 msgstr "Filer"
 
-#: lib/LIXUZ/Controller/Admin/Files.pm:115
-#: lib/LIXUZ/Controller/Admin/Users.pm:67
-#: lib/LIXUZ/Controller/Admin/Users.pm:143
-#: lib/LIXUZ/Controller/Admin/Users.pm:207
-#: lib/LIXUZ/Controller/Admin/Categories.pm:174
-#: lib/LIXUZ/Controller/Admin/Categories.pm:214
-#: lib/LIXUZ/Controller/Admin/RSSImport.pm:362
-#: lib/LIXUZ/Controller/Admin/Files/Edit.pm:130
-#: lib/LIXUZ/Controller/Admin/Files/Edit.pm:228
+#: lib/LizztCMS/Controller/Admin/Files.pm:115
+#: lib/LizztCMS/Controller/Admin/Users.pm:67
+#: lib/LizztCMS/Controller/Admin/Users.pm:143
+#: lib/LizztCMS/Controller/Admin/Users.pm:207
+#: lib/LizztCMS/Controller/Admin/Categories.pm:174
+#: lib/LizztCMS/Controller/Admin/Categories.pm:214
+#: lib/LizztCMS/Controller/Admin/RSSImport.pm:362
+#: lib/LizztCMS/Controller/Admin/Files/Edit.pm:130
+#: lib/LizztCMS/Controller/Admin/Files/Edit.pm:228
 #: root/adm/rssimport/list.html:23 root/adm/files/edit.html:100
 #: root/adm/files/list.html:56 root/adm/users/roles/edit/index.html:40
 msgid "Active"
 msgstr "Aktiv"
 
-#: lib/LIXUZ/Controller/Admin/Files.pm:119
-#: lib/LIXUZ/Controller/Admin/Users.pm:71
-#: lib/LIXUZ/Controller/Admin/Users.pm:144
-#: lib/LIXUZ/Controller/Admin/Users.pm:310
-#: lib/LIXUZ/Controller/Admin/Categories.pm:175
-#: lib/LIXUZ/Controller/Admin/Categories.pm:344
-#: lib/LIXUZ/Controller/Admin/RSSImport.pm:366
-#: lib/LIXUZ/Controller/Admin/Files/Edit.pm:130
-#: lib/LIXUZ/Schema/LzStatus.pm:130 root/adm/files/edit.html:101
+#: lib/LizztCMS/Controller/Admin/Files.pm:119
+#: lib/LizztCMS/Controller/Admin/Users.pm:71
+#: lib/LizztCMS/Controller/Admin/Users.pm:144
+#: lib/LizztCMS/Controller/Admin/Users.pm:310
+#: lib/LizztCMS/Controller/Admin/Categories.pm:175
+#: lib/LizztCMS/Controller/Admin/Categories.pm:344
+#: lib/LizztCMS/Controller/Admin/RSSImport.pm:366
+#: lib/LizztCMS/Controller/Admin/Files/Edit.pm:130
+#: lib/LizztCMS/Schema/LzStatus.pm:130 root/adm/files/edit.html:101
 #: root/adm/files/list.html:58 root/adm/users/roles/edit/index.html:41
 msgid "Inactive"
 msgstr "Inaktiv"
 
-#: lib/LIXUZ/Controller/Admin/Files.pm:124
+#: lib/LizztCMS/Controller/Admin/Files.pm:124
 msgid "Uploaded by"
 msgstr "Lasta opp av"
 
-#: lib/LIXUZ/Controller/Admin/Files.pm:128
+#: lib/LizztCMS/Controller/Admin/Files.pm:128
 msgid "(anyone)"
 msgstr "(kven som helst)"
 
-#: lib/LIXUZ/Controller/Admin/Files.pm:131
-#: lib/LIXUZ/Controller/Admin/Users.pm:82
-#: lib/LIXUZ/Controller/Admin/Users.pm:141
-#: lib/LIXUZ/Controller/Admin/Categories.pm:172
-#: lib/LIXUZ/Controller/Admin/RSSImport.pm:371
-#: lib/LIXUZ/Controller/Admin/Articles.pm:918
-#: lib/LIXUZ/Controller/Admin/Articles.pm:988 lib/LIXUZ/Schema/LzField.pm:242
+#: lib/LizztCMS/Controller/Admin/Files.pm:131
+#: lib/LizztCMS/Controller/Admin/Users.pm:82
+#: lib/LizztCMS/Controller/Admin/Users.pm:141
+#: lib/LizztCMS/Controller/Admin/Categories.pm:172
+#: lib/LizztCMS/Controller/Admin/RSSImport.pm:371
+#: lib/LizztCMS/Controller/Admin/Articles.pm:918
+#: lib/LizztCMS/Controller/Admin/Articles.pm:988 lib/LizztCMS/Schema/LzField.pm:242
 #: root/adm/categories/editform.html:70 root/adm/categories/list.html:33
 #: root/adm/articles/relationships_right.html:34
 #: root/adm/articles/list.html:42
@@ -126,90 +126,90 @@ msgstr "(kven som helst)"
 msgid "Status"
 msgstr "Status"
 
-#: lib/LIXUZ/Controller/Admin/Files.pm:169
-#: lib/LIXUZ/Controller/Admin/Users.pm:415
-#: lib/LIXUZ/Controller/Admin/Users.pm:445
-#: lib/LIXUZ/Controller/Admin/Categories.pm:98
-#: lib/LIXUZ/Controller/Admin/Categories.pm:133
-#: lib/LIXUZ/Controller/Admin/Dictionary.pm:57
-#: lib/LIXUZ/Controller/Admin/Dictionary.pm:119
-#: lib/LIXUZ/Controller/Admin/Articles.pm:752
-#: lib/LIXUZ/Controller/Admin/Articles.pm:806
-#: lib/LIXUZ/Controller/Admin/Files/Edit.pm:42
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:146
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:204
-#: lib/LIXUZ/Controller/Admin/Settings/Admin/Additionalfields.pm:58
+#: lib/LizztCMS/Controller/Admin/Files.pm:169
+#: lib/LizztCMS/Controller/Admin/Users.pm:415
+#: lib/LizztCMS/Controller/Admin/Users.pm:445
+#: lib/LizztCMS/Controller/Admin/Categories.pm:98
+#: lib/LizztCMS/Controller/Admin/Categories.pm:133
+#: lib/LizztCMS/Controller/Admin/Dictionary.pm:57
+#: lib/LizztCMS/Controller/Admin/Dictionary.pm:119
+#: lib/LizztCMS/Controller/Admin/Articles.pm:752
+#: lib/LizztCMS/Controller/Admin/Articles.pm:806
+#: lib/LizztCMS/Controller/Admin/Files/Edit.pm:42
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:146
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:204
+#: lib/LizztCMS/Controller/Admin/Settings/Admin/Additionalfields.pm:58
 msgid "Error: Failed to locate UID. The path specified is invalid."
 msgstr "Feil: Kunna ikkje finne UIDen. Stigen som er spesifisert er ugyldig."
 
-#: lib/LIXUZ/Controller/Admin/Files.pm:180
+#: lib/LizztCMS/Controller/Admin/Files.pm:180
 msgid "File deleted"
 msgstr "Fila er sletta"
 
-#: lib/LIXUZ/Controller/Admin/Users.pm:34 root/adm/core/menu.html:104
+#: lib/LizztCMS/Controller/Admin/Users.pm:34 root/adm/core/menu.html:104
 msgid "Users"
 msgstr "Brukarar"
 
-#: lib/LIXUZ/Controller/Admin/Users.pm:76
-#: lib/LIXUZ/Controller/Admin/Users.pm:130 root/adm/users/edit/index.html:142
+#: lib/LizztCMS/Controller/Admin/Users.pm:76
+#: lib/LizztCMS/Controller/Admin/Users.pm:130 root/adm/users/edit/index.html:142
 msgid "Role"
 msgstr "Rolle"
 
-#: lib/LIXUZ/Controller/Admin/Users.pm:125 root/adm/users/edit/index.html:74
+#: lib/LizztCMS/Controller/Admin/Users.pm:125 root/adm/users/edit/index.html:74
 msgid "First name"
 msgstr "Fornamn"
 
-#: lib/LIXUZ/Controller/Admin/Users.pm:126 root/adm/users/edit/index.html:80
+#: lib/LizztCMS/Controller/Admin/Users.pm:126 root/adm/users/edit/index.html:80
 msgid "Last name"
 msgstr "Etternamn"
 
-#: lib/LIXUZ/Controller/Admin/Users.pm:127
-#: lib/LIXUZ/Controller/Admin/Newsletter.pm:152
+#: lib/LizztCMS/Controller/Admin/Users.pm:127
+#: lib/LizztCMS/Controller/Admin/Newsletter.pm:152
 #: root/adm/newsletter/list.html:26 root/adm/users/edit/index.html:87
 msgid "E-mail"
 msgstr "E-post"
 
-#: lib/LIXUZ/Controller/Admin/Users.pm:128 root/adm/users/edit/index.html:97
+#: lib/LizztCMS/Controller/Admin/Users.pm:128 root/adm/users/edit/index.html:97
 msgid "User name"
 msgstr "Brukarnamn"
 
-#: lib/LIXUZ/Controller/Admin/Users.pm:129
-#: lib/LIXUZ/Controller/Admin/Login.pm:122 root/adm/core/login.html:33
+#: lib/LizztCMS/Controller/Admin/Users.pm:129
+#: lib/LizztCMS/Controller/Admin/Login.pm:122 root/adm/core/login.html:33
 msgid "Password"
 msgstr "Passord"
 
-#: lib/LIXUZ/Controller/Admin/Users.pm:132 root/adm/users/edit/index.html:119
+#: lib/LizztCMS/Controller/Admin/Users.pm:132 root/adm/users/edit/index.html:119
 msgid "Language"
 msgstr "Språk"
 
-#: lib/LIXUZ/Controller/Admin/Users.pm:152
-#: lib/LIXUZ/Controller/Admin/Users.pm:153
+#: lib/LizztCMS/Controller/Admin/Users.pm:152
+#: lib/LizztCMS/Controller/Admin/Users.pm:153
 msgid "Create user"
 msgstr "Opprett brukar"
 
-#: lib/LIXUZ/Controller/Admin/Users.pm:159 root/adm/core/header.html:154
+#: lib/LizztCMS/Controller/Admin/Users.pm:159 root/adm/core/header.html:154
 msgid "Edit account information"
 msgstr "Rediger kontoinformasjon"
 
-#: lib/LIXUZ/Controller/Admin/Users.pm:163
+#: lib/LizztCMS/Controller/Admin/Users.pm:163
 msgid "Editing user %(USER_ID)"
 msgstr "Redigerer brukar %(USER_ID)"
 
-#: lib/LIXUZ/Controller/Admin/Users.pm:166
-#: lib/LIXUZ/Controller/Admin/Categories.pm:193
-#: lib/LIXUZ/Controller/Admin/Dictionary.pm:178
+#: lib/LizztCMS/Controller/Admin/Users.pm:166
+#: lib/LizztCMS/Controller/Admin/Categories.pm:193
+#: lib/LizztCMS/Controller/Admin/Dictionary.pm:178
 #: root/adm/rssimport/list.html:82 root/adm/categories/layout/edit.html:21
 #: root/adm/categories/layout/layout.html:61
 #: root/source-js/utils/elementEditor.js:66
 msgid "Save changes"
 msgstr "Lagra endringar"
 
-#: lib/LIXUZ/Controller/Admin/Users.pm:168
+#: lib/LizztCMS/Controller/Admin/Users.pm:168
 #: root/adm/core/change_password.html:12 root/adm/users/edit/index.html:110
 msgid "Change password to"
 msgstr "Endre passordet til"
 
-#: lib/LIXUZ/Controller/Admin/Users.pm:197
+#: lib/LizztCMS/Controller/Admin/Users.pm:197
 msgid ""
 "You have not defined any roles. You need to add some roles before you can "
 "add a new user."
@@ -217,181 +217,181 @@ msgstr ""
 "Du har ikkje definert nokon roller. Du må leggja til nokon roller før du kan "
 "leggja til ein ny brukar."
 
-#: lib/LIXUZ/Controller/Admin/Users.pm:286
+#: lib/LizztCMS/Controller/Admin/Users.pm:286
 msgid "Your current password was incorrect"
 msgstr "Passordet ditt er feil"
 
-#: lib/LIXUZ/Controller/Admin/Users.pm:293
+#: lib/LizztCMS/Controller/Admin/Users.pm:293
 msgid "Your new password is too short"
 msgstr "Ditt nye passord er for kort"
 
-#: lib/LIXUZ/Controller/Admin/Users.pm:294
+#: lib/LizztCMS/Controller/Admin/Users.pm:294
 msgid "The new password is too short"
 msgstr "Det nye passordet er for kort"
 
-#: lib/LIXUZ/Controller/Admin/Users.pm:295
+#: lib/LizztCMS/Controller/Admin/Users.pm:295
 msgid "The password is too short"
 msgstr "Passordet er for kort"
 
-#: lib/LIXUZ/Controller/Admin/Users.pm:348
-#: lib/LIXUZ/Controller/Admin/Dashboard.pm:49
+#: lib/LizztCMS/Controller/Admin/Users.pm:348
+#: lib/LizztCMS/Controller/Admin/Dashboard.pm:49
 msgid "User data saved"
 msgstr "Brukardata lagra"
 
-#: lib/LIXUZ/Controller/Admin/Users.pm:366
+#: lib/LizztCMS/Controller/Admin/Users.pm:366
 msgid ""
 "Error: A user with the username %(USERNAME) already exists (UID %(UID))."
 msgstr ""
 "Feil: Ein brukar med brukarnamnet %(USERNAME) finst allerete (ID %(UID))."
 
-#: lib/LIXUZ/Controller/Admin/Users.pm:421
+#: lib/LizztCMS/Controller/Admin/Users.pm:421
 msgid "Error: Failed to locate a user with the UID %(UID)."
 msgstr "Feil: Kunna ikkje finna ein brukar med IDen %(UID)."
 
-#: lib/LIXUZ/Controller/Admin/Users.pm:452
+#: lib/LizztCMS/Controller/Admin/Users.pm:452
 msgid "User deleted"
 msgstr "Brukar sletta"
 
-#: lib/LIXUZ/Controller/Admin/Categories.pm:35 root/adm/core/menu.html:45
+#: lib/LizztCMS/Controller/Admin/Categories.pm:35 root/adm/core/menu.html:45
 msgid "Categories"
 msgstr "Kategoriar"
 
-#: lib/LIXUZ/Controller/Admin/Categories.pm:64
+#: lib/LizztCMS/Controller/Admin/Categories.pm:64
 msgid ""
 "Error: A category with the categoryname %(USERNAME) already exists (UID "
 "%(UID))."
 msgstr "Feil: Ein kategori med namnet %(USERNAME) finst allerete (ID %(UID))."
 
-#: lib/LIXUZ/Controller/Admin/Categories.pm:107
+#: lib/LizztCMS/Controller/Admin/Categories.pm:107
 msgid "Error: Failed to locate a category with the UID %(UID)."
 msgstr "Feil: Kunna ikkje finna ein kategori med IDen %(UID)"
 
-#: lib/LIXUZ/Controller/Admin/Categories.pm:150
+#: lib/LizztCMS/Controller/Admin/Categories.pm:150
 msgid "Category deleted"
 msgstr "Kategori sletta"
 
-#: lib/LIXUZ/Controller/Admin/Categories.pm:170
+#: lib/LizztCMS/Controller/Admin/Categories.pm:170
 #: root/adm/categories/editform.html:37 root/adm/categories/list.html:28
 msgid "Category name"
 msgstr "Kategorinamn"
 
-#: lib/LIXUZ/Controller/Admin/Categories.pm:178
+#: lib/LizztCMS/Controller/Admin/Categories.pm:178
 msgid "URL"
 msgstr "Nettadresse"
 
-#: lib/LIXUZ/Controller/Admin/Categories.pm:179
+#: lib/LizztCMS/Controller/Admin/Categories.pm:179
 #: root/adm/categories/editform.html:80
 msgid "Folders"
 msgstr "Mapper"
 
-#: lib/LIXUZ/Controller/Admin/Categories.pm:180
-#: lib/LIXUZ/Controller/Admin/Articles.pm:917
-#: lib/LIXUZ/Controller/Admin/Articles.pm:996 lib/LIXUZ/Schema/LzField.pm:250
+#: lib/LizztCMS/Controller/Admin/Categories.pm:180
+#: lib/LizztCMS/Controller/Admin/Articles.pm:917
+#: lib/LizztCMS/Controller/Admin/Articles.pm:996 lib/LizztCMS/Schema/LzField.pm:250
 #: root/adm/categories/editform.html:53 root/adm/categories/list.html:29
 #: root/adm/articles/list.html:40
 msgid "Template"
 msgstr "Mal"
 
-#: lib/LIXUZ/Controller/Admin/Categories.pm:186
-#: lib/LIXUZ/Controller/Admin/Categories.pm:188
+#: lib/LizztCMS/Controller/Admin/Categories.pm:186
+#: lib/LizztCMS/Controller/Admin/Categories.pm:188
 msgid "Create category"
 msgstr "Opprett kategori"
 
-#: lib/LIXUZ/Controller/Admin/Categories.pm:199
+#: lib/LizztCMS/Controller/Admin/Categories.pm:199
 msgid "Editing category %(CATEGORY_ID)"
 msgstr "Redigerer kategori %(CATEGORY_ID)"
 
-#: lib/LIXUZ/Controller/Admin/Categories.pm:232
+#: lib/LizztCMS/Controller/Admin/Categories.pm:232
 msgid "No parent"
 msgstr "Inga forelder"
 
-#: lib/LIXUZ/Controller/Admin/Categories.pm:390
+#: lib/LizztCMS/Controller/Admin/Categories.pm:390
 msgid "Category data saved"
 msgstr "Kategoridata lagra"
 
-#: lib/LIXUZ/Controller/Admin/ACL.pm:35
+#: lib/LizztCMS/Controller/Admin/ACL.pm:35
 msgid "<b>Access denied</b>: You are not allowed to access that resource"
 msgstr "<b>Tilgang nekta</b>: Du har ikkje tilgang til denne ressursen"
 
-#: lib/LIXUZ/Controller/Admin/ACL.pm:36
+#: lib/LizztCMS/Controller/Admin/ACL.pm:36
 msgid "Access denied"
 msgstr "Tilgang nekta"
 
-#: lib/LIXUZ/Controller/Admin/Dictionary.pm:35 root/adm/core/menu.html:56
+#: lib/LizztCMS/Controller/Admin/Dictionary.pm:35 root/adm/core/menu.html:56
 msgid "Dictionary"
 msgstr "Ordliste"
 
-#: lib/LIXUZ/Controller/Admin/Dictionary.pm:63
+#: lib/LizztCMS/Controller/Admin/Dictionary.pm:63
 msgid "Definition deleted"
 msgstr "Definisjonen er sletta"
 
-#: lib/LIXUZ/Controller/Admin/Dictionary.pm:77
+#: lib/LizztCMS/Controller/Admin/Dictionary.pm:77
 msgid ""
 "Error: a definition of the word \"%(WORD)\" already exists with the word id "
 "%(WORDID)"
 msgstr ""
 "Feil: ein definisjon av ordet «%(WORD)» finst allereie med ord IDen %(WORDID)"
 
-#: lib/LIXUZ/Controller/Admin/Dictionary.pm:128
+#: lib/LizztCMS/Controller/Admin/Dictionary.pm:128
 msgid "Error: Failed to locate a dictionary with the UID %(UID)."
 msgstr "Feil: Kunnne ikkje finna ein ordlisteoppføring med IDen %(UID)."
 
-#: lib/LIXUZ/Controller/Admin/Dictionary.pm:164
+#: lib/LizztCMS/Controller/Admin/Dictionary.pm:164
 #: root/adm/dictionary/editform.html:37 root/adm/dictionary/list.html:28
 msgid "Word"
 msgstr "Ord"
 
-#: lib/LIXUZ/Controller/Admin/Dictionary.pm:165
+#: lib/LizztCMS/Controller/Admin/Dictionary.pm:165
 #: root/adm/dictionary/editform.html:44 root/adm/dictionary/list.html:29
 #: root/source-js/utils/elementEditor.js:53
 msgid "Definition"
 msgstr "Definisjon"
 
-#: lib/LIXUZ/Controller/Admin/Dictionary.pm:171
-#: lib/LIXUZ/Controller/Admin/Dictionary.pm:173
+#: lib/LizztCMS/Controller/Admin/Dictionary.pm:171
+#: lib/LizztCMS/Controller/Admin/Dictionary.pm:173
 msgid "Create definition"
 msgstr "Opprett definisjon"
 
-#: lib/LIXUZ/Controller/Admin/Dictionary.pm:179
+#: lib/LizztCMS/Controller/Admin/Dictionary.pm:179
 msgid "Editing definition %(DICTIONARY_ID)"
 msgstr "Redigerer definisjonen av ordet %(DICTIONARY_ID)"
 
-#: lib/LIXUZ/Controller/Admin/Dictionary.pm:231
+#: lib/LizztCMS/Controller/Admin/Dictionary.pm:231
 msgid "Definition saved"
 msgstr "Definisjon lagra"
 
-#: lib/LIXUZ/Controller/Admin/Login.pm:54
+#: lib/LizztCMS/Controller/Admin/Login.pm:54
 msgid "You have been logged out."
 msgstr "Du har blitt logga ut."
 
-#: lib/LIXUZ/Controller/Admin/Login.pm:65
+#: lib/LizztCMS/Controller/Admin/Login.pm:65
 msgid "Login"
 msgstr "Logg inn"
 
-#: lib/LIXUZ/Controller/Admin/Login.pm:92
+#: lib/LizztCMS/Controller/Admin/Login.pm:92
 msgid "<b>Login refused</b>: %(REASON)"
 msgstr "<b>Innlogging nekta</b>: %(REASON)"
 
-#: lib/LIXUZ/Controller/Admin/Login.pm:113
+#: lib/LizztCMS/Controller/Admin/Login.pm:113
 msgid "Invalid username or password"
 msgstr "Uglydig brukarnamn eller passord"
 
-#: lib/LIXUZ/Controller/Admin/Login.pm:118 root/adm/core/header.html:160
+#: lib/LizztCMS/Controller/Admin/Login.pm:118 root/adm/core/header.html:160
 #: root/adm/core/login.html:37
 msgid "Log in"
 msgstr "Logg inn"
 
-#: lib/LIXUZ/Controller/Admin/Login.pm:121 root/adm/core/login.html:29
+#: lib/LizztCMS/Controller/Admin/Login.pm:121 root/adm/core/login.html:29
 #: root/adm/users/list.html:28
 msgid "Username"
 msgstr "Brukarnamn"
 
-#: lib/LIXUZ/Controller/Admin/ForgottenPw.pm:30
-#: lib/LIXUZ/Controller/Admin/ForgottenPw.pm:77 root/adm/core/login.html:43
+#: lib/LizztCMS/Controller/Admin/ForgottenPw.pm:30
+#: lib/LizztCMS/Controller/Admin/ForgottenPw.pm:77 root/adm/core/login.html:43
 msgid "Forgotten password"
 msgstr "Gløymd passord"
 
-#: lib/LIXUZ/Controller/Admin/ForgottenPw.pm:35
+#: lib/LizztCMS/Controller/Admin/ForgottenPw.pm:35
 msgid ""
 "An e-mail with a link where you may change your password has been sent. "
 "Please check your e-mail."
@@ -399,51 +399,51 @@ msgstr ""
 "Ein e-post med ei lenkje kvar du kan endre passordet ditt har blitt sendt "
 "til e-postadressa di."
 
-#: lib/LIXUZ/Controller/Admin/ForgottenPw.pm:40
+#: lib/LizztCMS/Controller/Admin/ForgottenPw.pm:40
 msgid "Error: Failed to locate a user with the this email address."
 msgstr "Feil: Kunna ikkje finna ein brukar med denne e-postadressa."
 
-#: lib/LIXUZ/Controller/Admin/ForgottenPw.pm:44
+#: lib/LizztCMS/Controller/Admin/ForgottenPw.pm:44
 msgid "Please enter a vaild e-mail address."
 msgstr "Skriv inn ei gyldig e-postadresse."
 
-#: lib/LIXUZ/Controller/Admin/ForgottenPw.pm:78
+#: lib/LizztCMS/Controller/Admin/ForgottenPw.pm:78
 msgid ""
-"Please click on following link to change your Lixuz password:\n"
+"Please click on following link to change your LizztCMS password:\n"
 " %(LINK)"
 msgstr ""
-"Trykk på denne lenkja for å endre Lixuz-passordet ditt:\n"
+"Trykk på denne lenkja for å endre LizztCMS-passordet ditt:\n"
 "%(LINK)"
 
-#: lib/LIXUZ/Controller/Admin/ForgottenPw.pm:98
+#: lib/LizztCMS/Controller/Admin/ForgottenPw.pm:98
 msgid "Change Password"
 msgstr "Endre passord"
 
-#: lib/LIXUZ/Controller/Admin/ForgottenPw.pm:108
+#: lib/LizztCMS/Controller/Admin/ForgottenPw.pm:108
 msgid "The password token was invalid."
 msgstr "Ugyldig passordstreng."
 
-#: lib/LIXUZ/Controller/Admin/ForgottenPw.pm:113
+#: lib/LizztCMS/Controller/Admin/ForgottenPw.pm:113
 msgid "You need to enter a password."
 msgstr "Du må skrive inn eit passord."
 
-#: lib/LIXUZ/Controller/Admin/ForgottenPw.pm:117
+#: lib/LizztCMS/Controller/Admin/ForgottenPw.pm:117
 msgid ""
 "Your password has been changed. You may now log in with your new password"
 msgstr ""
 "Passordet ditt har blitt endra. Du kan no logge inn med ditt nye passord."
 
-#: lib/LIXUZ/Controller/Admin/ForgottenPw.pm:122
+#: lib/LizztCMS/Controller/Admin/ForgottenPw.pm:122
 #: root/adm/users/edit/index.html:44
 msgid "The new passwords do not match"
 msgstr "Passorda du skreiv inn er ikkje like"
 
-#: lib/LIXUZ/Controller/Admin/Newsletter.pm:57
+#: lib/LizztCMS/Controller/Admin/Newsletter.pm:57
 msgid "Newsletter subscriptions"
 msgstr "Abonnenter på nyheitsbrev"
 
-#: lib/LIXUZ/Controller/Admin/Newsletter.pm:152
-#: lib/LIXUZ/Controller/Admin/Files/Edit.pm:125
+#: lib/LizztCMS/Controller/Admin/Newsletter.pm:152
+#: lib/LizztCMS/Controller/Admin/Files/Edit.pm:125
 #: root/adm/templates/list.html:28 root/adm/files/edit.html:63
 #: root/adm/files/classes/edit.html:22 root/adm/files/classes/list.html:28
 #: root/adm/newsletter/list.html:27 root/adm/users/roles/list.html:25
@@ -451,63 +451,63 @@ msgstr "Abonnenter på nyheitsbrev"
 msgid "Name"
 msgstr "Namn"
 
-#: lib/LIXUZ/Controller/Admin/Newsletter.pm:152 root/adm/files/edit.html:197
+#: lib/LizztCMS/Controller/Admin/Newsletter.pm:152 root/adm/files/edit.html:197
 #: root/adm/newsletter/send.html:33
 #: root/source-js/newsletter/newsletter.js:502
 msgid "Format"
 msgstr "Format"
 
-#: lib/LIXUZ/Controller/Admin/Newsletter.pm:152
+#: lib/LizztCMS/Controller/Admin/Newsletter.pm:152
 #: root/adm/newsletter/list.html:28
 #: root/source-js/newsletter/newsletter.js:503
 msgid "Interval"
 msgstr "Intervall"
 
-#: lib/LIXUZ/Controller/Admin/Newsletter.pm:152
-#: lib/LIXUZ/Controller/Admin/Newsletter.pm:494
+#: lib/LizztCMS/Controller/Admin/Newsletter.pm:152
+#: lib/LizztCMS/Controller/Admin/Newsletter.pm:494
 msgid "Group"
 msgstr "Gruppe"
 
-#: lib/LIXUZ/Controller/Admin/Newsletter.pm:196
+#: lib/LizztCMS/Controller/Admin/Newsletter.pm:196
 msgid "Manual newsletter"
 msgstr "Manuelt nyheitsbrev"
 
-#: lib/LIXUZ/Controller/Admin/Dashboard.pm:40 root/adm/core/menu.html:24
+#: lib/LizztCMS/Controller/Admin/Dashboard.pm:40 root/adm/core/menu.html:24
 msgid "Dashboard"
 msgstr "Dashbord"
 
-#: lib/LIXUZ/Controller/Admin/Settings.pm:31 root/adm/core/menu.html:123
+#: lib/LizztCMS/Controller/Admin/Settings.pm:31 root/adm/core/menu.html:123
 msgid "Settings"
 msgstr "Innstillingar"
 
-#: lib/LIXUZ/Controller/Admin/Templates.pm:45
+#: lib/LizztCMS/Controller/Admin/Templates.pm:45
 msgid "Templates"
 msgstr "Malar"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:49
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:240 root/adm/core/menu.html:29
+#: lib/LizztCMS/Controller/Admin/Articles.pm:49
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:240 root/adm/core/menu.html:29
 msgid "Articles"
 msgstr "Artiklar"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:135
+#: lib/LizztCMS/Controller/Admin/Articles.pm:135
 msgid "Article status changed, and article(s) have been reassigned"
 msgstr ""
 "Artikkelstatus endra, og artikkelen/artiklane har blitt tildelt nokon nye"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:139
+#: lib/LizztCMS/Controller/Admin/Articles.pm:139
 msgid "Article status changed"
 msgstr "Artikkelstatus endra"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:143
+#: lib/LizztCMS/Controller/Admin/Articles.pm:143
 msgid "Article(s) have been reassigned"
 msgstr "Artikkel/artiklar har blitt tildelt nokon andre"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:193
-#: lib/LIXUZ/Controller/Admin/Articles.pm:522
-#: lib/LIXUZ/Controller/Admin/Articles.pm:527
-#: lib/LIXUZ/Controller/Admin/Articles/Submit.pm:731
-#: lib/LIXUZ/Controller/Admin/Articles/Submit.pm:793
-#: lib/LIXUZ/Schema/LzFile.pm:878 root/adm/articles/list.html:125
+#: lib/LizztCMS/Controller/Admin/Articles.pm:193
+#: lib/LizztCMS/Controller/Admin/Articles.pm:522
+#: lib/LizztCMS/Controller/Admin/Articles.pm:527
+#: lib/LizztCMS/Controller/Admin/Articles/Submit.pm:731
+#: lib/LizztCMS/Controller/Admin/Articles/Submit.pm:793
+#: lib/LizztCMS/Schema/LzFile.pm:878 root/adm/articles/list.html:125
 #: root/adm/files/list.html:87
 #: root/adm/dashboard/widgetHelper_articleList.html:93
 #: root/adm/dashboard/widgetHelper_articleList.html:112
@@ -516,73 +516,73 @@ msgstr "Artikkel/artiklar har blitt tildelt nokon andre"
 msgid "(none)"
 msgstr "(inga)"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:201
+#: lib/LizztCMS/Controller/Admin/Articles.pm:201
 #: root/adm/dashboard/widgetHelper_articleList.html:90
 msgid "(unknown)"
 msgstr "(ukjend)"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:291
-#: lib/LIXUZ/Controller/Admin/Articles.pm:296
+#: lib/LizztCMS/Controller/Admin/Articles.pm:291
+#: lib/LizztCMS/Controller/Admin/Articles.pm:296
 msgid "(user)"
 msgstr "(brukar)"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:304
-#: lib/LIXUZ/Controller/Admin/Articles.pm:309
-#: lib/LIXUZ/Controller/Admin/Articles/Workflow.pm:233
+#: lib/LizztCMS/Controller/Admin/Articles.pm:304
+#: lib/LizztCMS/Controller/Admin/Articles.pm:309
+#: lib/LizztCMS/Controller/Admin/Articles/Workflow.pm:233
 msgid "(role)"
 msgstr "(rolle)"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:336
+#: lib/LizztCMS/Controller/Admin/Articles.pm:336
 #: root/adm/articles/workflow.html:43 root/adm/articles/list.html:44
 #: root/adm/articles/read/workflow_read.html:39
 #: root/adm/dashboard/widgetHelper_articleList.html:37
 msgid "Assigned to"
 msgstr "Tildelt"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:340
+#: lib/LizztCMS/Controller/Admin/Articles.pm:340
 msgid "(any user or role)"
 msgstr "(alle brukarar og roller)"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:343
+#: lib/LizztCMS/Controller/Admin/Articles.pm:343
 msgid "In status"
 msgstr "I status"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:379
-#: lib/LIXUZ/Controller/Admin/Articles.pm:571
+#: lib/LizztCMS/Controller/Admin/Articles.pm:379
+#: lib/LizztCMS/Controller/Admin/Articles.pm:571
 msgid "Error: Failed to locate revision %(REVISION) of the article %(UID)"
 msgstr "Feil: Kunna ikkje finna revisjonen %(REVISION) av artikkelen %(UID)"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:381
-#: lib/LIXUZ/Controller/Admin/Articles.pm:573
-#: lib/LIXUZ/Controller/Admin/Articles.pm:761
+#: lib/LizztCMS/Controller/Admin/Articles.pm:381
+#: lib/LizztCMS/Controller/Admin/Articles.pm:573
+#: lib/LizztCMS/Controller/Admin/Articles.pm:761
 msgid "Error: Failed to locate a article with the UID %(UID)."
 msgstr "Feil: Kunna ikkje finna ein artikkel med IDen %(UID)."
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:494
+#: lib/LizztCMS/Controller/Admin/Articles.pm:494
 msgid "Default Template"
 msgstr "Standardmal"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:773
+#: lib/LizztCMS/Controller/Admin/Articles.pm:773
 msgid "You have stolen the edit lock for this article."
 msgstr "Du har stjålet redigeringslåsen for denne artikkelen."
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:826
+#: lib/LizztCMS/Controller/Admin/Articles.pm:826
 msgid "Article deleted"
 msgstr "Artikkelen er sletta"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:890
-#: lib/LIXUZ/Controller/Admin/Articles.pm:894
+#: lib/LizztCMS/Controller/Admin/Articles.pm:890
+#: lib/LizztCMS/Controller/Admin/Articles.pm:894
 msgid "Editing article %(ARTICLE_ID)"
 msgstr "Redigerer artikkel %(ARTICLE_ID)"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:898
+#: lib/LizztCMS/Controller/Admin/Articles.pm:898
 msgid "Creating article"
 msgstr "Opprettar artikkel"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:910
-#: lib/LIXUZ/Controller/Admin/Articles.pm:989
-#: lib/LIXUZ/Controller/Admin/Files/Edit.pm:126
-#: lib/LIXUZ/Schema/LzField.pm:243 root/adm/files/edit.html:72
+#: lib/LizztCMS/Controller/Admin/Articles.pm:910
+#: lib/LizztCMS/Controller/Admin/Articles.pm:989
+#: lib/LizztCMS/Controller/Admin/Files/Edit.pm:126
+#: lib/LizztCMS/Schema/LzField.pm:243 root/adm/files/edit.html:72
 #: root/adm/dashboard/widgetHelper_articleList.html:22
 #: root/source-js/articles/relationships.js:76
 #: root/source-js/articles/articles.js:117
@@ -591,67 +591,67 @@ msgstr "Opprettar artikkel"
 msgid "Title"
 msgstr "Tittel"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:911
-#: lib/LIXUZ/Controller/Admin/Articles.pm:991 lib/LIXUZ/Schema/LzField.pm:245
+#: lib/LizztCMS/Controller/Admin/Articles.pm:911
+#: lib/LizztCMS/Controller/Admin/Articles.pm:991 lib/LizztCMS/Schema/LzField.pm:245
 msgid "Lead"
 msgstr "Inngress"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:912
-#: lib/LIXUZ/Controller/Admin/Articles.pm:992 lib/LIXUZ/Schema/LzField.pm:246
+#: lib/LizztCMS/Controller/Admin/Articles.pm:912
+#: lib/LizztCMS/Controller/Admin/Articles.pm:992 lib/LizztCMS/Schema/LzField.pm:246
 #: root/adm/articles/list.html:43
 msgid "Author"
 msgstr "Forfattar"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:913
-#: lib/LIXUZ/Controller/Admin/Articles.pm:990 lib/LIXUZ/Schema/LzField.pm:244
+#: lib/LizztCMS/Controller/Admin/Articles.pm:913
+#: lib/LizztCMS/Controller/Admin/Articles.pm:990 lib/LizztCMS/Schema/LzField.pm:244
 msgid "Body"
 msgstr "Brødtekst"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:914
-#: lib/LIXUZ/Controller/Admin/Articles.pm:993 lib/LIXUZ/Schema/LzField.pm:247
+#: lib/LizztCMS/Controller/Admin/Articles.pm:914
+#: lib/LizztCMS/Controller/Admin/Articles.pm:993 lib/LizztCMS/Schema/LzField.pm:247
 #: root/adm/articles/read/workflow_read.html:31
 msgid "Publish time"
 msgstr "Publiseringstid"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:915
+#: lib/LizztCMS/Controller/Admin/Articles.pm:915
 msgid "Expires at"
 msgstr "Gyldig til"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:916
+#: lib/LizztCMS/Controller/Admin/Articles.pm:916
 msgid "Order"
 msgstr "Rekkjefølgja"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:994 lib/LIXUZ/Schema/LzField.pm:248
+#: lib/LizztCMS/Controller/Admin/Articles.pm:994 lib/LizztCMS/Schema/LzField.pm:248
 #: root/adm/articles/read/workflow_read.html:35
 msgid "Expiry time"
 msgstr "Gyldig til"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:995 lib/LIXUZ/Schema/LzField.pm:249
+#: lib/LizztCMS/Controller/Admin/Articles.pm:995 lib/LizztCMS/Schema/LzField.pm:249
 msgid "Primary folder"
 msgstr "Hovudmappe"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:1091
-#: lib/LIXUZ/HelperModules/Forms.pm:159
+#: lib/LizztCMS/Controller/Admin/Articles.pm:1091
+#: lib/LizztCMS/HelperModules/Forms.pm:159
 #: root/adm/core/fields/rangepulldown.html:21
 #: root/adm/core/fields/userpulldown.html:55 root/source-js/core/chosen.js:9
 msgid "-select-"
 msgstr "-vel-"
 
-#: lib/LIXUZ/Controller/Admin/Articles.pm:1098
+#: lib/LizztCMS/Controller/Admin/Articles.pm:1098
 msgid "(Default template)"
 msgstr "(standardmal)"
 
-#: lib/LIXUZ/Controller/Admin/Services.pm:249
+#: lib/LizztCMS/Controller/Admin/Services.pm:249
 msgid "Unsorted (files that are not in any folder yet)"
 msgstr "Usortert (filer som ikkje er i ei mappe)"
 
-#: lib/LIXUZ/Controller/Admin/Services.pm:760
+#: lib/LizztCMS/Controller/Admin/Services.pm:760
 #: root/adm/categories/layout/layout.html:32
 #: root/adm/categories/layout/list.html:16 root/adm/articles/list.html:67
 msgid "(unnamed)"
 msgstr "(utan namn)"
 
-#: lib/LIXUZ/Controller/Admin/Services.pm:823 root/adm/templates/list.html:27
+#: lib/LizztCMS/Controller/Admin/Services.pm:823 root/adm/templates/list.html:27
 #: root/adm/articles/additionalElements_right.html:33
 #: root/adm/files/classes/list.html:27
 #: root/adm/dashboard/widgetHelper_articleList.html:21
@@ -660,64 +660,64 @@ msgstr "(utan namn)"
 msgid "ID"
 msgstr "ID"
 
-#: lib/LIXUZ/Controller/Admin/Services.pm:823
+#: lib/LizztCMS/Controller/Admin/Services.pm:823
 #: root/adm/articles/additionalElements_right.html:34
 msgid "Element"
 msgstr "Element"
 
-#: lib/LIXUZ/Controller/Admin/Services.pm:823
+#: lib/LizztCMS/Controller/Admin/Services.pm:823
 #: root/adm/articles/additionalElements_right.html:35
 #: root/source-js/articles-previewUI/previewUI.js:202
 msgid "Value"
 msgstr "Verdi"
 
-#: lib/LIXUZ/Controller/Admin/Services.pm:965
+#: lib/LizztCMS/Controller/Admin/Services.pm:965
 msgid "In folder"
 msgstr "I mappe"
 
-#: lib/LIXUZ/Controller/Admin/Categories/Layout.pm:57
-#: lib/LIXUZ/Controller/Admin/Categories/Layout.pm:119
+#: lib/LizztCMS/Controller/Admin/Categories/Layout.pm:57
+#: lib/LizztCMS/Controller/Admin/Categories/Layout.pm:119
 msgid "Error: Invalid ID supplied"
 msgstr "Feil: Ugyldig ID"
 
-#: lib/LIXUZ/Controller/Admin/Categories/Layout.pm:64
-#: lib/LIXUZ/Controller/Admin/Categories/Layout.pm:124
+#: lib/LizztCMS/Controller/Admin/Categories/Layout.pm:64
+#: lib/LizztCMS/Controller/Admin/Categories/Layout.pm:124
 msgid "Error: Failed to locate a category with the id %(CATEGORY_ID)."
 msgstr "Feil: Kunna ikkje finna ein kategori med IDen %(CATEGORY_ID)."
 
-#: lib/LIXUZ/Controller/Admin/Categories/Layout.pm:76
+#: lib/LizztCMS/Controller/Admin/Categories/Layout.pm:76
 msgid "Category layout"
 msgstr "Sideoppsett"
 
-#: lib/LIXUZ/Controller/Admin/Categories/Layout.pm:130
+#: lib/LizztCMS/Controller/Admin/Categories/Layout.pm:130
 msgid "Error: Invalid folder-ID supplied"
 msgstr "Feil: Ugyldig mappe-ID"
 
-#: lib/LIXUZ/Controller/Admin/Categories/Layout.pm:137
+#: lib/LizztCMS/Controller/Admin/Categories/Layout.pm:137
 msgid "This folder is not associated with the category"
 msgstr "Denne mappa høyrer ikkje til denne kategorien"
 
-#: lib/LIXUZ/Controller/Admin/Categories/Layout.pm:169
+#: lib/LizztCMS/Controller/Admin/Categories/Layout.pm:169
 msgid "Invalid category id."
 msgstr "Ugyldig kategori-ID."
 
-#: lib/LIXUZ/Controller/Admin/Categories/Layout.pm:173
+#: lib/LizztCMS/Controller/Admin/Categories/Layout.pm:173
 msgid "Invalid template id."
 msgstr "Ugyldig mal-ID."
 
-#: lib/LIXUZ/Controller/Admin/Categories/Layout.pm:177
+#: lib/LizztCMS/Controller/Admin/Categories/Layout.pm:177
 msgid "Template has no spots, unable to save layout"
 msgstr "Malfila har inga område, kan ikkje lagre sideoppsettet"
 
-#: lib/LIXUZ/Controller/Admin/Categories/Layout.pm:250
+#: lib/LizztCMS/Controller/Admin/Categories/Layout.pm:250
 msgid "Category layout saved successfully."
 msgstr "Sideoppsettet vart lagra."
 
-#: lib/LIXUZ/Controller/Admin/Files/Upload.pm:146
+#: lib/LizztCMS/Controller/Admin/Files/Upload.pm:146
 msgid "File(s) successfully uploaded"
 msgstr "Fil(er) lasta opp"
 
-#: lib/LIXUZ/Controller/Admin/Files/Upload.pm:196
+#: lib/LizztCMS/Controller/Admin/Files/Upload.pm:196
 msgid ""
 "The target directory for files was not found or was not writable. Contact "
 "the system administrator."
@@ -725,218 +725,218 @@ msgstr ""
 "Målmappa for filer kunna ikkje verta funne eller vart ikkje skrivbar. "
 "Kontakt systemadministratoren."
 
-#: lib/LIXUZ/Controller/Admin/Files/Upload.pm:201
+#: lib/LizztCMS/Controller/Admin/Files/Upload.pm:201
 msgid "An error occurred while writing data to disk: %(PERLIO_ERROR)"
 msgstr "Ein feil oppstod under skriving av data til disken: %(PERLIO_ERROR)"
 
-#: lib/LIXUZ/Controller/Admin/Files/Upload.pm:206
+#: lib/LizztCMS/Controller/Admin/Files/Upload.pm:206
 msgid "Templates must be of htm, html or xml type"
 msgstr "Malar må vera i html eller xml format"
 
-#: lib/LIXUZ/Controller/Admin/Files/Upload.pm:211
+#: lib/LizztCMS/Controller/Admin/Files/Upload.pm:211
 msgid "An internal unknown fatal error (ID %(ERRID)) occurred"
 msgstr "Ein ukjend og fatal intern feil oppstod (ID %(ERRID))"
 
-#: lib/LIXUZ/Controller/Admin/Files/Upload.pm:214
+#: lib/LizztCMS/Controller/Admin/Files/Upload.pm:214
 msgid "<b>Fatal error:</b><br />%(ERROR_MESSAGE)"
 msgstr "<b>Fatal feil:</b><br />%(ERROR_MESSAGE)"
 
-#: lib/LIXUZ/Controller/Admin/Files/Edit.pm:47
+#: lib/LizztCMS/Controller/Admin/Files/Edit.pm:47
 msgid "Error: That file does not exist."
 msgstr "Feil: Den fila finst ikkje."
 
-#: lib/LIXUZ/Controller/Admin/Files/Edit.pm:127 root/adm/files/edit.html:80
+#: lib/LizztCMS/Controller/Admin/Files/Edit.pm:127 root/adm/files/edit.html:80
 #: root/source-js/articles-previewUI/previewUI.js:212
 msgid "Caption"
 msgstr "Bilettekst"
 
-#: lib/LIXUZ/Controller/Admin/Files/Edit.pm:154 root/adm/files/edit.html:118
+#: lib/LizztCMS/Controller/Admin/Files/Edit.pm:154 root/adm/files/edit.html:118
 msgid "Height (pixels)"
 msgstr "Høgd (pikslar)"
 
-#: lib/LIXUZ/Controller/Admin/Files/Edit.pm:155 root/adm/files/edit.html:125
+#: lib/LizztCMS/Controller/Admin/Files/Edit.pm:155 root/adm/files/edit.html:125
 msgid "Width (pixels)"
 msgstr "Breidd (pikslar)"
 
-#: lib/LIXUZ/Controller/Admin/Files/Edit.pm:283
+#: lib/LizztCMS/Controller/Admin/Files/Edit.pm:283
 msgid "File saved."
 msgstr "Fil lagra."
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:33 root/adm/core/menu.html:113
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:33 root/adm/core/menu.html:113
 msgid "Roles"
 msgstr "Roller"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:155
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:155
 msgid "Error: Failed to locate a role with the UID %(UID)."
 msgstr "Feil: Kunna ikkje finna ein rolle med IDen %(UID)."
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:227
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:227
 msgid "Role deleted"
 msgstr "Rolle sletta"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:237
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:237
 msgid "Super user (unrestricted access)"
 msgstr "Superbrukar (fri tilgang til alt)"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:242
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:242
 msgid "Add and edit articles"
 msgstr "Legg til og rediger artiklar"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:270
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:270
 msgid "Set/change deadline"
 msgstr "Vel/endra tidsfrist"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:276
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:276
 msgid "Edit other users articles"
 msgstr "Rediger artiklane til andre brukarar"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:281
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:281
 msgid "Preview and read own articles"
 msgstr "Sjå førehandsvising og lesevisning av eigne artiklar"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:287
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:287
 msgid "Preview others articles"
 msgstr "Sjå førehandsvising av andres artiklar"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:293
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:293
 msgid "Move articles to the trash"
 msgstr "Flytte artiklar til papirkorga"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:299
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:299
 msgid "Delete trashed articles"
 msgstr "Slette artiklar frå papirkorga"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:305
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:305
 msgid "Restore trashed articles"
 msgstr "Gjenopprette artiklar frå papirkorga"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:311
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:311
 msgid "Set permissions on folders/objects for roles/users"
 msgstr "Set tilgangsrettar på mapper/objekt for roller/brukarar"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:317
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:317
 msgid "Manage categories"
 msgstr "Handter kategoriar"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:325
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:325
 msgid "Access the dashboard"
 msgstr "Få tilgang til dashbordet"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:328
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:328
 msgid "Access dictionaries"
 msgstr "Få tilgang til ordlister"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:330
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:330
 msgid "Add/remove dictionary entries"
 msgstr "Leggja til og fjerna oppføringar i ordlista"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:338
-msgid "Access essential Lixuz services"
-msgstr "Få tilgang til grunnleggjande Lixuz-tenester"
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:338
+msgid "Access essential LizztCMS services"
+msgstr "Få tilgang til grunnleggjande LizztCMS-tenester"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:350
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:350
 msgid "Edit permissions on folders"
 msgstr "Rediger tilgangsrettar på mapper"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:356
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:356
 msgid "Delete folders"
 msgstr "Slette mapper"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:361
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:361
 msgid "Rename folders"
 msgstr "Gje nytt namn til mapper"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:366
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:366
 msgid "Move folders"
 msgstr "Flytte mapper"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:376
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:376
 msgid "Upload or edit files"
 msgstr "Last opp eller rediger filer"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:386
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:386
 msgid "Delete files"
 msgstr "Slette filer"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:391
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:391
 msgid "Crop images"
 msgstr "Beskjær bilete"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:398
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:398
 msgid "View other users files"
 msgstr "Sjå på filer til andre brukarar"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:401
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:401
 msgid "Edit other users files"
 msgstr "Rediger filer til andre brukarar"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:404
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:404
 msgid "Manage file classes"
 msgstr "Handter filklassar"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:413 root/adm/core/menu.html:93
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:413 root/adm/core/menu.html:93
 msgid "Newsletter"
 msgstr "Nyheitsbrev"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:417
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:417
 msgid "Send, delete, edit and export"
 msgstr "Send, slett, rediger og eksporter"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:433
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:433
 msgid "Access tags"
 msgstr "Få tilgang til emneord"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:438
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:438
 msgid "Create new tags"
 msgstr "Opprett emneord"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:440
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:440
 msgid "Manage tags"
 msgstr "Handter emneord"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:445
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:445
 msgid "RSSImport"
 msgstr "RSS importering"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:448 root/adm/core/menu.html:128
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:448 root/adm/core/menu.html:128
 msgid "Administrative settings"
 msgstr "Administrative innstillingar"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:455
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:455
 msgid "Edit additional fields"
 msgstr "Rediger tilleggsfelt"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:466
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:466
 msgid "Edit statuses"
 msgstr "Rediger statuser"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:474 root/adm/users/left.html:19
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:474 root/adm/users/left.html:19
 msgid "Manage users"
 msgstr "Handter brukarar"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:481 root/adm/users/left.html:21
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:481 root/adm/users/left.html:21
 msgid "Manage roles"
 msgstr "Handter roller"
 
-#: lib/LIXUZ/Controller/Admin/Users/Roles.pm:491 root/adm/core/menu.html:132
+#: lib/LizztCMS/Controller/Admin/Users/Roles.pm:491 root/adm/core/menu.html:132
 msgid "Manage templates"
 msgstr "Handter malar"
 
-#: lib/LIXUZ/Controller/Admin/Articles/Submit.pm:603
+#: lib/LizztCMS/Controller/Admin/Articles/Submit.pm:603
 msgid "%(USER) has assigned article %(ARTICLE_ID) (%(ARTICLE_NAME)) to you"
 msgstr "%(USER) har tildelt artikkelen %(ARTICLE_ID) (%(ARTICLE_NAME)) til deg"
 
-#: lib/LIXUZ/Controller/Admin/Articles/Submit.pm:609
+#: lib/LizztCMS/Controller/Admin/Articles/Submit.pm:609
 msgid ""
 "The article \"%(ARTICLE_NAME)\" (%(ARTICLE_ID)) has been\n"
 "assigned to you by %(USER). You may now edit\n"
-"and manage this article in Lixuz at %(PAGE)."
+"and manage this article in LizztCMS at %(PAGE)."
 msgstr ""
 "Artikkelen «%(ARTICLE_NAME)» (%(ARTICLE_ID) har blitt\n"
 "tildelt deg av %(USER). Du kan no redigera\n"
 "og handtera denne artikkelen på %(PAGE)."
 
-#: lib/LIXUZ/Controller/Admin/Articles/Submit.pm:639
+#: lib/LizztCMS/Controller/Admin/Articles/Submit.pm:639
 msgid ""
 "Some changes has been made by %(FIRSTNAME) %(LASTNAME) (%(USERNAME))\n"
 "to an article (ID %(ARTICLE_ID)) you are watching:"
@@ -944,132 +944,132 @@ msgstr ""
 "Nokon endringar har blitt gjort av %(FIRSTNAME) %(LASTNAME) (%(USERNAME))\n"
 "på ein artikkel (ID %(ARTICLE_ID)) du følger:"
 
-#: lib/LIXUZ/Controller/Admin/Articles/Submit.pm:673
+#: lib/LizztCMS/Controller/Admin/Articles/Submit.pm:673
 msgid "Title change: \"%(old)\" => \"%(new).\""
 msgstr "Tittel endra: «%(old)» => «%(new)»."
 
-#: lib/LIXUZ/Controller/Admin/Articles/Submit.pm:677
+#: lib/LizztCMS/Controller/Admin/Articles/Submit.pm:677
 msgid "The lead has been changed."
 msgstr "Inngressen har blitt endra."
 
-#: lib/LIXUZ/Controller/Admin/Articles/Submit.pm:681
+#: lib/LizztCMS/Controller/Admin/Articles/Submit.pm:681
 msgid "The body has been changed."
 msgstr "Brødteksten har blitt endra."
 
-#: lib/LIXUZ/Controller/Admin/Articles/Submit.pm:685
+#: lib/LizztCMS/Controller/Admin/Articles/Submit.pm:685
 msgid "Author change: \"%(old)\" => \"%(new).\""
 msgstr "Forfattar har blitt endra: «%(old)» => «%(new)»"
 
-#: lib/LIXUZ/Controller/Admin/Articles/Submit.pm:691
+#: lib/LizztCMS/Controller/Admin/Articles/Submit.pm:691
 msgid "Publish time has changed: \"%(old)\" => \"%(new).\""
 msgstr "Publiseringstid har blitt endra: «%(old)» => «%(new)»"
 
-#: lib/LIXUZ/Controller/Admin/Articles/Submit.pm:695
+#: lib/LizztCMS/Controller/Admin/Articles/Submit.pm:695
 msgid "Expiry time has changed: \"%(old)\" => \"%(new)\"."
 msgstr "«Gyldig til» har blitt endra: «%(old)» => «%(new)»"
 
-#: lib/LIXUZ/Controller/Admin/Articles/Submit.pm:709
+#: lib/LizztCMS/Controller/Admin/Articles/Submit.pm:709
 msgid "(default)"
 msgstr "(standard)"
 
-#: lib/LIXUZ/Controller/Admin/Articles/Submit.pm:713
+#: lib/LizztCMS/Controller/Admin/Articles/Submit.pm:713
 msgid "Template change: \"%(old)\" => \"%(new)\"."
 msgstr "Mal har blitt endra: «%(old)» => «%(new)»"
 
-#: lib/LIXUZ/Controller/Admin/Articles/Submit.pm:734
+#: lib/LizztCMS/Controller/Admin/Articles/Submit.pm:734
 msgid "Status change: \"%(old)\" => \"%(new)\"."
 msgstr "Status har blitt endra: «%(old)» => «%(new)»"
 
-#: lib/LIXUZ/Controller/Admin/Articles/Submit.pm:780
+#: lib/LizztCMS/Controller/Admin/Articles/Submit.pm:780
 #: root/adm/articles/workflow.html:163
 #: root/adm/articles/read/workflow_read.html:94
 msgid "Low"
 msgstr "Låg"
 
-#: lib/LIXUZ/Controller/Admin/Articles/Submit.pm:781
+#: lib/LizztCMS/Controller/Admin/Articles/Submit.pm:781
 #: root/adm/articles/workflow.html:168
 #: root/adm/articles/read/workflow_read.html:99
 msgid "Medium"
 msgstr "Middels"
 
-#: lib/LIXUZ/Controller/Admin/Articles/Submit.pm:782
+#: lib/LizztCMS/Controller/Admin/Articles/Submit.pm:782
 #: root/adm/articles/workflow.html:173
 #: root/adm/articles/read/workflow_read.html:104
 msgid "High"
 msgstr "Høg"
 
-#: lib/LIXUZ/Controller/Admin/Articles/Submit.pm:796
+#: lib/LizztCMS/Controller/Admin/Articles/Submit.pm:796
 msgid "Priority change: \"%(old)\" => \"%(new)\"."
 msgstr "Prioriteten har blitt endra: «%(old)» => «%(new)»"
 
-#: lib/LIXUZ/Controller/Admin/Articles/Submit.pm:800
+#: lib/LizztCMS/Controller/Admin/Articles/Submit.pm:800
 msgid "The start date changed: \"%(old)\" => \"%(new)\"."
 msgstr "Startdatoen har blitt endra: «%(old)» => «%(new)»"
 
-#: lib/LIXUZ/Controller/Admin/Articles/Submit.pm:804
+#: lib/LizztCMS/Controller/Admin/Articles/Submit.pm:804
 msgid "The deadline changed: \"%(old)\" => \"%(new)\"."
 msgstr "Tidsfristen har blitt endra: «%(old)» => «%(new)»"
 
-#: lib/LIXUZ/Controller/Admin/Articles/Submit.pm:856
+#: lib/LizztCMS/Controller/Admin/Articles/Submit.pm:856
 msgid ""
-"This message has been automatically generated by Lixuz because you\n"
+"This message has been automatically generated by LizztCMS because you\n"
 "are watching this article. You can stop watching this article\n"
 "by going to its edit page."
 msgstr ""
-"Denne medlinga har blitt sendt automatisk av Lixuz fordi du\n"
+"Denne medlinga har blitt sendt automatisk av LizztCMS fordi du\n"
 "følger denne artikkelen. Du kan slutte å følgja artikkelen\n"
 "ved å gå til redigeringssida til den."
 
-#: lib/LIXUZ/Controller/Admin/Articles/Submit.pm:856
+#: lib/LizztCMS/Controller/Admin/Articles/Submit.pm:856
 msgid "An article you are watching (%(ARTID)) has been edited"
 msgstr "Ein artikkel du følger (%(ARTID)) har blitt redigert"
 
-#: lib/LIXUZ/Controller/Admin/Articles/Workflow.pm:193
+#: lib/LizztCMS/Controller/Admin/Articles/Workflow.pm:193
 msgid "(you do not have permission to set this value)"
 msgstr "(du har ikkje tilgang til å redigera denne verdien)"
 
-#: lib/LIXUZ/Controller/Admin/Articles/Workflow.pm:254
-#: lib/LIXUZ/Controller/Admin/Articles/Workflow.pm:269
-#: lib/LIXUZ/Controller/Admin/Articles/Workflow.pm:304
-#: lib/LIXUZ/Schema/LzWorkflow.pm:201 lib/LIXUZ/Schema/LzWorkflow.pm:218
+#: lib/LizztCMS/Controller/Admin/Articles/Workflow.pm:254
+#: lib/LizztCMS/Controller/Admin/Articles/Workflow.pm:269
+#: lib/LizztCMS/Controller/Admin/Articles/Workflow.pm:304
+#: lib/LizztCMS/Schema/LzWorkflow.pm:201 lib/LizztCMS/Schema/LzWorkflow.pm:218
 #: root/adm/articles/list.html:209
 #: root/adm/dashboard/widgetHelper_articleList.html:103
 msgid "(nobody)"
 msgstr "(inga)"
 
-#: lib/LIXUZ/Controller/Admin/Articles/Workflow.pm:278
+#: lib/LizztCMS/Controller/Admin/Articles/Workflow.pm:278
 msgid "Reassign to role"
 msgstr "Tildel til rolle"
 
-#: lib/LIXUZ/Controller/Admin/Articles/Workflow.pm:283
+#: lib/LizztCMS/Controller/Admin/Articles/Workflow.pm:283
 msgid "Reassign to user"
 msgstr "Tildel til brukar"
 
-#: lib/LIXUZ/Controller/Admin/Articles/Workflow.pm:308
+#: lib/LizztCMS/Controller/Admin/Articles/Workflow.pm:308
 msgid "Assign to role"
 msgstr "Tildel til rolle"
 
-#: lib/LIXUZ/Controller/Admin/Articles/Workflow.pm:313
+#: lib/LizztCMS/Controller/Admin/Articles/Workflow.pm:313
 msgid "Assign to user"
 msgstr "Tildel til brukar"
 
-#: lib/LIXUZ/Controller/Admin/Articles/Workflow.pm:365
+#: lib/LizztCMS/Controller/Admin/Articles/Workflow.pm:365
 msgid "A new article (%(ARTICLE_NAME) (%(ARTICLE_ID)) is available"
 msgstr "Ein ny artikkel (%(ARTICLE_NAME) %(ARTICLE_ID)) er tilgjengeleg"
 
-#: lib/LIXUZ/Controller/Admin/Articles/Workflow.pm:366
+#: lib/LizztCMS/Controller/Admin/Articles/Workflow.pm:366
 msgid ""
 "An article has just been reassigned to the role that you belong to.\n"
 "\n"
 "You may accept this assignment on its page, %(PAGE),\n"
-"or your Lixuz dashboard."
+"or your LizztCMS dashboard."
 msgstr ""
 "Ein artikkel har nettopp blit tildelt ein rolle du er med i.\n"
 "\n"
 "Du kan godta denne oppgaven på artikkelsida, %(PAGE),\n"
-"eller på Lixuz dashbordet ditt."
+"eller på LizztCMS dashbordet ditt."
 
-#: lib/LIXUZ/Controller/Admin/Articles/Workflow.pm:394
+#: lib/LizztCMS/Controller/Admin/Articles/Workflow.pm:394
 msgid ""
 "%(FIRSTNAME) %(LASTNAME) (%(USERNAME)) commented on the article %(ARTID) "
 "(%(ARTICLE_TITLE))"
@@ -1077,7 +1077,7 @@ msgstr ""
 "%(FIRSTNAME) %(LASTNAME) (%(USERNAME)) kommenterte på artikkelen %(ARTID) "
 "(%(ARTICLE_TITLE))"
 
-#: lib/LIXUZ/Controller/Admin/Articles/Workflow.pm:401
+#: lib/LizztCMS/Controller/Admin/Articles/Workflow.pm:401
 msgid ""
 "%(SUBJECT) by %(FIRSTNAME) %(LASTNAME) (%(USERNAME)):\n"
 "%(BODY)"
@@ -1085,218 +1085,218 @@ msgstr ""
 "%(SUBJECT) av %(FIRSTNAME) %(LASTNAME) (%(USERNAME)):\n"
 "%(BODY)"
 
-#: lib/LIXUZ/Controller/Admin/Articles/Workflow.pm:409
+#: lib/LizztCMS/Controller/Admin/Articles/Workflow.pm:409
 msgid ""
-"This message has been automatically generated by Lixuz because you\n"
+"This message has been automatically generated by LizztCMS because you\n"
 "are either watching this article, or you are the assignee.\n"
 msgstr ""
-"Denne meldinga har blitt sendt automatisk av Lixuz fordi du anten\n"
+"Denne meldinga har blitt sendt automatisk av LizztCMS fordi du anten\n"
 "følger denne artikkelen, eller er tildelt denne artikkelen.\n"
 
-#: lib/LIXUZ/Controller/Admin/Articles/Trash.pm:34
+#: lib/LizztCMS/Controller/Admin/Articles/Trash.pm:34
 msgid "Trash (articles)"
 msgstr "Papirkurv (artiklar)"
 
-#: lib/LIXUZ/Controller/Admin/Settings/Admin.pm:28
+#: lib/LizztCMS/Controller/Admin/Settings/Admin.pm:28
 #: root/adm/settings/admin.html:19
 msgid "Server settings"
 msgstr "Innstillingar for tenaren"
 
-#: lib/LIXUZ/Controller/Admin/Settings/Admin/Statuses.pm:51
+#: lib/LizztCMS/Controller/Admin/Settings/Admin/Statuses.pm:51
 msgid "Deleting system UIDs is not allowed"
 msgstr "Sletting av system UIDar er ikkje tillatt"
 
-#: lib/LIXUZ/Controller/Admin/Settings/Admin/Statuses.pm:56
-#: lib/LIXUZ/Controller/Admin/Settings/Admin/Statuses.pm:89
+#: lib/LizztCMS/Controller/Admin/Settings/Admin/Statuses.pm:56
+#: lib/LizztCMS/Controller/Admin/Settings/Admin/Statuses.pm:89
 msgid "Status id did not exist."
 msgstr "Status IDen finst ikkje"
 
-#: lib/LIXUZ/Controller/Admin/Settings/Admin/Statuses.pm:68
+#: lib/LizztCMS/Controller/Admin/Settings/Admin/Statuses.pm:68
 msgid "Status deleted."
 msgstr "Status sletta"
 
-#: lib/LIXUZ/Controller/Admin/Settings/Admin/Statuses.pm:78
+#: lib/LizztCMS/Controller/Admin/Settings/Admin/Statuses.pm:78
 msgid "Editing system UIDs is not allowed"
 msgstr "Redigering av system UIDar er ikkje tillatt"
 
-#: lib/LIXUZ/Controller/Admin/Settings/Admin/Statuses.pm:84
-#: lib/LIXUZ/Controller/Admin/Settings/Admin/Widgets.pm:71
+#: lib/LizztCMS/Controller/Admin/Settings/Admin/Statuses.pm:84
+#: lib/LizztCMS/Controller/Admin/Settings/Admin/Widgets.pm:71
 msgid "Changes saved"
 msgstr "Endringar lagra"
 
-#: lib/LIXUZ/Controller/Admin/Settings/Admin/Statuses.pm:111
+#: lib/LizztCMS/Controller/Admin/Settings/Admin/Statuses.pm:111
 msgid "Create status"
 msgstr "Opprett status"
 
-#: lib/LIXUZ/Controller/Admin/Settings/Admin/Statuses.pm:115
+#: lib/LizztCMS/Controller/Admin/Settings/Admin/Statuses.pm:115
 msgid "Status created"
 msgstr "Status oppretta"
 
-#: lib/LIXUZ/Controller/Admin/Settings/Admin/Info.pm:42
+#: lib/LizztCMS/Controller/Admin/Settings/Admin/Info.pm:42
 msgid "Memcached has been flushed."
 msgstr "Memcached har blit tømt."
 
-#: lib/LIXUZ/Controller/Admin/Settings/Admin/Additionalfields.pm:64
+#: lib/LizztCMS/Controller/Admin/Settings/Admin/Additionalfields.pm:64
 msgid "Error: Failed to locate a field with the UID %(UID)."
 msgstr "Feil: Kunna ikkje finna eit felt med IDen %(UID)"
 
-#: lib/LIXUZ/Controller/Admin/Settings/Admin/Additionalfields.pm:215
+#: lib/LizztCMS/Controller/Admin/Settings/Admin/Additionalfields.pm:215
 msgid "Failed to locate the supplied field"
 msgstr "Kunna ikkje finna det valde feltet"
 
-#: lib/LIXUZ/Controller/Admin/Settings/Admin/Additionalfields.pm:229
+#: lib/LizztCMS/Controller/Admin/Settings/Admin/Additionalfields.pm:229
 msgid "Field and all related values have been deleted"
 msgstr "Feltet og alle relaterte verdiar har blitt sletta"
 
-#: lib/LIXUZ/Controller/Admin/Settings/Admin/Widgets.pm:51
+#: lib/LizztCMS/Controller/Admin/Settings/Admin/Widgets.pm:51
 msgid "Unknown widget"
 msgstr "Ukjend skjermelement"
 
-#: lib/LIXUZ/Controller/Admin/Templates/Upload.pm:42
+#: lib/LizztCMS/Controller/Admin/Templates/Upload.pm:42
 #: root/adm/templates/left.html:19 root/adm/core/menu.html:136
 msgid "Upload template"
 msgstr "Last opp mal"
 
-#: lib/LIXUZ/Controller/Admin/Templates/Upload.pm:113
+#: lib/LizztCMS/Controller/Admin/Templates/Upload.pm:113
 msgid "The template has been uploaded"
 msgstr "Malfila har blitt lasta opp"
 
-#: lib/LIXUZ/Controller/Admin/Templates/Upload.pm:114
+#: lib/LizztCMS/Controller/Admin/Templates/Upload.pm:114
 msgid "Template uploaded"
 msgstr "Malfila har blitt lasta opp"
 
-#: lib/LIXUZ/HelperModules/List.pm:335 root/adm/categories/layout/edit.html:45
+#: lib/LizztCMS/HelperModules/List.pm:335 root/adm/categories/layout/edit.html:45
 #: root/source-js/utils/objectSelector.js:208
 msgid "Search"
 msgstr "Søk"
 
-#: lib/LIXUZ/HelperModules/List.pm:338
+#: lib/LizztCMS/HelperModules/List.pm:338
 msgid "Filter"
 msgstr "Filter"
 
-#: lib/LIXUZ/HelperModules/DragDrop.pm:584
+#: lib/LizztCMS/HelperModules/DragDrop.pm:584
 msgid "All"
 msgstr "Alle"
 
-#: lib/LIXUZ/HelperModules/DragDrop.pm:701
+#: lib/LizztCMS/HelperModules/DragDrop.pm:701
 msgid "Maximum depth of nodes reached"
 msgstr "Maksnivå på noder er nådd"
 
-#: lib/LIXUZ/HelperModules/Forms.pm:135 root/adm/files/edit.html:143
+#: lib/LizztCMS/HelperModules/Forms.pm:135 root/adm/files/edit.html:143
 msgid "Reset"
 msgstr "Nullstill"
 
-#: lib/LIXUZ/HelperModules/EMail.pm:90
-msgid "This message has been automatically generated by Lixuz"
-msgstr "Denne meldinga er sendt automatisk av Lixuz"
+#: lib/LizztCMS/HelperModules/EMail.pm:90
+msgid "This message has been automatically generated by LizztCMS"
+msgstr "Denne meldinga er sendt automatisk av LizztCMS"
 
-#: lib/LIXUZ/Schema/LzField.pm:177
+#: lib/LizztCMS/Schema/LzField.pm:177
 msgid "Single line"
 msgstr "Ei linje"
 
-#: lib/LIXUZ/Schema/LzField.pm:178
+#: lib/LizztCMS/Schema/LzField.pm:178
 msgid "Multi-line"
 msgstr "Fleire linjer"
 
-#: lib/LIXUZ/Schema/LzField.pm:179
+#: lib/LizztCMS/Schema/LzField.pm:179
 #: root/adm/settings/admin/adfields/adfieldedit.html:111
 msgid "Custom pulldown"
 msgstr "Tilpassa nedtrekksmeny"
 
-#: lib/LIXUZ/Schema/LzField.pm:180
+#: lib/LizztCMS/Schema/LzField.pm:180
 #: root/adm/settings/admin/adfields/adfieldedit.html:116
 msgid "Range-defined pulldown"
 msgstr "Intervall-definert nedtrekksmeny"
 
-#: lib/LIXUZ/Schema/LzField.pm:181
+#: lib/LizztCMS/Schema/LzField.pm:181
 msgid "Multiple select"
 msgstr "Fleire val"
 
-#: lib/LIXUZ/Schema/LzField.pm:182
+#: lib/LizztCMS/Schema/LzField.pm:182
 msgid "Date/time"
 msgstr "Dato/tid"
 
-#: lib/LIXUZ/Schema/LzField.pm:183
+#: lib/LizztCMS/Schema/LzField.pm:183
 msgid "Pulldown"
 msgstr "Nedtrekksmeny"
 
-#: lib/LIXUZ/Schema/LzField.pm:184
+#: lib/LizztCMS/Schema/LzField.pm:184
 #: root/adm/settings/admin/adfields/adfieldedit.html:101
 msgid "Checkbox"
 msgstr "Avkryssingsboks"
 
-#: lib/LIXUZ/Schema/LzField.pm:185
+#: lib/LizztCMS/Schema/LzField.pm:185
 #: root/adm/settings/admin/adfields/adfieldedit.html:41
 #: root/adm/settings/admin/adfields/adfieldedit.html:126
 msgid "Range"
 msgstr "Intervall"
 
-#: lib/LIXUZ/Schema/LzField.pm:186
+#: lib/LizztCMS/Schema/LzField.pm:186
 msgid "Metadata (date)"
 msgstr "Metadata (dato)"
 
-#: lib/LIXUZ/Schema/LzField.pm:187
+#: lib/LizztCMS/Schema/LzField.pm:187
 msgid "Metadata (integer)"
 msgstr "Metadata (heiltal)"
 
-#: lib/LIXUZ/Schema/LzField.pm:192
+#: lib/LizztCMS/Schema/LzField.pm:192
 msgid "(unknown - not set in database)"
 msgstr "(ukjend - ikkje sett i databasen)"
 
-#: lib/LIXUZ/Schema/LzField.pm:205
+#: lib/LizztCMS/Schema/LzField.pm:205
 msgid "(unknown - \"%(FIELDNAME)\")"
 msgstr "(ukjend - «%(FIELDNAME»)"
 
-#: lib/LIXUZ/Schema/LzField.pm:265
+#: lib/LizztCMS/Schema/LzField.pm:265
 msgid "Unknown"
 msgstr "Ukjend"
 
-#: lib/LIXUZ/Schema/LzWorkflow.pm:169
+#: lib/LizztCMS/Schema/LzWorkflow.pm:169
 msgid "(user not found)"
 msgstr "(brukar ikkje funne)"
 
-#: lib/LIXUZ/Schema/LzWorkflow.pm:190
+#: lib/LizztCMS/Schema/LzWorkflow.pm:190
 msgid "%(ROLE_NAME) (role)"
 msgstr "%(ROLE_NAME) (rolle)"
 
-#: lib/LIXUZ/Schema/LzFile.pm:853 lib/LIXUZ/Schema/LzFile.pm:875
+#: lib/LizztCMS/Schema/LzFile.pm:853 lib/LizztCMS/Schema/LzFile.pm:875
 msgid "File ID:"
 msgstr "Fil ID:"
 
-#: lib/LIXUZ/Schema/LzFile.pm:885 lib/LIXUZ/Schema/LzFile.pm:890
+#: lib/LizztCMS/Schema/LzFile.pm:885 lib/LizztCMS/Schema/LzFile.pm:890
 #: root/source-js/core/createArticle.js:49
 msgid "Folder:"
 msgstr "Mappe:"
 
-#: lib/LIXUZ/Schema/LzFile.pm:897 root/adm/files/list.html:73
+#: lib/LizztCMS/Schema/LzFile.pm:897 root/adm/files/list.html:73
 msgid "View other versions"
 msgstr "Sjå andre versjonar"
 
-#: lib/LIXUZ/Schema/LzAction.pm:89
+#: lib/LizztCMS/Schema/LzAction.pm:89
 msgid "Change status of an article to \"%(STATUS)\""
 msgstr "Endra statusen til ein artikkel til «%(STATUS)»"
 
-#: lib/LIXUZ/Schema/LzAction.pm:100
+#: lib/LizztCMS/Schema/LzAction.pm:100
 msgid "Reassign an article to the role \"%(ROLE)\""
 msgstr "Tildel ein artikkel til rollen «%(ROLE)»"
 
-#: lib/LIXUZ/Schema/LzAction.pm:233
+#: lib/LizztCMS/Schema/LzAction.pm:233
 msgid "Assign articles to users"
 msgstr "Tildel artiklar til brukarar"
 
-#: lib/LIXUZ/Schema/LzFileClass.pm:79
+#: lib/LizztCMS/Schema/LzFileClass.pm:79
 msgid "Default/generic"
 msgstr "Standard/generell"
 
-#: lib/LIXUZ/Schema/LzStatus.pm:127
+#: lib/LizztCMS/Schema/LzStatus.pm:127
 msgid "Draft"
 msgstr "Utkast"
 
-#: lib/LIXUZ/Schema/LzStatus.pm:128
+#: lib/LizztCMS/Schema/LzStatus.pm:128
 msgid "Live"
 msgstr "Live (på nett)"
 
-#: lib/LIXUZ/Schema/LzStatus.pm:129 root/adm/articles/editform.html:55
+#: lib/LizztCMS/Schema/LzStatus.pm:129 root/adm/articles/editform.html:55
 #: root/adm/articles/read/workflow_read.html:27
 #: root/source-js/articles/viewArticleRevisions.js:119
 msgid "Revision"
@@ -1439,7 +1439,7 @@ msgstr "Område:"
 msgid "Folder actions"
 msgstr "Mappehandlingar"
 
-#: root/adm/core/folderActions.html:4 root/source-js/dragdrop/lixuzdd.js:321
+#: root/adm/core/folderActions.html:4 root/source-js/dragdrop/lizztcmsdd.js:321
 msgid "New folder"
 msgstr "Opprett mappe"
 
@@ -1530,8 +1530,8 @@ msgid "(any)"
 msgstr "(kva som helst)"
 
 #: root/adm/core/footer.html:23
-msgid "Lixuz version %(VERSION)"
-msgstr "Lixuz versjon %(VERSION)"
+msgid "LizztCMS version %(VERSION)"
+msgstr "LizztCMS versjon %(VERSION)"
 
 #: root/adm/core/header.html:158
 msgid "Log out"
@@ -1991,10 +1991,10 @@ msgstr "filer"
 
 #: root/adm/files/selectClass.html:19
 msgid ""
-"Lixuz has multiple file classes available. Select the class that best fits "
+"LizztCMS has multiple file classes available. Select the class that best fits "
 "the file(s) you wish to upload."
 msgstr ""
-"Lixuz har fleire filklasser tilgjengeleg. Vel klassen som passar best til fil"
+"LizztCMS har fleire filklasser tilgjengeleg. Vel klassen som passar best til fil"
 "(ene) du vil laste opp."
 
 #: root/adm/files/selectClass.html:31
@@ -2340,8 +2340,8 @@ msgid "(autodetect)"
 msgstr "(oppdag automatisk)"
 
 #: root/adm/dashboard/main.html:18
-msgid "Welcome to Lixuz, %(NAME) (%(USERNAME))"
-msgstr "Velkomen til Lixuz, %(NAME) (%(USERNAME))"
+msgid "Welcome to LizztCMS, %(NAME) (%(USERNAME))"
+msgstr "Velkomen til LizztCMS, %(NAME) (%(USERNAME))"
 
 #: root/adm/dashboard/main.html:40
 msgid "Assignments for:"
@@ -2710,7 +2710,7 @@ msgid "Rename folder"
 msgstr "Endra namn på mappe"
 
 #: root/source-js/core/folders.js:143 root/source-js/core/objPermEditor.js:246
-#: root/source-js/dragdrop/lixuzdd.js:285
+#: root/source-js/dragdrop/lizztcmsdd.js:285
 msgid "Loading folder data ..."
 msgstr "Lastar mapperdata …"
 
@@ -2967,7 +2967,7 @@ msgid "(use default)"
 msgstr "(bruk standard)"
 
 #: root/source-js/core/createArticle.js:65
-#: root/source-js/dragdrop/lixuzdd.js:310
+#: root/source-js/dragdrop/lizztcmsdd.js:310
 msgid "Create"
 msgstr "Opprett"
 
@@ -2989,8 +2989,8 @@ msgstr "Legg til tilleggselement"
 
 #: root/source-js/articles-previewUI/previewUI.js:52
 #: root/source-js/articles-previewUI/previewUI.js:112
-msgid "Show Lixuz sidebar"
-msgstr "Vis Lixuz sidestolpe"
+msgid "Show LizztCMS sidebar"
+msgstr "Vis LizztCMS sidestolpe"
 
 #: root/source-js/articles-previewUI/previewUI.js:54
 msgid "Working..."
@@ -3017,8 +3017,8 @@ msgid "Locked"
 msgstr "Låst"
 
 #: root/source-js/articles-previewUI/previewUI.js:124
-msgid "Hide Lixuz sidebar"
-msgstr "Gøym Lixuz sidestolpe"
+msgid "Hide LizztCMS sidebar"
+msgstr "Gøym LizztCMS sidestolpe"
 
 #: root/source-js/articles-previewUI/previewUI.js:132
 msgid "Loading data ..."
@@ -3149,11 +3149,11 @@ msgstr "Tilkoplinga til tenaren har hatt eit tidsavbrot. Prøv att snart."
 #: root/source-js/core/XHR.js:120
 msgid ""
 "The server returned invalid JSON data. This is either a temporary server "
-"problem, or a bug in Lixuz. If the problem persists, contact your system "
+"problem, or a bug in LizztCMS. If the problem persists, contact your system "
 "administrator with the information listed below."
 msgstr ""
 "Tenaren svarte med ugyldig JSON-data. Dette er anten eit mellombels "
-"tenarproblem, eller ein feil i Lixuz. Viss problemet fortsetter, kontakt din "
+"tenarproblem, eller ein feil i LizztCMS. Viss problemet fortsetter, kontakt din "
 "systemadministrator med informasjonen som er lista opp under denne meldinga."
 
 #: root/source-js/core/XHR.js:127
@@ -3292,11 +3292,11 @@ msgstr ""
 
 #: root/source-js/core/asyncHelper.js:58
 msgid ""
-"Failed to submit data, you have been logged out of Lixuz. Please open the "
+"Failed to submit data, you have been logged out of LizztCMS. Please open the "
 "Dashboard page in another tab or window and log in there, and then try to "
 "save your data again"
 msgstr ""
-"Klarte ikkje å sende inn data, du har blitt logga ut av Lixuz. Opna opp "
+"Klarte ikkje å sende inn data, du har blitt logga ut av LizztCMS. Opna opp "
 "dashbordet ditt i ein annan fane eller vindauge og logg inn der og så forsøk "
 "å lagra att."
 
@@ -3334,7 +3334,7 @@ msgid ""
 "a bug. Your data has probably not been saved."
 msgstr ""
 "Ein feil oppstod under kommunikasjon med databasetenaren, dette er mest "
-"sannsynleg ein feil i Lixuz. Dine data har kanskje ikkje blitt lagra."
+"sannsynleg ein feil i LizztCMS. Dine data har kanskje ikkje blitt lagra."
 
 #: root/source-js/core/asyncHelper.js:82
 msgid ""
@@ -3470,27 +3470,27 @@ msgstr "Du må lagra artikkelen før du kan sjå på kommentarar"
 msgid "Loading comment list ..."
 msgstr "Lastar kommentarliste …"
 
-#: root/source-js/dragdrop/lixuzdd.js:73
+#: root/source-js/dragdrop/lizztcmsdd.js:73
 msgid "Refreshing..."
 msgstr "Oppdaterar …"
 
-#: root/source-js/dragdrop/lixuzdd.js:305
+#: root/source-js/dragdrop/lizztcmsdd.js:305
 msgid "Parent folder"
 msgstr "Foreldremappe"
 
-#: root/source-js/dragdrop/lixuzdd.js:308
+#: root/source-js/dragdrop/lizztcmsdd.js:308
 msgid "Folder name"
 msgstr "Mappenamn"
 
-#: root/source-js/dragdrop/lixuzdd.js:340
+#: root/source-js/dragdrop/lizztcmsdd.js:340
 msgid "You have to enter a name for the folder"
 msgstr "Du må skriva inn eit namn for mappa"
 
-#: root/source-js/dragdrop/lixuzdd.js:351
+#: root/source-js/dragdrop/lizztcmsdd.js:351
 msgid "Creating folder..."
 msgstr "Opprettar mappe …"
 
-#: root/source-js/dragdrop/lixuzdd.js:367
+#: root/source-js/dragdrop/lizztcmsdd.js:367
 msgid "Failed to create a new folder"
 msgstr "Kunne ikkje oppretta ein ny mappe"
 
@@ -3655,12 +3655,12 @@ msgstr "Er du viss på at du vil sletta emneordet «%(TAGNAME)» (%(TAGID))?"
 #: root/source-js/articles/files.js:29
 msgid ""
 "The video file with file_id %(FILEID) has not been converted to the FLV "
-"format used to serve video through Lixuz yet, the process is still running, "
+"format used to serve video through LizztCMS yet, the process is still running, "
 "please reload and try again in a few minutes.\\n\\nIf the conversion takes "
 "more than an hour, please contact your system administrator"
 msgstr ""
 "Videofila med fil IDen %(FILEID) har ikkje blitt konvertert til FLV-formatet "
-"som vert brukt til å visa video via Lixuz ennå. Prosessen køyrer framleis. "
+"som vert brukt til å visa video via LizztCMS ennå. Prosessen køyrer framleis. "
 "Last sida på nytt og prøv att om nokon minutt.\\n\\nViss konverteringa tek "
 "meir enn ein time, ta kontakt med din systemadministrator."
 
@@ -3762,12 +3762,12 @@ msgstr "Vart nekta å godta"
 msgid "Acceptance failed"
 msgstr "Klarte ikkje godta"
 
-#: root/source-js/core/0-LIXUZ.js:17
+#: root/source-js/core/0-LizztCMS.js:17
 msgid ""
-"Lixuz has loaded several instances on top of each other. This is dangerous, "
+"LizztCMS has loaded several instances on top of each other. This is dangerous, "
 "and can result in data corruption. Please save your work and then reload."
 msgstr ""
-"Lixuz har lasta fleire instansar på toppen av kvarandre. Dette er farlig og "
+"LizztCMS har lasta fleire instansar på toppen av kvarandre. Dette er farlig og "
 "kan resultere i øydelagd data. Lagre arbeidet ditt og last sida på nytt."
 
 #~ msgid "Save layout"

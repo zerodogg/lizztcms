@@ -1,4 +1,4 @@
-# LIXUZ content management system
+# LizztCMS content management system
 # Copyright (C) Utrop A/S Portu media & Communications 2012
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,20 +14,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-=head1 LIXUZ TEMPLATE MANUAL
+=head1 LizztCMS TEMPLATE MANUAL
 
-This is the Lixuz template manual for media templates.
+This is the LizztCMS template manual for media templates.
 
-This file describes version B<3> of the Lixuz template API.
+This file describes version B<3> of the LizztCMS template API.
 
 B<Note>: the text in this file assumes you have already read the general
-template introduction found in doc/templates.pod of the Lixuz source tree.
+template introduction found in doc/templates.pod of the LizztCMS source tree.
 
 =head1 INTRODUCTION TO MEDIA TEMPLATES
 
-A media template is what Lixuz uses to render inline images. It's special
-because Lixuz doesn't use them to render any page, and they can't be called
-by other templates. The media templates will be called while Lixuz is
+A media template is what LizztCMS uses to render inline images. It's special
+because LizztCMS doesn't use them to render any page, and they can't be called
+by other templates. The media templates will be called while LizztCMS is
 preparing an article string for display. It's used so that images that are
 added inline into ie. the article body can still be formatted. The templates
 are called once for each image present in the string, and can be cached for
@@ -36,7 +36,7 @@ several times, it is entirely possible that the template is only called once
 for an article in a period of several weeks (all depending on cache settings).
 
 Media templates are also limited in the amount of data that they have available,
-and they are unable to poll the Lixuz template engine for additional data, like
+and they are unable to poll the LizztCMS template engine for additional data, like
 ie. web templates can. That being said, they are still full HTML::Mason templates.
 
 =head2 Processing overview for media templates
@@ -45,7 +45,7 @@ ie. web templates can. That being said, they are still full HTML::Mason template
 
 =item Step 1
 
-Lixuz retrieves an image from a string, by parsing it as a HTML DOM-tree.
+LizztCMS retrieves an image from a string, by parsing it as a HTML DOM-tree.
 It then fetches the lz_file object from the database. Then it calculates
 the size of the file.
 
@@ -56,11 +56,11 @@ DATA> section.
 
 =item Step 3
 
-The rendered template gets parsed as a HTML DOM-tree. Lixuz looks for an <img>
+The rendered template gets parsed as a HTML DOM-tree. LizztCMS looks for an <img>
 element that has the class 'lzImagePlaceholder'. It then merges the attributes
 of the <img> tag in the original string, with the attributes of the <img> tag
 from the template, overwriting settings in the template if needed (style=""
-tags are handled separately, and Lixuz attempts to merge those directly, so
+tags are handled separately, and LizztCMS attempts to merge those directly, so
 that styling from the template isn't lost).
 
 It will then remove lzImagePlaceholder from the class attribute.
@@ -74,7 +74,7 @@ string is returned to caller.
 
 =head1 AVAILABLE DATA
 
-Lixuz will provide you with some very specific data that you can use 
+LizztCMS will provide you with some very specific data that you can use 
 while rendering it. Each of the variables are provided as Mason arguments,
 and you can retrieve them by including them in your <%args> block.
 
@@ -82,8 +82,8 @@ and you can retrieve them by including them in your <%args> block.
 
 =item $image
 
-Never undef. This is the LIXUZDB::LzFile object that is being rendered.
-Keep in mind that you don't have to fetch any url for this image, as Lixuz
+Never undef. This is the LizztCMSDB::LzFile object that is being rendered.
+Keep in mind that you don't have to fetch any url for this image, as LizztCMS
 will insert that into the <img> tag with the lzImagePlaceholder class
 after the template has rendered.
 
@@ -114,7 +114,7 @@ a container block.
 
 =head1 INFOBLOCK DATA
 
-The Lixuz infoblock can contain various pieces of information. The entries that
+The LizztCMS infoblock can contain various pieces of information. The entries that
 are required to be present are: NAME LICENSE VERSION
 TYPE APIVERSION and UNIQUEID.
 
@@ -128,12 +128,12 @@ use INCLUDES or NEEDSINFO in media templates.
 
 This option should contain the version number of your template. This is
 mostly present to let you track versions yourself, but might also be used
-by Lixuz in the future. It accepts any string and is required.
+by LizztCMS in the future. It accepts any string and is required.
 
 =item B<NAME>
 
 This option should contain the human-readable name of the template. This
-is the string that will be displayed within the Lixuz interface. It accepts
+is the string that will be displayed within the LizztCMS interface. It accepts
 any string and is required.
 
 =item B<LICENSE>
@@ -145,20 +145,20 @@ It accepts any string and is required.
 
 =item B<APIVERSION>
 
-This option must contain the Lixuz template API version the template is written
-for, as of this document that version is 1. This will make sure that Lixuz does
+This option must contain the LizztCMS template API version the template is written
+for, as of this document that version is 1. This will make sure that LizztCMS does
 not accept templates for newer versions than the one installed, and might also
 allow it to activate a compatibility mode in the future for templates that
 are using an old api version. It accepts a single integer and is required.
 
 =item B<TYPE>
 
-This option determines which type of template it is, and thus also what Lixuz
+This option determines which type of template it is, and thus also what LizztCMS
 will use it for. For media templates it should be set to "media".
 
 =item B<MEDIASETTINGS>
 
-This option lets you change some parameters of how Lixuz will treat the images
+This option lets you change some parameters of how LizztCMS will treat the images
 that will be used. It takes a set of parameters surrounded by square-brackets
 ([ ]).
 
@@ -171,11 +171,11 @@ The settings it permits you to set are (all optional):
 These specify the maximum height and width of an image that will be rendered
 with this template. You will never get an image that has dimensions that are
 larger than this. This is equivalent to the parameters that can be supplied to
-the LIXUZ::HelperModules::HTMLRenderer object within Lixuz.
+the LizztCMS::HelperModules::HTMLRenderer object within LizztCMS.
 
 =item noFloat
 
-This can be set to true to force Lixuz not to honor or add float styles to
+This can be set to true to force LizztCMS not to honor or add float styles to
 images.
 
 =back
@@ -190,15 +190,15 @@ The simplest template possible could be written like this:
 
     <img class="lzImagePlaceholder" />
     <%once>
-    # BEGIN LIXUZ_INFOBLOCK
+    # BEGIN LizztCMS_INFOBLOCK
     # VERSION=0.1
-    # NAME=Lixuz media renderer
+    # NAME=LizztCMS media renderer
     # LICENSE=Proprietary
     # APIVERSION=1
     # TYPE=media
     # UNIQUEID=org.example.media
     # MEDIASETTINGS=maxWidth=400,maxHeight=400,noFloat=true
-    # END LIXUZ_INFOBLOCK
+    # END LizztCMS_INFOBLOCK
     </%once>
 
 Hopefully this should make it a bit clearer. You can do anything you want with
@@ -228,14 +228,14 @@ that markup, as long as you have an img tag with the lzImagePlaceholder class.
     $float => 'left'
     </%args>
     <%once>
-    # BEGIN LIXUZ_INFOBLOCK
+    # BEGIN LizztCMS_INFOBLOCK
     # VERSION=0.1
-    # NAME=Lixuz media renderer
+    # NAME=LizztCMS media renderer
     # LICENSE=Proprietary
     # APIVERSION=1
     # TYPE=media
     # UNIQUEID=org.example.media
-    # END LIXUZ_INFOBLOCK
+    # END LizztCMS_INFOBLOCK
 
 =head3 Rendered code
 

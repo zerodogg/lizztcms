@@ -1,5 +1,5 @@
 /*
- * LIXUZ content management system
+ * LizztCMS content management system
  * Copyright (C) Utrop A/S Portu media & Communications 2008-2011
  *
  * This program is free software: you can redistribute it and/or modify
@@ -265,7 +265,7 @@ function manualNewsletterFormatChange ()
     {
         try
         {
-            var editor = lixuzRTE.get('mail_editor');
+            var editor = lizztcmsRTE.get('mail_editor');
             editor.hide();
             editor.destroy();
             editor = null;
@@ -273,7 +273,7 @@ function manualNewsletterFormatChange ()
     }
     else
     {
-        lixuzRTE.init('mail_editor');
+        lizztcmsRTE.init('mail_editor');
     }
 }
 

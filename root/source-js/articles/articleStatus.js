@@ -111,7 +111,7 @@ $(function ()
     });
     // Check if any changes have been made and needs to be submitting before
     // allowing the user to move away from the page.
-    $.subscribe('/lixuz/beforeunload', function (messages)
+    $.subscribe('/lizztcms/beforeunload', function (messages)
     {
         if ($('#quickedit div[dt=nofollow]').length > 0 && !submitting)
         {

@@ -1,5 +1,5 @@
 /*
- * LIXUZ content management system
+ * LizztCMS content management system
  * Copyright (C) Utrop A/S Portu media & Communications 2008-2011
  *
  * This program is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@ function LZ_toggleSecondaryFolders ()
 
 function LZ_secondaryFolders_request ()
 {
-    var article_id = $('#lixuzArticleEdit_uid').val();
+    var article_id = $('#lizztcmsArticleEdit_uid').val();
 
     if(article_id == null || article_id == '')
     {
@@ -57,11 +57,11 @@ function LZ_secondaryFolders_success (reply)
         treeObj.setMaximumDepth(7);
         treeObj.filePathRenameItem = "/admin/articles/folderAjax/";
         treeObj.filePathDeleteItem = "/admin/articles/folderAjax/";
-        lixuz_DD_URL = "/admin/articles/folderAjax/";
+        lizztcms_DD_URL = "/admin/articles/folderAjax/";
         treeObj.setMessageMaximumDepthReached("Maximum depth of nodes reached");
         treeObj.initTree();
-        lixuz_DD_LastOrder = treeObj.getNodeOrders();
-        treeObj.orderChangeEvent = lixuz_DD_OrderChangeEvent;
+        lizztcms_DD_LastOrder = treeObj.getNodeOrders();
+        treeObj.orderChangeEvent = lizztcms_DD_OrderChangeEvent;
         treeObj.expandAll();
     } catch(e)
     {

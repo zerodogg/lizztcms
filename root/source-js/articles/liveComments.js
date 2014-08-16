@@ -1,5 +1,5 @@
 /*
- * LIXUZ content management system
+ * LizztCMS content management system
  * Copyright (C) Utrop A/S Portu media & Communications 2008-2011
  *
  * This program is free software: you can redistribute it and/or modify
@@ -54,7 +54,7 @@ function LZ_reallyDeleteComment (deleteIt)
 // Fetch file list for an article
 function LZ_fetchLiveCommentsForArticle (toggle)
 {
-    XHR.GET('/admin/articles/getCommentListFor/'+$('#lixuzArticleEdit_uid').val(),LZ_newLiveCommentList,LZ_newLiveCommentListFailure);
+    XHR.GET('/admin/articles/getCommentListFor/'+$('#lizztcmsArticleEdit_uid').val(),LZ_newLiveCommentList,LZ_newLiveCommentListFailure);
 }
 
 // New file list recieved
@@ -118,7 +118,7 @@ function LZ_newLiveCommentListFailure (reply)
 $.subscribe('/articles/toggleSection/liveComments',function(evData)
 {
     evData.handled = true;
-    if ($('#lixuzArticleEdit_uid').val() == null || $('#lixuzArticleEdit_uid').val() == '')
+    if ($('#lizztcmsArticleEdit_uid').val() == null || $('#lizztcmsArticleEdit_uid').val() == '')
     {
         userMessage(i18n.get('You must save the article before you can view comments made to it'));
         return;

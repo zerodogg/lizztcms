@@ -1,4 +1,4 @@
-name: lixuz_statusEdit
+name: lizztcms_statusEdit
 method:post
 fields:
     uid:

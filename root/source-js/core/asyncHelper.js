@@ -1,5 +1,5 @@
 /*
- * LIXUZ content management system
+ * LizztCMS content management system
  * Copyright (C) Utrop A/S Portu media & Communications 2008-2011
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,14 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*
- * Asynchronous JavaScript helper for LIXUZ
+ * Asynchronous JavaScript helper for LizztCMS
  *
  * Copyright (C) Portu media & communications
  * All Rights Reserved
  *
  * Needs: standard.js asyncQueue.js
  */
-var lixuz_curr_JSON_URL = null;
+var lizztcms_curr_JSON_URL = null;
 
 /*
  * This is a function that you can call if you can not handle the
@@ -55,7 +55,7 @@ function LZ_SaveFailure (data, genericError)
 	{
         // TODO: We could open up the login frame in a pop-under iframe and have the user
         // log in right on the page and then auto-submit again once the iframe is deleted.
-		userMessage(i18n.get('Failed to submit data, you have been logged out of Lixuz. Please open the Dashboard page in another tab or window and log in there, and then try to save your data again'));
+		userMessage(i18n.get('Failed to submit data, you have been logged out of LizztCMS. Please open the Dashboard page in another tab or window and log in there, and then try to save your data again'));
 	}
     else if(errorCode == 'ACCESS_DENIED')
     {
@@ -104,7 +104,7 @@ function LZ_SaveFailure (data, genericError)
 	}
     if(myLzError !== null)
     {
-        lzError(errorCode+' while submitting to '+lixuz_curr_JSON_URL,myLzError,false);
+        lzError(errorCode+' while submitting to '+lizztcms_curr_JSON_URL,myLzError,false);
         lzlog(data);
     }
 }

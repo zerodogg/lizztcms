@@ -1,5 +1,5 @@
 <%perl>
-# LIXUZ content management system
+# LizztCMS content management system
 # Copyright (C) Utrop A/S Portu media & Communications 2008-2011
 #
 # This program is free software: you can redistribute it and/or modify
@@ -32,8 +32,8 @@ use File::Basename qw(basename);
 $m->out('$LAB');
 $m->comp('/core/CDN-hosted.html', mode => 'LABchain', UI => 0, JQcore => 0, YUI => 1);
 
-my @files = glob($LIXUZ::PATH.'/root/js/*.lib.js');
-push(@files, glob($LIXUZ::PATH.'/root/js/*.js'));
+my @files = glob($LizztCMS::PATH.'/root/js/*.lib.js');
+push(@files, glob($LizztCMS::PATH.'/root/js/*.js'));
 my %seen;
 
 foreach my $JSFile (@files)

@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # flvConverter.manual
 #
-# LIXUZ content management system
+# LizztCMS content management system
 # Copyright (C) Utrop A/S Portu media & Communications 2008-2011
 #
 # This program is free software: you can redistribute it and/or modify
@@ -42,12 +42,12 @@ if ($file =~ /\D/)
 $| = 1;
 print "Initializing...";
 use lib $FindBin::RealBin.'/../lib/';
-# Lixuz doesn't like not being in its own dir when initializing
+# LizztCMS doesn't like not being in its own dir when initializing
 chdir($FindBin::RealBin.'/..');
-require LIXUZ;
+require LizztCMS;
 print ".";
-my $fobj = LIXUZ->model('LIXUZDB::LzFile')->find({file_id => $file});
-my $fakeC = bless({},'LIXUZ');
+my $fobj = LizztCMS->model('LizztCMSDB::LzFile')->find({file_id => $file});
+my $fakeC = bless({},'LizztCMS');
 die("Filed to locate file object with file_id $file\n") if not $fobj;
 die("File id $file is not a video file\n") if not $fobj->is_video();
 print "done\n";

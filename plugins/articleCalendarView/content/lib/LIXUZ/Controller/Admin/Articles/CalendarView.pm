@@ -1,12 +1,12 @@
-package LIXUZ::Controller::Admin::Articles::CalendarView;
+package LizztCMS::Controller::Admin::Articles::CalendarView;
 use 5.010;
 use strict;
 use warnings;
 use Moose;
 use DateTime;
-use LIXUZ::HelperModules::Calendar qw(datetime_from_SQL_to_unix);
-use LIXUZ::HelperModules::RevisionHelpers qw(get_latest_article);
-use LIXUZ::HelperModules::Includes qw(add_cssIncl);
+use LizztCMS::HelperModules::Calendar qw(datetime_from_SQL_to_unix);
+use LizztCMS::HelperModules::RevisionHelpers qw(get_latest_article);
+use LizztCMS::HelperModules::Includes qw(add_cssIncl);
 BEGIN { extends 'Catalyst::Controller'; }
 
 sub default : Public
@@ -35,7 +35,7 @@ sub performSearch
     my $last  = $year . '-' . _pad($month) . '-' . _pad($day) . ' 23:59';
     my $field_id = $self->_getSearchField($c);
 
-    my $values = $c->model('LIXUZDB::LzFieldValue')->search({
+    my $values = $c->model('LizztCMSDB::LzFieldValue')->search({
             field_id => $field_id,
             module_name => 'articles',
             dt_value => {
@@ -65,12 +65,12 @@ sub performSearch
 sub _getSearchField
 {
     my ($self,$c) = @_;
-    my $cview = $c->model('LIXUZDB::LzLixuzMeta')->find({
+    my $cview = $c->model('LizztCMSDB::LzLizztCMSMeta')->find({
             entry => 'calendarview_field',
         });
     if ($cview->value eq 'auto')
     {
-        my $fields = $c->model('LIXUZDB::LzField')->search({ field_type => 'datetime' },{
+        my $fields = $c->model('LizztCMSDB::LzField')->search({ field_type => 'datetime' },{
                 limit => 1
             });
         if ($fields)

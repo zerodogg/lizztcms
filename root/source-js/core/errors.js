@@ -1,5 +1,5 @@
 /*
- * LIXUZ content management system
+ * LizztCMS content management system
  * Copyright (C) Utrop A/S Portu media & Communications 2008-2011
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*
- * Lixuz shared error handling code
+ * LizztCMS shared error handling code
  *
  * Copyright (C) Portu media & communications
  * All Rights Reserved
@@ -83,15 +83,15 @@ function getLzErrInfo (add)
     } catch(e) { lzelog(e); }
     // Get the user agent
     try { userAgent = navigator.userAgent; } catch(e) { }
-    // Get the current Lixuz version
-    try { lzVer = $('#lixuz_version').val(); } catch(e) { }
+    // Get the current LizztCMS version
+    try { lzVer = $('#lizztcms_version').val(); } catch(e) { }
     // Get the current username+user id
     try { user = $('#currentUsername').val(); user = user +'/'+$('#currentUserId').val(); } catch(e) { }
     // Generate the actual message string
     var message = '<code class="errorInformation"';
     try
     {
-        if(/git\//.test($('#lixuz_version').val()))
+        if(/git\//.test($('#lizztcms_version').val()))
         {
             message = message+' style="color:black"';
         }
@@ -102,7 +102,7 @@ function getLzErrInfo (add)
     message = message+'User&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: '+user+'<br />';
     message = message+'On page&nbsp;&nbsp;&nbsp;: '+URL+'<br />';
     message = message+'User agent: '+userAgent+'<br />';
-    message = message+'Lixuz&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: '+lzVer;
+    message = message+'LizztCMS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: '+lzVer;
     try
     {
         message = message+'<br />At&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: '+(new Date).toString();
@@ -112,7 +112,7 @@ function getLzErrInfo (add)
 }
 
 /*
- * Summary: Lixuz javascript exception handler
+ * Summary: LizztCMS javascript exception handler
  * Arguments:
  *  exception: exception object
  *  error: optional error message
@@ -157,14 +157,14 @@ function lzException(exception,error)
     else
     {
         var internal = false;
-        try { if(exception.internalLixuzError) { internal = true }; }  catch(e) { }
+        try { if(exception.internalLizztCMSError) { internal = true }; }  catch(e) { }
         if(internal)
         {
-            message = "An internal error occurred. This means that some part of your Lixuz instance just had a serious problem. If you were saving some data, that data may not have been saved. Please try again in a few moments. If the problem persists, please supply the Lixuz developers with the information at the bottom of this message.";
+            message = "An internal error occurred. This means that some part of your LizztCMS instance just had a serious problem. If you were saving some data, that data may not have been saved. Please try again in a few moments. If the problem persists, please supply the LizztCMS developers with the information at the bottom of this message.";
         }
         else
         {
-            message = "An exception occurred. This means that some part of your Lixuz instance just crashed. Please try again in a few moments. If the problem persists, please supply the Lixuz developers with the information at the bottom of this message.";
+            message = "An exception occurred. This means that some part of your LizztCMS instance just crashed. Please try again in a few moments. If the problem persists, please supply the LizztCMS developers with the information at the bottom of this message.";
         }
     }
 
@@ -229,9 +229,9 @@ function lzException(exception,error)
     extraInfo = extraInfo+'Caught by : '+caller+"<br />";
     if($.browser.ie && /JSON/.match(caller))
     {
-        if(lixuz_curr_JSON_URL)
+        if(lizztcms_curr_JSON_URL)
         {
-            extraInfo = extraInfo+'JSON URL: '+lixuz_curr_JSON_URL;
+            extraInfo = extraInfo+'JSON URL: '+lizztcms_curr_JSON_URL;
         }
     }
     message = message+getLzErrInfo(extraInfo);
@@ -306,7 +306,7 @@ function lzException(exception,error)
 }
 
 /*
- * Summary: Lixuz javascript exception logger
+ * Summary: LizztCMS javascript exception logger
  * Arguments: exception: exception object
  */
 function lzelog (exception,backtrace)
@@ -337,7 +337,7 @@ function lzelog (exception,backtrace)
         {
             lzlog("Stack trace of above exception:\n"+backtrace.join("\n"));
         }
-        LIXUZ.errorLog.send(output);
+        LizztCMS.errorLog.send(output);
     } catch(e) { }
 }
 
@@ -350,7 +350,7 @@ function lzErrLog (error)
             return;
         }
         lzlog('Error: '+error);
-        LIXUZ.errorLog.send(error);
+        LizztCMS.errorLog.send(error);
     } catch(e) { }
 }
 
@@ -372,7 +372,7 @@ function lzError (error,userError,fatal)
 {
     var exception = {};
     exception.message = error;
-    exception.internalLixuzError = true;
+    exception.internalLizztCMSError = true;
     if(arguments && arguments.length && arguments[3])
     {
         exception.lzIntCaller = arguments[3];
@@ -402,7 +402,7 @@ try
     };
 } catch(e) {}
 
-LIXUZ.addNamespace('error',
+LizztCMS.addNamespace('error',
 {
     exception: lzelog,
     log: lzErrLog,
@@ -410,7 +410,7 @@ LIXUZ.addNamespace('error',
     exception: lzException,
     getInfo: getLzErrInfo
 });
-LIXUZ.extendNamespace('message',
+LizztCMS.extendNamespace('message',
 {
     error: displayErrorBox
 });

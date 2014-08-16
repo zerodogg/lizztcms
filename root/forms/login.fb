@@ -1,4 +1,4 @@
-name: lixuz_login
+name: lizztcms_login
 method: post
 fields:
 	user_name:

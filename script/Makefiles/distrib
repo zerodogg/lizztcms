@@ -4,19 +4,19 @@
 DIST_QUICK?=0
 DIST_SOURCE?=$(shell pwd)
 DIST_VERSION?=$(VERSION)
-DIST_MAINTARGET?=lixuz-$(DIST_VERSION)
+DIST_MAINTARGET?=lizztcms-$(DIST_VERSION)
 DIST_TARGET?=$(DIST_MAINTARGET)
 GIT_VERSION=$(shell git log --format="%h" | head -n1)
 GIT_BRANCH=$(shell git branch|egrep '^\*'|perl -pi -e 's/^\S+\s+//')
 
 # Release distrib target
 distrib: DIST_VERSION=$(VERSION)
-distrib: DIST_TARGET=lixuz-$(DIST_VERSION)
+distrib: DIST_TARGET=lizztcms-$(DIST_VERSION)
 distrib: mkDistClone distCloneAddGitrev distCloneSanity vanillaPackage distCloneBuildAndMinify usePackage installerPackage pluginPackages buildCleanup
 
 # Git snapshot distrib target
 gitdistrib: DIST_VERSION=$(VERSION)-$(GIT_VERSION)-$(GIT_BRANCH)
-gitdistrib: DIST_TARGET=lixuz-$(DIST_VERSION)
+gitdistrib: DIST_TARGET=lizztcms-$(DIST_VERSION)
 gitdistrib: mkDistClone distCloneAddGitrev distCloneSetSnapshot distCloneSanity vanillaPackage distCloneBuildAndMinify usePackage installerPackage pluginPackages buildCleanup
 # Git snapshot distrib target that skips sanity checks
 quickgitdistrib: DIST_QUICK=1
@@ -30,31 +30,31 @@ mkDistClone:
 	cd "$(DIST_TARGET)" && git clean -x -d -f
 
 distCloneAddGitrev: mkDistClone
-	perl -pi -e "s{^(our \\\$$GITREV =).*}{\$$1 '$(GIT_VERSION)';}" "$(DIST_TARGET)/lib/LIXUZ.pm"
-	perl -pi -e "s{^(our \\\$$GITBRANCH =).*}{\$$1 '$(GIT_BRANCH)';}" "$(DIST_TARGET)/lib/LIXUZ.pm"
+	perl -pi -e "s{^(our \\\$$GITREV =).*}{\$$1 '$(GIT_VERSION)';}" "$(DIST_TARGET)/lib/LizztCMS.pm"
+	perl -pi -e "s{^(our \\\$$GITBRANCH =).*}{\$$1 '$(GIT_BRANCH)';}" "$(DIST_TARGET)/lib/LizztCMS.pm"
 distCloneSetSnapshot: mkDistClone
-	perl -pi -e 's{^(my\s+\$$SNAPSHOT)\s*=\s*\d*\;}{$$1 = 1;}g' "$(DIST_TARGET)/lib/LIXUZ.pm"
+	perl -pi -e 's{^(my\s+\$$SNAPSHOT)\s*=\s*\d*\;}{$$1 = 1;}g' "$(DIST_TARGET)/lib/LizztCMS.pm"
 
 distCloneSanity: mkDistClone
 	[  "$(DIST_QUICK)" == "1" ] || make -C "$(DIST_TARGET)" sanitycheck_nojs
 
 vanillaPackage: mkDistClone distCloneSanity
-	tar -jcf lixuz-$(DIST_VERSION).src.tar.bz2 $(DIST_TARGET)
-	mv lixuz-$(DIST_VERSION).src.tar.bz2 packages
+	tar -jcf lizztcms-$(DIST_VERSION).src.tar.bz2 $(DIST_TARGET)
+	mv lizztcms-$(DIST_VERSION).src.tar.bz2 packages
 
 distCloneBuildAndMinify: mkDistClone
 	make -C "$(DIST_TARGET)" build minify
 
 usePackage: mkDistClone distCloneBuildAndMinify
-	tar -jcf lixuz-$(DIST_VERSION).minified.tar.bz2 $(DIST_TARGET)
-	mv lixuz-$(DIST_VERSION).minified.tar.bz2 packages
+	tar -jcf lizztcms-$(DIST_VERSION).minified.tar.bz2 $(DIST_TARGET)
+	mv lizztcms-$(DIST_VERSION).minified.tar.bz2 packages
 
 installerPackage: mkDistClone distCloneBuildAndMinify
-	( cd $$HOME/makeself* || cd $$HOME/downloads/makeself* || exit 1; $(BESILENT) ./makeself.sh --bzip2 --nox11 $(shell realpath "$(DIST_TARGET)") lixuz-$(DIST_VERSION).run 'Lixuz $(DIST_VERSION) distribution script' ./script/lixuz_distrib_wrap.pl || exit 1; mv ./lixuz-$(DIST_VERSION).run "$(DIST_SOURCE)"/packages )
+	( cd $$HOME/makeself* || cd $$HOME/downloads/makeself* || exit 1; $(BESILENT) ./makeself.sh --bzip2 --nox11 $(shell realpath "$(DIST_TARGET)") lizztcms-$(DIST_VERSION).run 'LizztCMS $(DIST_VERSION) distribution script' ./script/lizztcms_distrib_wrap.pl || exit 1; mv ./lizztcms-$(DIST_VERSION).run "$(DIST_SOURCE)"/packages )
 
 pluginPackages: mkDistClone distCloneBuildPluginPackages
 distCloneBuildPluginPackages:
-	[ ! -e "$(DIST_TARGET)/plugins/" ] || for plugin in $(DIST_TARGET)/plugins/*; do cd "$$plugin"; perl ../../tools/lixuzctl package build || exit 1;done
+	[ ! -e "$(DIST_TARGET)/plugins/" ] || for plugin in $(DIST_TARGET)/plugins/*; do cd "$$plugin"; perl ../../tools/lizztctl package build || exit 1;done
 	[ ! -e "$(DIST_TARGET)/plugins/" ] || mv "$(DIST_TARGET)/plugins/"*/*.lpk packages
 
 buildCleanup:

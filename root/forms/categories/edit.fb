@@ -1,4 +1,4 @@
-name: lixuz_userEdit
+name: lizztcms_userEdit
 method:post
 fields:
     hilightedFolders:

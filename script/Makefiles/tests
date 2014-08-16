@@ -18,15 +18,15 @@ depscheck:
 simpledepslist:
 	perl DEPSLIST list
 depslist:
-	./script/lixuz_codestats modulesOnly
+	./script/lizztcms_codestats modulesOnly
 modreport:
-	./script/lixuz_codestats modreport
+	./script/lizztcms_codestats modreport
 stats: statistics
 statistics:
-	./script/lixuz_codestats
+	./script/lizztcms_codestats
 
 # SWEC tests
-SWEC_URL ?= /admin/login/?user_name=swecUser&password=$(shell [ -e "./.swecpwd" ] && cat ./.swecpwd|perl -pi -e chomp )&_submitted_lixuz_login=1
+SWEC_URL ?= /admin/login/?user_name=swecUser&password=$(shell [ -e "./.swecpwd" ] && cat ./.swecpwd|perl -pi -e chomp )&_submitted_lizztcms_login=1
 SWEC_PORT ?= 3000
 SWEC_HOST ?= http://localhost:$(SWEC_PORT)
 SWEC_EXTRARULES ?=
@@ -37,7 +37,7 @@ SWEC_CMD ?= $(SWEC_BASECMD) $(SWEC_BASERULES) $(SWEC_EXTRARULES)
 swec: swec_full
 swec_init:
 	@if ! type swec >/dev/null; then echo "***";echo "SWEC is not installed. Get it from: http://random.zerodogg.org/swec";echo "***";exit 1;fi
-	@if [ ! -e ~/.swecrc ]; then echo "***";echo "WARNING: no ~/.swecrc found, there is one for Lixuz in the devdocs branch. Going on without it.";echo "***";fi
+	@if [ ! -e ~/.swecrc ]; then echo "***";echo "WARNING: no ~/.swecrc found, there is one for LizztCMS in the devdocs branch. Going on without it.";echo "***";fi
 	@if [ ! -e ./.swecpwd ]; then echo "./.swecpwd is missing, this should contain the password for the swecUser.";exit 1;fi
 swec_livesanity: swec_init
 	$(SWEC_BASECMD) --baseurl $(SWEC_HOST) -m '.=100' -m Innenriks=20 -m Utenriks=20 -m Nyheter=70 -s / -s /rss  -m /admin=0

@@ -4,7 +4,7 @@
  * Only supply one of newHeight and newWidth (make the other null)
  * Returns the new width or height, keeping the aspect ratio
  *
- * JS equalent to get_new_aspect() from LIXUZ::HelperModules::Files
+ * JS equalent to get_new_aspect() from LizztCMS::HelperModules::Files
  *
  * Same syntax, some additional error handling (original die()s),
  * this one returns null on failure.

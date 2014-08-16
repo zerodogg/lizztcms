@@ -1,5 +1,5 @@
 /*
- * LIXUZ content management system
+ * LizztCMS content management system
  * Copyright (C) Utrop A/S Portu media & Communications 2008-2011
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,24 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*
- * Media (audio and video) support on live websites for Lixuz
+ * Media (audio and video) support on live websites for LizztCMS
  */
 
 /*
  * Overrides:
  *
- * Set the variable lixuz_VideoPlayerOverride to a JavaScript function.
- * This will override the function that gets called when Lixuz wants
+ * Set the variable lizztcms_VideoPlayerOverride to a JavaScript function.
+ * This will override the function that gets called when LizztCMS wants
  * to play a video file.
  *
  * The function should have the following signature:
  *
- * window.lixuz_VideoPlayerOverride = function (videoElementID, helpers)
+ * window.lizztcms_VideoPlayerOverride = function (videoElementID, helpers)
  * {
  * };
  *
  * helpers is a javascript hash ("object") containing keys referencing
- * the various Lixuz video player functions. The reason for this is that
+ * the various LizztCMS video player functions. The reason for this is that
  * the actual functions reside within an enclosure, and thus can't be
  * directly referenced outside of it.
  *
@@ -62,7 +62,7 @@
         videos = [];
 
     /*
-     * This function looks for elements with lixuz_video as their name attribute.
+     * This function looks for elements with lizztcms_video as their name attribute.
      * If it finds any then it tries to start the player.  If none is found it just
      * returns
      */
@@ -70,7 +70,7 @@
     {
         try 
         { 
-            var $media = $('[name=lixuz_video], [name=lixuz_audio]');
+            var $media = $('[name=lizztcms_video], [name=lizztcms_audio]');
             if($media.length)
             {
                 $.getScript('/swf/flowplayer/flowplayer.js?'+FPVER,function ()
@@ -78,7 +78,7 @@
                     $media.each(function ()
                     {
                         var $this = $(this);
-                        if($this.attr('name') == 'lixuz_video')
+                        if($this.attr('name') == 'lizztcms_video')
                         {
                             playVideo($this.attr('id'));
                         }
@@ -104,7 +104,7 @@
         var override = null;
         try
         {
-            override = window.lixuz_AudioPlayerOverride;
+            override = window.lizztcms_AudioPlayerOverride;
         } catch(e) { override = null; }
         if(override != null && override != undefined)
         {
@@ -280,20 +280,20 @@
                 }
             }
         });
-        player.__lixuzInfo = { fired: 0, mainVidURL: vidURL };
+        player.__lizztcmsInfo = { fired: 0, mainVidURL: vidURL };
         player.onFinish(function () {
                 var clips = player.getPlaylist();
                 if(clips.length == 1)
                 {
                     return;
                 }
-                this.__lixuzInfo.fired++;
-                if(clips.length == this.__lixuzInfo.fired)
+                this.__lizztcmsInfo.fired++;
+                if(clips.length == this.__lizztcmsInfo.fired)
                 {
                     this.setPlaylist([ {
                         autoPlay: false,
                         autoBuffering: true,
-                        url: this.__lixuzInfo.mainVidURL,
+                        url: this.__lizztcmsInfo.mainVidURL,
                         seekableOnBegin: true
                         }]);
                 }
@@ -310,7 +310,7 @@
         var override = null;
         try
         {
-            override = window.lixuz_VideoPlayerOverride;
+            override = window.lizztcms_VideoPlayerOverride;
         } catch(e) { override = null; }
         if(override != null && override != undefined)
         {
@@ -352,7 +352,7 @@
                 {
                     // Element appears to be missing both attributes that we can use to build
                     // the video URL. We're going to make a final attempt at finding it.
-                    // All Lixuz-generated video elements has an img inside them. That img tag
+                    // All LizztCMS-generated video elements has an img inside them. That img tag
                     // also contains the UID for the video within its src attribute. The first
                     // int found in the img tag can be assumed to be the UID of the movie.
                     var i;
@@ -416,14 +416,14 @@
             else
             {
                 /*
-                 * Lixuz-generated video elements are small, and contain an <img>
+                 * LizztCMS-generated video elements are small, and contain an <img>
                  * element. Here we perform checks for badly created ones which is
                  * usually caused by <div>s not getting closed properly. If we
                  * initialize the video even though the div doesn't look like it
-                 * contains the usual Lixuz <img> tag, but something else, then we
+                 * contains the usual LizztCMS <img> tag, but something else, then we
                  * might overwrite information.
                  *
-                 * This will never happen with properly generated Lixuz videos
+                 * This will never happen with properly generated LizztCMS videos
                  */
                 if($element.html().length > 200)
                 {

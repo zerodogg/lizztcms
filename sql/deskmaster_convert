@@ -10,7 +10,7 @@ use Data::Dumper;
 use File::Basename qw(basename);
 use File::Copy qw(copy);
 use DBI;
-# Lixuz doesn't like not being in its own dir when initializing
+# LizztCMS doesn't like not being in its own dir when initializing
 chdir($FindBin::RealBin.'/..');
 
 # --- CONFIGURATION ---
@@ -25,7 +25,7 @@ my $prevIprintText = '';
 my $prevStatus = undef;
 my $logHandle;
 my $LZ_Target_Path;
-my %DeskMasterToLixuzMap = (
+my %DeskMasterToLizztCMSMap = (
     article => {},
     file => {},
     fileNames => [],
@@ -47,9 +47,9 @@ sub main
         die("You need to fix DM_Files_Path ($DM_Files_Path || $!)");
     }
     print 'Initializing...' if not $debug;
-    require LIXUZ;
+    require LizztCMS;
     print '.' if not $debug;
-    $LZ_Target_Path = LIXUZ->config->{LIXUZ}->{file_path};
+    $LZ_Target_Path = LizztCMS->config->{LizztCMS}->{file_path};
     if(not $LZ_Target_Path or not -e $LZ_Target_Path or not -w $LZ_Target_Path or not -d $LZ_Target_Path)
     {
         die("failed to get a usable LZ_Target_Path ($LZ_Target_Path || $!)");
@@ -75,11 +75,11 @@ sub main
         $| = 1;
         select($main_fh);
     }
-    print " Dumping existing lixuz database...";
-    my $db = LIXUZ->config->{'Model::LIXUZDB'}->{connect_info}->{dsn};
+    print " Dumping existing lizztcms database...";
+    my $db = LizztCMS->config->{'Model::LizztCMSDB'}->{connect_info}->{dsn};
     $db =~ s/^.*=([^=]+)$/$1/;
-    my $user = LIXUZ->config->{'Model::LIXUZDB'}->{connect_info}->{user};
-    my $pwd = LIXUZ->config->{'Model::LIXUZDB'}->{connect_info}->{password};
+    my $user = LizztCMS->config->{'Model::LizztCMSDB'}->{connect_info}->{user};
+    my $pwd = LizztCMS->config->{'Model::LizztCMSDB'}->{connect_info}->{password};
     system('mysqldump',qw(--complete-insert --opt -t),'-r',$FindBin::RealBin.'/deskmaster_convert-prebackup.sql','-u'.$user,'-p'.$pwd,$db);
     print "done - wrote deskmaster_convert-prebackup.sql\n";
     _log('Starting conversion');
@@ -215,11 +215,11 @@ sub finalStats
     iprint(' ');
     print "\r                         \n";
     printAndLog(" All done. Converted:\n");
-    printAndLog('  Articles:             '.scalar keys (%{$DeskMasterToLixuzMap{article}})."\n");
-    printAndLog('  Files:                '.scalar keys (%{$DeskMasterToLixuzMap{file}})."\n");
-    printAndLog('  Fields:               '.scalar keys (%{$DeskMasterToLixuzMap{field}})."\n");
-    printAndLog('  Categories:           '.scalar keys (%{$DeskMasterToLixuzMap{catFolder}})."\n");
-    printAndLog('  Invalid placeholders: '.scalar keys (%{$DeskMasterToLixuzMap{invalidPlaceholders}})."\n");
+    printAndLog('  Articles:             '.scalar keys (%{$DeskMasterToLizztCMSMap{article}})."\n");
+    printAndLog('  Files:                '.scalar keys (%{$DeskMasterToLizztCMSMap{file}})."\n");
+    printAndLog('  Fields:               '.scalar keys (%{$DeskMasterToLizztCMSMap{field}})."\n");
+    printAndLog('  Categories:           '.scalar keys (%{$DeskMasterToLizztCMSMap{catFolder}})."\n");
+    printAndLog('  Invalid placeholders: '.scalar keys (%{$DeskMasterToLizztCMSMap{invalidPlaceholders}})."\n");
     printAndLog("  (invalid placeholders are removed)\n");
     _log( 'Started running at '.scalar localtime($started)."\n");
     _log( 'Finished at        '.scalar localtime()."\n");
@@ -229,9 +229,9 @@ sub finalStats
     $Data::Dumper::Sortkeys = 1;
     $Data::Dumper::Indent = 1;
     _log( "Invalid placeholder dump:\n");
-    print {$logHandle} Dumper($DeskMasterToLixuzMap{invalidPlaceholders});
+    print {$logHandle} Dumper($DeskMasterToLizztCMSMap{invalidPlaceholders});
     _log( "Full dump: \n");
-    print {$logHandle} Dumper(\%DeskMasterToLixuzMap);
+    print {$logHandle} Dumper(\%DeskMasterToLizztCMSMap);
     close($logHandle);
     print "Log written to ./deskmaster_convert.log\n";
     print "To finalize the conversion, run the upgradeDB script (ensures database\n";
@@ -270,21 +270,21 @@ sub convertStringToPlain
     return $string;
 }
 
-sub getLixuzID
+sub getLizztCMSID
 {
     my $type = shift or confess;
     $type = ($type =~ /^(folder|category)$/i) ? 'catFolder' : $type;
     my $id = shift or confess;
     if(not $type =~ /^(article|file|field|catFolder)$/)
     {
-        confess("getLixuzID($type,$id): invalid type");
+        confess("getLizztCMSID($type,$id): invalid type");
     }
     
-    my $lz_id = $DeskMasterToLixuzMap{$type}->{$id};
+    my $lz_id = $DeskMasterToLizztCMSMap{$type}->{$id};
     return $lz_id;
 }
 
-sub setLixuzID
+sub setLizztCMSID
 {
     my $type = shift or confess;
     my $id = shift or confess;
@@ -292,14 +292,14 @@ sub setLixuzID
     $type = ($type =~ /^(folder|category)$/i) ? 'catFolder' : $type;
     if(not $type =~ /^(article|file|field|catFolder)$/)
     {
-        confess("setLixuzID($type,$id,$lz_id): invalid type");
+        confess("setLizztCMSID($type,$id,$lz_id): invalid type");
     }
     
-    if(defined $DeskMasterToLixuzMap{$type}->{$id})
+    if(defined $DeskMasterToLizztCMSMap{$type}->{$id})
     {
-        confess("setLixuzID($type,$id,$lz_id): attempted to remap $id from the existing one ".$DeskMasterToLixuzMap{$type}->{$id}." to $lz_id");
+        confess("setLizztCMSID($type,$id,$lz_id): attempted to remap $id from the existing one ".$DeskMasterToLizztCMSMap{$type}->{$id}." to $lz_id");
     }
-    $DeskMasterToLixuzMap{$type}->{$id} = $lz_id;
+    $DeskMasterToLizztCMSMap{$type}->{$id} = $lz_id;
     return $lz_id;
 }
 
@@ -308,9 +308,9 @@ sub finalizeConversionMap
     mainStatus(' Finalizing conversion map...');
     my $dbh;
     if (
-        not $dbh = DBI->connect(LIXUZ->config->{'Model::LIXUZDB'}->{connect_info}->{dsn},
-            LIXUZ->config->{'Model::LIXUZDB'}->{connect_info}->{user},
-            LIXUZ->config->{'Model::LIXUZDB'}->{connect_info}->{password})
+        not $dbh = DBI->connect(LizztCMS->config->{'Model::LizztCMSDB'}->{connect_info}->{dsn},
+            LizztCMS->config->{'Model::LizztCMSDB'}->{connect_info}->{user},
+            LizztCMS->config->{'Model::LizztCMSDB'}->{connect_info}->{password})
     )
     {
         _log("FATAL: Failed to open up connection to database for conversion mapping");
@@ -324,7 +324,7 @@ sub finalizeConversionMap
         mainstatus('failed');
         return;
     }
-    while(my ($old,$new) = each(%{$DeskMasterToLixuzMap{article}}))
+    while(my ($old,$new) = each(%{$DeskMasterToLizztCMSMap{article}}))
     {
         iprint(sprintf('%-5s <-> %s',$new,$old));
         eval
@@ -347,9 +347,9 @@ sub finalizeConversionMap
 sub runCronJobs
 {
     mainStatus(' Running daily cronjob once...');
-    if (-x './cronjobs/lixuz_cron_daily.pl')
+    if (-x './cronjobs/lizztcms_cron_daily.pl')
     {
-        system('./cronjobs/lixuz_cron_daily.pl');
+        system('./cronjobs/lizztcms_cron_daily.pl');
     }
     mainStatus('done');
 }
@@ -359,7 +359,7 @@ sub runCronJobs
 # ---
 sub convertFields
 {
-    mainStatus(' Converting DeskMaster additional fields to Lixuz additional fields...');
+    mainStatus(' Converting DeskMaster additional fields to LizztCMS additional fields...');
     print '  Converting: ';
     iprint('(preparing)');
     my $fields = $dm->resultset('DmField');
@@ -381,7 +381,7 @@ sub convertThisField
         text => 'singleline',
         textarea => 'multiline',
     );
-    my $lz_field = LIXUZ->model('LIXUZDB::LzField')->create({
+    my $lz_field = LizztCMS->model('LizztCMSDB::LzField')->create({
             field_name => convertStringToPlain($field->fieldtitle),
         });
     if ($typeMap{$type})
@@ -406,7 +406,7 @@ sub convertThisField
                 _log('seq_opts_frm/seq_opts_to is null, should not be possible');
                 return;
             }
-            my $lz_seq = LIXUZ->model('LIXUZDB::LzFieldOptions')->create({
+            my $lz_seq = LizztCMS->model('LizztCMSDB::LzFieldOptions')->create({
                     field_id => $lz_field->field_id,
                     range_from => $field->seq_opts_frm,
                     range_to => $field->seq_opts_to,
@@ -419,19 +419,19 @@ sub convertThisField
 
             my $usr_opts = $field->usr_opts;
             my $i = 0;
-            $DeskMasterToLixuzMap{fieldOpts}->{$field->fieldid} = {};
+            $DeskMasterToLizztCMSMap{fieldOpts}->{$field->fieldid} = {};
             my @options = split(/,+/,$usr_opts);
             foreach my $opt (@options)
             {
                 (my $key = $opt) =~ s/^([^:]+):+.*$/$1/g;
                 (my $value = $opt) =~ s/^[^:]+:+(.*)$/$1/g;
-                my $opts = LIXUZ->model('LIXUZDB::LzFieldOptions')->create({
+                my $opts = LizztCMS->model('LizztCMSDB::LzFieldOptions')->create({
                         field_id => $lz_field->field_id,
                         option_id => $i,
                         option_name => $value,
                     });
                 $opts->update();
-                $DeskMasterToLixuzMap{fieldOpts}->{$field->fieldid}->{$key} = $i;
+                $DeskMasterToLizztCMSMap{fieldOpts}->{$field->fieldid}->{$key} = $i;
                 $i++;
             }
         }
@@ -446,7 +446,7 @@ sub convertThisField
         _log('Unhandled field type: '.$type);
     }
     $lz_field->update();
-    setLixuzID('field',$field->fieldid, $lz_field->field_id);
+    setLizztCMSID('field',$field->fieldid, $lz_field->field_id);
 }
 
 # ---
@@ -454,7 +454,7 @@ sub convertThisField
 # ---
 sub convertArticleCategories
 {
-    mainStatus(' Converting DeskMaster Article<->Category relations to Lixuz folder relations...');
+    mainStatus(' Converting DeskMaster Article<->Category relations to LizztCMS folder relations...');
     print '  Converting: ';
     iprint('(preparing)');
     my $art_cats = $dm->resultset('DmArtCat')->search(undef,{order_by => 'artid'});
@@ -463,8 +463,8 @@ sub convertArticleCategories
         if(defined $art_cat->artid and defined $art_cat->catid and not $art_cat->catid == 0)
         {
             iprint($art_cat->artid);
-            my $article_id = getLixuzID('article',$art_cat->artid);
-            my $folder_id = getLixuzID('folder',$art_cat->catid);
+            my $article_id = getLizztCMSID('article',$art_cat->artid);
+            my $folder_id = getLizztCMSID('folder',$art_cat->catid);
             if(not defined $article_id)
             {
                 _log("FATAL: failed to locate NEW artid for article id: ".$art_cat->artid);
@@ -475,7 +475,7 @@ sub convertArticleCategories
                 _log("FATAL: Failed to locate NEW folder_id for category: ".$art_cat->catid);
                 next;
             }
-            LIXUZ->model('LIXUZDB::LzArticleFolder')->create({
+            LizztCMS->model('LizztCMSDB::LzArticleFolder')->create({
                     article_id => $article_id,
                     folder_id => $folder_id,
                     primary_folder => $art_cat->main,
@@ -494,14 +494,14 @@ sub convertArticleCategories
 # converted links.
 sub convertArticleFilesAndContent
 {
-    mainStatus(' Converting DeskMaster article bodies and leads to Lixuz article bodies and leads...');
+    mainStatus(' Converting DeskMaster article bodies and leads to LizztCMS article bodies and leads...');
     print "  Converting: ";
     iprint('(preparing)');
-    foreach my $artid (sort keys(%{$DeskMasterToLixuzMap{article}}))
+    foreach my $artid (sort keys(%{$DeskMasterToLizztCMSMap{article}}))
     {
-        my $lz_article_id = getLixuzID('article',$artid);
+        my $lz_article_id = getLizztCMSID('article',$artid);
         iprint($lz_article_id);
-        my $article = LIXUZ->model('LIXUZDB::LzArticle')->find({
+        my $article = LizztCMS->model('LizztCMSDB::LzArticle')->find({
                 article_id => $lz_article_id,
             });
         my ($body, $b_changed) = safesub('performArtContentConversion',$artid, $article, $article->body);
@@ -545,7 +545,7 @@ sub performArtContentConversion
 
     my $art_files = $dm->resultset('DmArtFile')->search({artid => $deskmaster_artid});
 
-    my $lixuzSpotNo = 0;
+    my $lizztcmsSpotNo = 0;
     while(my $file = $art_files->next)
     {
         if(defined $spots{$file->spot})
@@ -553,9 +553,9 @@ sub performArtContentConversion
             _log("Fighting over a single spot ".$file->spot.' for artid '.$deskmaster_artid.'. '.$file->fid.' lost');
             next;
         }
-        my $lixuzFileID = getLixuzID('file',$file->fid);
-        my $obj = LIXUZ->model('LIXUZDB::LzFile')->find({
-                file_id => $lixuzFileID,
+        my $lizztcmsFileID = getLizztCMSID('file',$file->fid);
+        my $obj = LizztCMS->model('LizztCMSDB::LzFile')->find({
+                file_id => $lizztcmsFileID,
             });
         my $fobj = $dm->resultset('DmFile')->find({
                 fid => $file->fid,
@@ -568,17 +568,17 @@ sub performArtContentConversion
         if(not defined $obj)
         {
             my $id = $file->id;
-            if(not defined $lixuzFileID)
+            if(not defined $lizztcmsFileID)
             {
-                _log("Deskmaster file \"$id\" appears to not have been converted to LzFile, getLixuzID() failed.");
-                if ($DeskMasterToLixuzMap{'file'}->{$id})
+                _log("Deskmaster file \"$id\" appears to not have been converted to LzFile, getLizztCMSID() failed.");
+                if ($DeskMasterToLizztCMSMap{'file'}->{$id})
                 {
-                    _log('Strangely, a direct lookup in DeskMasterToLixuzMap succeeds');
+                    _log('Strangely, a direct lookup in DeskMasterToLizztCMSMap succeeds');
                 }
             }
             else
             {
-                _log("Deskmaster file $id which is suppose to map to Lixuz file $lixuzFileID failed to retrieve the Lixuz file object");
+                _log("Deskmaster file $id which is suppose to map to LizztCMS file $lizztcmsFileID failed to retrieve the LizztCMS file object");
             }
             die();
             next;
@@ -588,17 +588,17 @@ sub performArtContentConversion
             align => $file->align,
             file_obj => $obj,
         };
-        $lixuzSpotNo++;
+        $lizztcmsSpotNo++;
         # Create relationship if it isn't already there
-        if(not LIXUZ->model('LIXUZDB::LzArticleFile')->find({
+        if(not LizztCMS->model('LizztCMSDB::LzArticleFile')->find({
                     article_id => $lz_article->article_id,
-                    file_id => getLixuzID('file',$file->fid),
+                    file_id => getLizztCMSID('file',$file->fid),
                 }))
         {
-            my $new = LIXUZ->model('LIXUZDB::LzArticleFile')->create({
+            my $new = LizztCMS->model('LizztCMSDB::LzArticleFile')->create({
                     article_id => $lz_article->article_id,
-                    file_id => getLixuzID('file',$file->fid),
-                    spot_no => $lixuzSpotNo,
+                    file_id => getLizztCMSID('file',$file->fid),
+                    spot_no => $lizztcmsSpotNo,
                 });
         }
     }
@@ -681,7 +681,7 @@ sub performArtContentConversion
                 if(not $l =~ /\d$/)
                 {
                     $e = 1;
-                    _log("Internal URL, might not work with Lixuz ($l). Maybe this should be cleaned? Found in lz_article ".$lz_article->article_id);
+                    _log("Internal URL, might not work with LizztCMS ($l). Maybe this should be cleaned? Found in lz_article ".$lz_article->article_id);
                 }
             }
         }
@@ -743,13 +743,13 @@ sub performArtContentConversion
                 }
                 else
                 {
-                    my $lz = getLixuzID('file',$file->fid);
+                    my $lz = getLizztCMSID('file',$file->fid);
                     if(not defined $lz)
                     {
                         _log("Failed to find lz file for ".$file->fid);
                         next;
                     }
-                    my $lzObj = LIXUZ->model('LIXUZDB::LzFile')->find({file_id => $lz});
+                    my $lzObj = LizztCMS->model('LizztCMSDB::LzFile')->find({file_id => $lz});
                     if(not $lzObj)
                     {
                         _log("Failed to find file object for lz file ".$lz);
@@ -809,17 +809,17 @@ sub artContentConvert_getElement
 
     if ($type =~ /^(rel)?art/)
     {
-        if(not getLixuzID('article',$elementId))
+        if(not getLizztCMSID('article',$elementId))
         {
             placeHolderErr($deskmaster_artid, $lz_article, $element, 'failed to look up element with the supplied ID',$elementId);
             return '';
         }
-        my $lz_art = LIXUZ->model('LIXUZDB::LzArticle')->find({
-                article_id => getLixuzID('article',$elementId),
+        my $lz_art = LizztCMS->model('LizztCMSDB::LzArticle')->find({
+                article_id => getLizztCMSID('article',$elementId),
             });
         if(not $lz_art)
         {
-            placeHolderErr($deskmaster_artid, $lz_article, $element, 'failed to locate lz_article with id '.getLixuzID('article',$elementId),$elementId);
+            placeHolderErr($deskmaster_artid, $lz_article, $element, 'failed to locate lz_article with id '.getLizztCMSID('article',$elementId),$elementId);
             return '';
         }
         if ($type eq 'relart')
@@ -874,7 +874,7 @@ sub artContentConvert_getElement
             placeHolderErr($deskmaster_artid, $lz_article, $element, 'failed to locate file id for spot',$elementId);
             return '';
         }
-        my $f = LIXUZ->model('LIXUZDB::LzFile')->find({
+        my $f = LizztCMS->model('LizztCMSDB::LzFile')->find({
                 file_id => $fid,
             });
         if(not $f)
@@ -916,7 +916,7 @@ sub artContentConvert_getElement
             placeHolderErr($deskmaster_artid, $lz_article, $element, 'Failed to locate spot',$elementId);
             return '';
         }
-        my $obj = LIXUZ->model('LIXUZDB::LzFile')->find({
+        my $obj = LizztCMS->model('LizztCMSDB::LzFile')->find({
                 file_id => $locEnt->{file},
             });
         if ($type eq 'align')
@@ -990,7 +990,7 @@ sub invalidPlaceHolder
         confess;
     }
     placeHolderErr($dm_art, $lz_art, $element,'Invalid placeholder');
-    $DeskMasterToLixuzMap{invalidPlaceholders}->{$placeHolder} += 1;
+    $DeskMasterToLizztCMSMap{invalidPlaceholders}->{$placeHolder} += 1;
     return '';
 }
 
@@ -1017,10 +1017,10 @@ sub debug_artFilePlaceholder
         if ($file)
         {
             $tests{fileexist} = 'OK';
-            if (getLixuzID('file',$file->fid))
+            if (getLizztCMSID('file',$file->fid))
             {
                 $tests{fileconverted} = 'OK';
-                my $lzf = LIXUZ->model('LzFile')->find({file_id => getLixuzID('file',$file->fid)});
+                my $lzf = LizztCMS->model('LzFile')->find({file_id => getLizztCMSID('file',$file->fid)});
                 if ($lzf)
                 {
                     $tests{lzfileexist} = 'OK';
@@ -1067,7 +1067,7 @@ sub undefDateTime
 # ---
 sub convertArticles
 {
-    mainStatus(' Preparing Lixuz database for article conversion...');
+    mainStatus(' Preparing LizztCMS database for article conversion...');
     iprint('Creating metadata fields...');
     my %fieldMap;
     my %metaFields = (
@@ -1083,7 +1083,7 @@ sub convertArticles
     );
     while(my ($name,$type) = each %metaFields)
     {
-        my $existing = LIXUZ->model('LIXUZDB::LzField')->find({
+        my $existing = LizztCMS->model('LizztCMSDB::LzField')->find({
                 field_name => $name,
                 field_type => $type,
             });
@@ -1093,7 +1093,7 @@ sub convertArticles
             $fieldMap{$name} = $existing->field_id;
             next;
         }
-        elsif(my $secondExisting = LIXUZ->model('LIXUZDB::LzField')->find({
+        elsif(my $secondExisting = LizztCMS->model('LizztCMSDB::LzField')->find({
                 field_name => $name.' (from DeskMaster)',
                 field_type => $type,
                 }))
@@ -1101,14 +1101,14 @@ sub convertArticles
             $fieldMap{$name} = $secondExisting;
             next;
         }
-        elsif(my $named = LIXUZ->model('LIXUZDB::LzField')->find({
+        elsif(my $named = LizztCMS->model('LizztCMSDB::LzField')->find({
                 field_name => $name,
                 field_type => $type,
                 }))
         {
             $setName = $name.' (from DeskMaster';
         }
-        my $lz_field = LIXUZ->model('LIXUZDB::LzField')->create({
+        my $lz_field = LizztCMS->model('LizztCMSDB::LzField')->create({
                 field_name => $setName,
                 field_type => $type,
             });
@@ -1116,7 +1116,7 @@ sub convertArticles
     }
     mainStatus('done');
 
-    mainStatus(' Converting DeskMaster articles to Lixuz articles...');
+    mainStatus(' Converting DeskMaster articles to LizztCMS articles...');
     print '  Converting: ';
     iprint('(preparing)');
     my $articles = $dm->resultset('DmArt')->search(undef,{order_by => 'artid'});
@@ -1178,8 +1178,8 @@ sub convertThisArticle
             target => $fieldMap->{arttype},
         },
     );
-    my $lz_article = LIXUZ->model('LIXUZDB::LzArticle')->create({});
-    my $lz_workflow = LIXUZ->model('LIXUZDB::LzWorkflow')->create({article_id => $lz_article->article_id});
+    my $lz_article = LizztCMS->model('LizztCMSDB::LzArticle')->create({});
+    my $lz_workflow = LizztCMS->model('LizztCMSDB::LzWorkflow')->create({article_id => $lz_article->article_id});
 
     while(my ($key,$value) = each(%map))
     {
@@ -1189,7 +1189,7 @@ sub convertThisArticle
             {
                 if(defined $article->get_column($key) and length $article->get_column($key))
                 {
-                    my $lz_value= LIXUZ->model('LIXUZDB::LzFieldValue')->create({
+                    my $lz_value= LizztCMS->model('LizztCMSDB::LzFieldValue')->create({
                             module_name => 'article',
                             value => convertStringToPlain($article->get_column($key)),
                             field_id => $value->{target},
@@ -1242,13 +1242,13 @@ sub convertThisArticle
     my $defaultUser = 24;
     if(my $regby = $article->regby)
     {
-        my $rb =  LIXUZ->model('LIXUZDB::LzUser')->find({
+        my $rb =  LizztCMS->model('LizztCMSDB::LzUser')->find({
                 user_name => $regby
             });
         if(not $rb)
         {
             $regby =~ tr/[A-Z]/[a-z]/;
-            $rb =  LIXUZ->model('LIXUZDB::LzUser')->find({
+            $rb =  LizztCMS->model('LizztCMSDB::LzUser')->find({
                     user_name => $regby
                 });
         }
@@ -1270,12 +1270,12 @@ sub convertThisArticle
 
     $lz_article->update();
     $lz_workflow->update();
-    setLixuzID('article',$article->artid,$lz_article->article_id);
+    setLizztCMSID('article',$article->artid,$lz_article->article_id);
 }
 
 sub convertArticleRelations
 {
-    mainStatus(' Converting DeskMaster article relationships to Lixuz article relationships...');
+    mainStatus(' Converting DeskMaster article relationships to LizztCMS article relationships...');
     print ' Converting : ';
     iprint('(preparing)');
 
@@ -1283,19 +1283,19 @@ sub convertArticleRelations
     while(my $rel = $rels->next)
     {
         iprint(sprintf('%-5s <-> %s',$rel->artid,$rel->relid));
-        my $lz_article = getLixuzID('article',$rel->artid);
-        my $lz_relart = getLixuzID('article',$rel->relid);
+        my $lz_article = getLizztCMSID('article',$rel->artid);
+        my $lz_relart = getLizztCMSID('article',$rel->relid);
         if(not $lz_article)
         {
-            _log('Failed to locate Lixuz article_id for artid in article relationship between dm_art '.$rel->artid.' and '.$rel->relid);
+            _log('Failed to locate LizztCMS article_id for artid in article relationship between dm_art '.$rel->artid.' and '.$rel->relid);
             next;
         }
         elsif(not $lz_relart)
         {
-            _log('Failed to locate Lixuz article_id for relid in article relationship between dm_art '.$rel->artid.' and '.$rel->relid);
+            _log('Failed to locate LizztCMS article_id for relid in article relationship between dm_art '.$rel->artid.' and '.$rel->relid);
             next;
         }
-        my $newRel = LIXUZ->model('LIXUZDB::LzArticleRelations')->create({
+        my $newRel = LizztCMS->model('LizztCMSDB::LzArticleRelations')->create({
                 article_id => $lz_article,
                 related_article_id => $lz_relart,
                 relation_type => 'related',
@@ -1313,19 +1313,19 @@ sub convertArticleRelations
     while(my $article = $articles->next)
     {
         iprint($article->artid);
-        my $artid = getLixuzID('article',$article->artid);
-        my $prev = getLixuzID('article',$article->previd);
+        my $artid = getLizztCMSID('article',$article->artid);
+        my $prev = getLizztCMSID('article',$article->previd);
         if(not $artid)
         {
-            _log('Failed to locate Lixuz article_id for artid in article prev relationship between dm_art '.$artid.' and '.$prev);
+            _log('Failed to locate LizztCMS article_id for artid in article prev relationship between dm_art '.$artid.' and '.$prev);
             next;
         }
         elsif(not $prev)
         {
-            _log('Failed to locate Lixuz article_id for previd in article prev relationship between dm_art '.$artid.' and '.$prev);
+            _log('Failed to locate LizztCMS article_id for previd in article prev relationship between dm_art '.$artid.' and '.$prev);
             next;
         }
-        my $newRel = LIXUZ->model('LIXUZDB::LzArticleRelations')->create({
+        my $newRel = LizztCMS->model('LizztCMSDB::LzArticleRelations')->create({
                 article_id => $artid,
                 related_article_id => $prev,
                 relation_type => 'previous',
@@ -1337,7 +1337,7 @@ sub convertArticleRelations
 
 sub convertArticleAdFields
 {
-    mainStatus(' Converting DeskMaster additional field values to Lixuz additional field values...');
+    mainStatus(' Converting DeskMaster additional field values to LizztCMS additional field values...');
     print '  Converting: ';
     iprint('(preparing)');
     my $fields = $dm->resultset('DmArtField')->search(undef, {order_by => 'artid'});
@@ -1348,19 +1348,19 @@ sub convertArticleAdFields
         {
             next;
         }
-        if(not defined getLixuzID('field',$field->fieldid))
+        if(not defined getLizztCMSID('field',$field->fieldid))
         {
             _log("Got invalid field that no longer exists when converting values: ".$field->fieldid);
             next;
         }
-        elsif(not defined getLixuzID('article',$field->artid))
+        elsif(not defined getLizztCMSID('article',$field->artid))
         {
             _log("Got invalid article that no longer exists when converting values: ".$field->artid);
             next;
         }
 
-        my $lz_art = LIXUZ->model('LIXUZDB::LzArticle')->find({
-                article_id => getLixuzID('article',$field->artid),
+        my $lz_art = LizztCMS->model('LizztCMSDB::LzArticle')->find({
+                article_id => getLizztCMSID('article',$field->artid),
             });
         if(not $lz_art)
         {
@@ -1372,22 +1372,22 @@ sub convertArticleAdFields
             $folder = $lz_art->folder->folder;
         };
         next if $@;
-        my $fields = LIXUZ->model('LIXUZDB::LzFieldModule')->search({
+        my $fields = LizztCMS->model('LizztCMSDB::LzFieldModule')->search({
                 folder_id => $folder->folder_id,
                 module => 'folder',
-                field_id => getLixuzID('article',$field->fieldid),
+                field_id => getLizztCMSID('article',$field->fieldid),
             });
         if(not $fields->count())
         {
-            my $newField = LIXUZ->model('LIXUZDB::LzFieldModule')->create({
+            my $newField = LizztCMS->model('LizztCMSDB::LzFieldModule')->create({
                     folder_id => $folder->folder_id,
                     module => 'folder',
-                    field_id => getLixuzID('field',$field->fieldid),
+                    field_id => getLizztCMSID('field',$field->fieldid),
                 });
             $newField->update();
         }
-        my $content = LIXUZ->model('LIXUZDB::LzFieldValue')->create({
-                field_id => getLixuzID('field',$field->fieldid),
+        my $content = LizztCMS->model('LizztCMSDB::LzFieldValue')->create({
+                field_id => getLizztCMSID('field',$field->fieldid),
                 module_id => $lz_art->article_id,
                 value => encode_utf8($field->content),
                 module_name => 'articles',
@@ -1403,7 +1403,7 @@ sub convertArticleAdFields
 
 sub convertArticleComments
 {
-    mainStatus(' Converting DeskMaster article comments to Lixuz article comments...');
+    mainStatus(' Converting DeskMaster article comments to LizztCMS article comments...');
     print '  Converting: ';
     iprint('(preparing)');
     my $comments = $dm->resultset('MbComment')->search(undef,{order_by => 'artid'});
@@ -1421,7 +1421,7 @@ sub convertArticleComments
         {
             next;
         }
-        my $lzArtid = getLixuzID('article',$comment->artid);
+        my $lzArtid = getLizztCMSID('article',$comment->artid);
         if(not defined $lzArtid)
         {
             if (my $e = $dm->resultset('DmArt')->find({ artid => $comment->artid}))
@@ -1435,7 +1435,7 @@ sub convertArticleComments
             _log('Comment '.$comment->comid.' was empty, ignoring');
             next;
         }
-        my $com = LIXUZ->model('LIXUZDB::LzLiveComment')->create({
+        my $com = LizztCMS->model('LizztCMSDB::LzLiveComment')->create({
                 article_id => $lzArtid,
             });
         my $modified = 0;
@@ -1463,7 +1463,7 @@ sub convertArticleComments
 # ---
 sub convertFiles
 {
-    mainStatus(' Converting DeskMaster files to Lixuz files...');
+    mainStatus(' Converting DeskMaster files to LizztCMS files...');
     print '  Converting: ';
     iprint('(preparing)');
     my %convertChildren;
@@ -1520,7 +1520,7 @@ sub convertFiles
     while(defined($allFiles) and (my $file = $allFiles->next))
     {
         iprint('(scanning for unreferenced files)');
-        next if getLixuzID('file',$file->fid);
+        next if getLizztCMSID('file',$file->fid);
         safesub('convertThisFile',$file,undef);
     }
     mainStatus('done');
@@ -1530,9 +1530,9 @@ sub convertThisFile
 {
     my $file = shift;
     my $parent = shift;
-    return if defined getLixuzID('file',$file->fid);
+    return if defined getLizztCMSID('file',$file->fid);
     iprint($file->fid);
-    my $lz_file = LIXUZ->model('LIXUZDB::LzFile')->create({});
+    my $lz_file = LizztCMS->model('LizztCMSDB::LzFile')->create({});
     # This is a map of fields that have (near) 1:1 mapping where
     # we don't need to perform any kind of special conversion of the value.
     my %map = (
@@ -1581,7 +1581,7 @@ sub convertThisFile
     $lz_file->set_column('status',$status);
     if ($parent)
     {
-        $lz_file->set_column('clone', getLixuzID('file',$parent->fid));
+        $lz_file->set_column('clone', getLizztCMSID('file',$parent->fid));
     }
 
     $lz_file->update();
@@ -1590,7 +1590,7 @@ sub convertThisFile
         _log('copyFile() failed - deleting lz_file object '.$lz_file->file_id);
         $lz_file->delete();
     }
-    setLixuzID('file',$file->fid,$lz_file->file_id);
+    setLizztCMSID('file',$file->fid,$lz_file->file_id);
     return 1;
 }
 
@@ -1600,7 +1600,7 @@ sub copyFile
     my $location = $DM_Files_Path;
     my $path = $dm_file->dirurl.'/'.$dm_file->srcfile;
     my $target = $LZ_Target_Path.'/'.$lz_file->file_id;
-    push(@{$DeskMasterToLixuzMap{fileNames}},{ $location.$path => $target });
+    push(@{$DeskMasterToLizztCMSMap{fileNames}},{ $location.$path => $target });
     if(not $path =~ /img/)
     {
         _log('WARNING: Path without /img/ : '.$path);
@@ -1627,7 +1627,7 @@ sub copyFile
 # ---
 sub convertCategoryToFolder
 {
-    mainStatus(' Converting DeskMaster categories to Lixuz folders...');
+    mainStatus(' Converting DeskMaster categories to LizztCMS folders...');
     print '  Converting: ';
     iprint('(preparing)');
     my %hasConverted;
@@ -1681,16 +1681,16 @@ sub convertThisCategory
     my($alreadyConverted, $cat, $parentCat) = @_;
     return if $alreadyConverted->{$cat->catid};
     iprint($cat->catid);
-    my $folders = LIXUZ->model('LIXUZDB::LzFolder');
+    my $folders = LizztCMS->model('LizztCMSDB::LzFolder');
     my $folder;
     my $similar_folders = $folders->search({folder_name => $cat->catname});
     while(defined($similar_folders) && ($folder = $similar_folders->next))
     {
         if ($parentCat)
         {
-            if(defined getLixuzID('catFolder',$parentCat->catid))
+            if(defined getLizztCMSID('catFolder',$parentCat->catid))
             {
-                if (not defined $folder->parent or not $folder->parent == getLixuzID('catFolder',$parentCat->catid))
+                if (not defined $folder->parent or not $folder->parent == getLizztCMSID('catFolder',$parentCat->catid))
                 {
                     $folder = undef;
                 }
@@ -1709,9 +1709,9 @@ sub convertThisCategory
             });
         if ($parentCat)
         {
-            if(defined getLixuzID('catFolder',$parentCat->catid))
+            if(defined getLizztCMSID('catFolder',$parentCat->catid))
             {
-                $folder->set_column('parent',getLixuzID('catFolder',$parentCat->catid));
+                $folder->set_column('parent',getLizztCMSID('catFolder',$parentCat->catid));
             }
             else
             {
@@ -1720,7 +1720,7 @@ sub convertThisCategory
         }
         $folder->update();
     }
-    setLixuzID('catFolder',$cat->catid,$folder->folder_id);
+    setLizztCMSID('catFolder',$cat->catid,$folder->folder_id);
 }
 
 # ---
