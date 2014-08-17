@@ -2503,7 +2503,7 @@ sub buildPackage
     {
         $minVersion = 4;
     }
-    writeFile($dir.'/lpkversion',$packageFormatRevision.'/'.$minVersion);
+    writeFile($dir.'/lzpkversion',$packageFormatRevision.'/'.$minVersion);
 
     # Write a metadata file
     writeFile($dir.'/contentMeta.json',encode_json({
@@ -2673,15 +2673,16 @@ sub installPackage
     }
 
     # Verify package version
-    my @lpkversion = (0,0);
-    if (-e $dir.'/lpkversion')
+    my @lzpkversion = (0,0);
+    if (! -e $dir.'/lzpkversion')
     {
-        my $lpkVersionContent = slurp($dir.'/lpkversion');
-        $lpkVersionContent =~ s/^#.*\n?//g;
-        @lpkversion = split('/',$lpkVersionContent);
+        die;
     }
-    my $packageVersion    = $lpkversion[0] // 0;
-    my $packageCompatible = $lpkversion[1] // 0;
+    my $lpkVersionContent = slurp($dir.'/lzpkversion');
+    $lpkVersionContent =~ s/^#.*\n?//g;
+    @lzpkversion = split('/',$lpkVersionContent);
+    my $packageVersion    = $lzpkversion[0] // 0;
+    my $packageCompatible = $lzpkversion[1] // 0;
     printd('Package version: '.$packageVersion.' || Compatible with: '.$packageCompatible);
     if ($packageCompatible > $packageFormatRevision)
     {
