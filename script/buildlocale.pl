@@ -239,7 +239,7 @@ if (not $buildOnlyMode)
     print 'Running xgettext...';
     my @command = ('xgettext',
         '--copyright-holder',	'Portu media & communications',
-        '--msgid-bugs-address',	'https://github.com/portu/lizztcms/issues',
+        '--msgid-bugs-address',	'https://github.com/zerodogg/lizztcms/issues',
         '--language',			'perl',
         '--default-domain',		'LizztCMS',
         '--package-name',		'LizztCMS',

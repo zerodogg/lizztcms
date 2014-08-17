@@ -18,7 +18,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: LizztCMS (Mon Feb 14 14:51:18 2011)\n"
-"Report-Msgid-Bugs-To: https://github.com/portu/lizztcms/issues\n"
+"Report-Msgid-Bugs-To: https://github.com/zerodogg/lizztcms/issues\n"
 "POT-Creation-Date: 2013-04-24 10:43+0200\n"
 "PO-Revision-Date: 2013-04-24 10:44+0200\n"
 "Last-Translator: Eskild Hustvedt eskild@portu.no\n"
