@@ -1,0 +1,15 @@
+Initially:
+- Remove the dictionary
+- Replace TinyMCE
+- Replace ancient table-based UI with CSS-based UI
+- Remove support for IE8 and older
+- Remove newsletter
+- Remove RSS import
+- Drop use of given/when
+- Remove old compatibility code
+
+Future:
+- Simplify article submission API
+- Add a basic set of default templates
+- Replace installer with LizztCMS package-based handling
+- Clean up database upgrader
