@@ -1,7 +1,7 @@
 # vim: set tw=79 :
 =head1 WHAT IS THIS DOCUMENT AND WHO IS IT FOR?
 
-This document describes the internal architecture of the LizztCMS CMS, from
+This document describes the internal architecture of LizztCMS, from
 back-end, to front-end, live and client-side. The primary audience for this
 document are developers wishing to hack on LizztCMS or write complex plugins. This
 is not end-user documentation, nor is it for people merely implementing basic
